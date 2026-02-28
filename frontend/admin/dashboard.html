@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin - SilverHappy</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .bloc { background: white; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<h1>Dashboard Admin - Silver Happy</h1>
+
+<div class="bloc">
+    <h2>Seniors</h2>
+    <button onclick="chargerSeniors()">Charger</button>
+    <ul id="liste-seniors"></ul>
+</div>
+
+<div class="bloc">
+    <h2>Prestataires</h2>
+    <button onclick="chargerPrestataires()">Charger</button>
+    <ul id="liste-prestataires"></ul>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
