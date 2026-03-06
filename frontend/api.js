@@ -15,7 +15,7 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("type", data.type_utilisateur);
             document.getElementById("message").innerText = "Connexion réussie";
-            window.location.href = "../frontend/admin/dashboard.html";
+            window.location.href = "admin/dashboard.html";        
         } else {
             document.getElementById("message").innerText = data.message;
         }

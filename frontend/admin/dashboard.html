@@ -1,29 +1,83 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard Admin - SilverHappy</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .bloc { background: white; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
-    </style>
+<meta charset="UTF-8">
+<title>Dashboard Admin</title>
+
+<style>
+body {
+font-family: Arial;
+padding:20px;
+}
+
+.bloc{
+border:1px solid #ccc;
+padding:15px;
+margin-bottom:20px;
+}
+
+input{
+padding:6px;
+margin:4px;
+}
+
+button{
+padding:6px 10px;
+cursor:pointer;
+}
+</style>
+
 </head>
+
 <body>
 
-<h1>Dashboard Admin - Silver Happy</h1>
+<h1>Dashboard Admin</h1>
 
 <div class="bloc">
-    <h2>Seniors</h2>
-    <button onclick="chargerSeniors()">Charger</button>
-    <ul id="liste-seniors"></ul>
+<h2>Seniors</h2>
+<button onclick="chargerSeniors()">Afficher</button>
+<ul id="liste-seniors"></ul>
 </div>
 
 <div class="bloc">
-    <h2>Prestataires</h2>
-    <button onclick="chargerPrestataires()">Charger</button>
-    <ul id="liste-prestataires"></ul>
+<h2>Prestataires</h2>
+<button onclick="chargerPrestataires()">Afficher</button>
+<ul id="liste-prestataires"></ul>
+</div>
+
+<div class="bloc">
+<h2>Categories</h2>
+
+<button onclick="chargerCategories()">Afficher</button>
+
+<ul id="liste-categories"></ul>
+
+<input id="cat-nom" placeholder="Nom">
+<input id="cat-desc" placeholder="Description">
+
+<button onclick="ajouterCategorie()">Ajouter</button>
+
+</div>
+
+
+<div class="bloc">
+
+<h2>Evenements</h2>
+
+<button onclick="chargerEvenements()">Afficher</button>
+
+<ul id="liste-evenements"></ul>
+
+<input id="ev-titre" placeholder="Titre">
+<input id="ev-date" type="date">
+<input id="ev-lieu" placeholder="Lieu">
+<input id="ev-places" type="number" placeholder="Places">
+
+<button onclick="ajouterEvenement()">Ajouter</button>
+
 </div>
 
 <script src="admin.js"></script>
+
 </body>
 </html>

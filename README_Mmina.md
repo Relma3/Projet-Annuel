@@ -43,7 +43,20 @@ SEMAINE 4
 
 
 
-Installation (local)
+
+
+
+
+
+
+
+
+
+
+
+
+
+Installation pour moi (en local)
 
 - Cloner le projet
 - Mettre le dossier dans htdocs (MAMP/XAMPP)
