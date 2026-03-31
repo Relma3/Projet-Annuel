@@ -1,13 +1,14 @@
 <?php
+
 require_once 'db_connect.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (!empty($_POST['prenom']) && !empty($_POST['nom']) && !empty($_POST['email']) && !empty($_POST['password'])) {
 
-        $prenom   = htmlspecialchars($_POST['prenom']);
-        $nom      = htmlspecialchars($_POST['nom']);
-        $email    = htmlspecialchars($_POST['email']);
+        $prenom = $_POST['prenom'];
+        $nom = $_POST['nom'];
+        $email = $_POST['email'];
         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
         try {
@@ -23,16 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
 
-            header('Location: connexion.php?inscrit=1');
+            header("Location: connexion.php?inscrit=1");
             exit();
 
         } catch (Exception $e) {
             $pdo->rollBack();
-            die("Erreur lors de l'inscription : " . $e->getMessage());
+            die("Erreur inscription");
         }
 
     } else {
-        header('Location: inscription.php?error=champs_manquants');
+        header("Location: inscription.php?error=champs_manquants");
         exit();
     }
 }

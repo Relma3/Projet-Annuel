@@ -1,15 +1,15 @@
 <?php
-// Mmina
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Authorization, Content-Type');
 header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit; }
-
-if (!function_exists('getDB')) {
-    require_once __DIR__ . "/config/database.php";
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit;
 }
+
+require_once __DIR__ . "/config/database.php";
 require_once __DIR__ . "/middleware.php";
 
 function lister_seniors() {
@@ -29,55 +29,62 @@ function lister_prestataires() {
 function lister_categories() {
     verifier_admin();
     $pdo = getDB();
-    $result = $pdo->query("SELECT * FROM categories_prestations");
-    echo json_encode($result->fetchAll(PDO::FETCH_ASSOC));
+    $req = $pdo->query("SELECT * FROM categories_prestations");
+    echo json_encode($req->fetchAll(PDO::FETCH_ASSOC));
 }
 
 function creer_categorie() {
     verifier_admin();
-    $pdo  = getDB();
+    $pdo = getDB();
     $data = json_decode(file_get_contents("php://input"), true);
+
     $stmt = $pdo->prepare("INSERT INTO categories_prestations (nom, description) VALUES (?, ?)");
     $stmt->execute([$data['nom'], $data['description'] ?? '']);
+
     echo json_encode(["message" => "Categorie creee"]);
 }
 
 function supprimer_categorie($id) {
     verifier_admin();
-    $pdo  = getDB();
+    $pdo = getDB();
+
     $stmt = $pdo->prepare("DELETE FROM categories_prestations WHERE id = ?");
     $stmt->execute([$id]);
+
     echo json_encode(["message" => "Categorie supprimee"]);
 }
 
 function lister_evenements() {
     verifier_admin();
-    $pdo    = getDB();
-    $result = $pdo->query("SELECT * FROM evenements");
-    echo json_encode($result->fetchAll(PDO::FETCH_ASSOC));
+    $pdo = getDB();
+    $req = $pdo->query("SELECT * FROM evenements");
+    echo json_encode($req->fetchAll(PDO::FETCH_ASSOC));
 }
 
 function creer_evenement() {
     verifier_admin();
-    $pdo  = getDB();
+    $pdo = getDB();
     $data = json_decode(file_get_contents("php://input"), true);
+
     $stmt = $pdo->prepare("INSERT INTO evenements (titre, date_debut, lieu, nombre_places) VALUES (?, ?, ?, ?)");
     $stmt->execute([$data['titre'], $data['date_debut'], $data['lieu'], $data['nombre_places']]);
+
     echo json_encode(["message" => "Evenement cree"]);
 }
 
 function supprimer_evenement($id) {
     verifier_admin();
-    $pdo  = getDB();
+    $pdo = getDB();
+
     $stmt = $pdo->prepare("DELETE FROM evenements WHERE id = ?");
     $stmt->execute([$id]);
+
     echo json_encode(["message" => "Evenement supprime"]);
 }
 
-
 $method = $_SERVER['REQUEST_METHOD'];
-$action = $_GET['action'] ?? '';
-$id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$action = isset($_GET['action']) ? $_GET['action'] : '';
+$id = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
 switch ($action) {
     case 'seniors':
@@ -89,20 +96,32 @@ switch ($action) {
         break;
 
     case 'categories':
-        if ($method === 'GET')    { lister_categories(); }
-        elseif ($method === 'POST')   { creer_categorie(); }
-        elseif ($method === 'DELETE' && $id) { supprimer_categorie($id); }
-        else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
+        if ($method == 'GET') {
+            lister_categories();
+        } elseif ($method == 'POST') {
+            creer_categorie();
+        } elseif ($method == 'DELETE' && $id) {
+            supprimer_categorie($id);
+        } else {
+            http_response_code(405);
+            echo json_encode(['erreur' => 'Methode non autorisee']);
+        }
         break;
 
     case 'evenements':
-        if ($method === 'GET')    { lister_evenements(); }
-        elseif ($method === 'POST')   { creer_evenement(); }
-        elseif ($method === 'DELETE' && $id) { supprimer_evenement($id); }
-        else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
+        if ($method == 'GET') {
+            lister_evenements();
+        } elseif ($method == 'POST') {
+            creer_evenement();
+        } elseif ($method == 'DELETE' && $id) {
+            supprimer_evenement($id);
+        } else {
+            http_response_code(405);
+            echo json_encode(['erreur' => 'Methode non autorisee']);
+        }
         break;
 
     default:
         http_response_code(404);
-        echo json_encode(['erreur' => 'Action inconnue : ' . $action]);
+        echo json_encode(['erreur' => 'Action inconnue']);
 }

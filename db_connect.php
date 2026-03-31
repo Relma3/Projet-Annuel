@@ -1,33 +1,23 @@
 <?php
-// Mmina
 
 if (file_exists(__DIR__ . '/.env.php')) {
     require_once __DIR__ . '/.env.php';
 }
 
-$host    = getenv('DB_HOST') ?: 'localhost';
-$dbname  = getenv('DB_NAME') ?: 'silver_happy';
-$db_user = getenv('DB_USER') ?: 'sh_user';
-$db_pass = getenv('DB_PASS') ?: '';
-
-$dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
+$host = getenv('DB_HOST') ?: 'localhost';
+$dbname = getenv('DB_NAME') ?: 'silver_happy';
+$user = getenv('DB_USER') ?: 'sh_user';
+$pass = getenv('DB_PASS') ?: '';
 
 try {
-    $pdo = new PDO($dsn, $db_user, $db_pass, $options);
-} catch (\PDOException $e) {
-    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur connexion BDD");
 }
 
-if (!function_exists('getDB')) {
-    function getDB(): PDO {
-        global $pdo;
-        return $pdo;
-    }
+function getDB() {
+    global $pdo;
+    return $pdo;
 }
-
-?>

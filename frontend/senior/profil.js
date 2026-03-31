@@ -29,7 +29,9 @@ async function sauvegarder() {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + token()
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({
+            email: email
+        })
     });
 
     const data = await res.json();

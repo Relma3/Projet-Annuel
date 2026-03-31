@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . "/config/database.php";
 require_once __DIR__ . "/middleware.php";
 
@@ -22,7 +23,7 @@ function login() {
         return;
     }
 
-$token = generer_token($user["id_utilisateur"], $user["type_utilisateur"]);
+    $token = generer_token($user["id_utilisateur"], $user["type_utilisateur"]);
 
     echo json_encode([
         "message" => "Connexion OK",
@@ -76,7 +77,5 @@ function forgotPassword() {
         return;
     }
 
-    echo json_encode([
-        "message" => "Si l'email existe, un lien de réinitialisation sera envoyé (fonctionnalité à venir)."
-    ]);
+    echo json_encode(["message" => "Si l email existe, un lien sera envoye plus tard"]);
 }

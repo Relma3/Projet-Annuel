@@ -2,8 +2,6 @@ SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';
 SET NAMES utf8mb4;
 
-
--- Table : utilisateur  
 DROP TABLE IF EXISTS `utilisateur`;
 CREATE TABLE `utilisateur` (
   `id_utilisateur` int(11) NOT NULL AUTO_INCREMENT,
@@ -15,10 +13,8 @@ CREATE TABLE `utilisateur` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_utilisateur`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : senior
 DROP TABLE IF EXISTS `senior`;
 CREATE TABLE `senior` (
   `id_senior` int(11) NOT NULL,
@@ -31,8 +27,6 @@ CREATE TABLE `senior` (
   CONSTRAINT `senior_ibfk_1` FOREIGN KEY (`id_senior`) REFERENCES `utilisateur` (`id_utilisateur`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : prestataire
 DROP TABLE IF EXISTS `prestataire`;
 CREATE TABLE `prestataire` (
   `id_prestataire` int(11) NOT NULL,
@@ -48,8 +42,6 @@ CREATE TABLE `prestataire` (
   CONSTRAINT `prestataire_ibfk_1` FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur` (`id_utilisateur`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : categories_prestations
 DROP TABLE IF EXISTS `categories_prestations`;
 CREATE TABLE `categories_prestations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -59,8 +51,6 @@ CREATE TABLE `categories_prestations` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : evenements
 DROP TABLE IF EXISTS `evenements`;
 CREATE TABLE `evenements` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -72,8 +62,6 @@ CREATE TABLE `evenements` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : reservation
 DROP TABLE IF EXISTS `reservation`;
 CREATE TABLE `reservation` (
   `id_reservation` int(11) NOT NULL AUTO_INCREMENT,
@@ -90,8 +78,6 @@ CREATE TABLE `reservation` (
   CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur` (`id_utilisateur`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : article
 DROP TABLE IF EXISTS `article`;
 CREATE TABLE `article` (
   `id_article` int(11) NOT NULL AUTO_INCREMENT,
@@ -105,8 +91,6 @@ CREATE TABLE `article` (
   PRIMARY KEY (`id_article`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : commandes  
 DROP TABLE IF EXISTS `commandes`;
 CREATE TABLE `commandes` (
   `id_commande` int(11) NOT NULL AUTO_INCREMENT,
@@ -121,8 +105,6 @@ CREATE TABLE `commandes` (
   CONSTRAINT `commandes_ibfk_1` FOREIGN KEY (`id_senior`) REFERENCES `utilisateur` (`id_utilisateur`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : messages  
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (
   `id_message` int(11) NOT NULL AUTO_INCREMENT,
@@ -138,8 +120,6 @@ CREATE TABLE `messages` (
   CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`id_destinataire`) REFERENCES `utilisateur` (`id_utilisateur`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
--- Table : message_contact  
 DROP TABLE IF EXISTS `message_contact`;
 CREATE TABLE `message_contact` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -154,8 +134,6 @@ CREATE TABLE `message_contact` (
 
 SET FOREIGN_KEY_CHECKS=1;
 
-
--- Données initiales
 INSERT INTO `utilisateur` VALUES
 (1,'admin@silverhappy.fr','$2y$10$7thWjBbuav4WkOIEf/BKeuogjkdWIlBlSsZ9vJRpM7bYK3lmkQzwCroot','admin',1,NULL,'2026-03-24 11:08:49'),
 (2,'mmina.rathi@gmail.com','$2y$10$Uz4vq8uyGJkpjRbbD6TEAeP4dFzHbL1hERjarXkICe6BxbyyWiL1e','senior',0,'00a05c7b151e5a0d56dd210f45d76e3586432b0a6f9765afc8f6c9b2606a05a9','2026-03-24 13:49:27');

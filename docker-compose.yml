@@ -13,7 +13,7 @@ services:
       DB_NAME: silver_happy
       DB_USER: sh_user
       DB_PASS: ChoisisUnMotDePasseFort
-      JWT_SECRET: silverhappy_secret_jwt_2026_ovh
+      JWT_SECRET: silverhappy_secret_jwt_2026
     restart: always
 
   db:
@@ -36,12 +36,10 @@ services:
       DB_NAME: silver_happy
       DB_USER: sh_user
       DB_PASS: ChoisisUnMotDePasseFort
-      JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     depends_on:
       - db
     restart: always
 
-  # phpMyAdmin : interface bdd sur http://51.210.12.40:8081
   phpmyadmin:
     image: phpmyadmin:latest
     ports:
@@ -50,7 +48,6 @@ services:
       PMA_HOST: db
       PMA_USER: sh_user
       PMA_PASSWORD: ChoisisUnMotDePasseFort
-      UPLOAD_LIMIT: 50M
     depends_on:
       - db
     restart: always

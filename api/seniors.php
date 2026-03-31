@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . "/config/database.php";
 require_once __DIR__ . "/middleware.php";
 
@@ -12,7 +13,7 @@ function get_profil_senior() {
 
     if (!$user) {
         http_response_code(404);
-        echo json_encode(["message" => "Utilisateur non trouvé"]);
+        echo json_encode(["message" => "Utilisateur non trouve"]);
         return;
     }
 
@@ -26,12 +27,12 @@ function modifier_profil_senior() {
 
     if (!isset($data["email"])) {
         http_response_code(400);
-        echo json_encode(["message" => "Email requis"]);
+        echo json_encode(["message" => "Email manquant"]);
         return;
     }
 
     $stmt = $pdo->prepare("UPDATE utilisateur SET email = ? WHERE id_utilisateur = ?");
     $stmt->execute([$data["email"], $payload["id_utilisateur"]]);
 
-    echo json_encode(["message" => "Profil mis à jour"]);
+    echo json_encode(["message" => "Profil mis a jour"]);
 }

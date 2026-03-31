@@ -1,14 +1,15 @@
 <?php
+
 require_once 'db_connect.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     header('Location: contact.php');
     exit;
 }
 
-$nom = htmlspecialchars(trim($_POST['nom'] ?? ''));
-$email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
-$message = htmlspecialchars(trim($_POST['message'] ?? ''));
+$nom = isset($_POST['nom']) ? $_POST['nom'] : '';
+$email = isset($_POST['email']) ? $_POST['email'] : '';
+$message = isset($_POST['message']) ? $_POST['message'] : '';
 
 if (!$nom || !$email || !$message) {
     header('Location: contact.php?erreur=champs_manquants');
@@ -23,4 +24,5 @@ try {
 } catch (Exception $e) {
     header('Location: contact.php?erreur=serveur');
 }
+
 exit;
