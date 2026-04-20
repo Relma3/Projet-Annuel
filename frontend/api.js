@@ -1,10 +1,10 @@
-document.getElementById("loginForm").addEventListener("submit", function (e) {
+document.getElementById("loginForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
     const email = document.getElementById("email").value;
     const mot_de_passe = document.getElementById("password").value;
 
-    fetch("http://localhost/PA_2EME_ANNEE/api/index.php/login", {
+    fetch("/api/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -14,31 +14,28 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
             mot_de_passe: mot_de_passe
         })
     })
-    .then(function (res) {
+    .then(function(res) {
         return res.json();
     })
-    .then(function (data) {
+    .then(function(data) {
         if (data.token) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("type", data.type_utilisateur);
-            document.getElementById("message").innerText = "Connexion reussie";
+            localStorage.setItem("id_utilisateur", data.id_utilisateur);
+            localStorage.setItem("prenom", data.prenom || "");
 
             if (data.type_utilisateur == "admin") {
-                window.location.href = "admin/dashboard.html";
-            }
-
-            if (data.type_utilisateur == "senior") {
-                window.location.href = "senior/profil.html";
-            }
-
-            if (data.type_utilisateur == "prestataire") {
-                window.location.href = "prestataire/profil.html";
+                window.location.href = "/frontend/admin/dashboard.html?token=" + encodeURIComponent(data.token);
+            } else if (data.type_utilisateur == "senior") {
+                window.location.href = "/dashboardS.php";
+            } else if (data.type_utilisateur == "prestataire") {
+                window.location.href = "/dashboardP.php";
             }
         } else {
-            document.getElementById("message").innerText = data.message;
+            document.getElementById("message").innerText = data.message || "Erreur de connexion";
         }
     })
-    .catch(function () {
-        document.getElementById("message").innerText = "Erreur de connexion a l API";
+    .catch(function() {
+        document.getElementById("message").innerText = "Impossible de joindre le serveur";
     });
 });

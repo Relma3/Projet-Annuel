@@ -15,7 +15,7 @@ function getDashboardLink() {
 $is_connected = isset($_SESSION['id']);
 
 function callAPI($method, $route, $data = []) {
-    $baseUrl = 'http://localhost/PA_2EME_ANNEE/api';
+    $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/api';
     $ch = curl_init($baseUrl . $route);
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

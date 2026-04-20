@@ -29,7 +29,6 @@
             }
         }
 
-        // Fonction pour vérifier si les mots de passe correspondent
         function validateForm() {
             const password = document.getElementsByName('password')[0].value;
             const confirm = document.getElementsByName('confirm_password')[0].value;

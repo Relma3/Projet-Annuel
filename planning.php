@@ -9,15 +9,7 @@ if (!$is_connected || $_SESSION['type'] != 'senior') {
 require_once 'db_connect.php';
 
 $db = getDB();
-
-$stmt = $db->prepare("
-    SELECT r.*, u.email AS prestataire_email
-    FROM reservation r
-    JOIN utilisateur u ON r.id_prestataire = u.id_utilisateur
-    WHERE r.id_senior = ?
-    ORDER BY r.date_reservation ASC
-");
-
+$stmt = $db->prepare("SELECT r.*, u.email AS prestataire_email FROM reservation r JOIN utilisateur u ON r.id_prestataire = u.id_utilisateur WHERE r.id_senior = ? ORDER BY r.date_reservation ASC");
 $stmt->execute([$_SESSION['id']]);
 $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -35,6 +27,10 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <span class="text-orange-500 font-bold text-2xl">Silver Happy</span>
     <div class="flex gap-4">
         <a href="dashboardS.php" class="text-gray-600">Tableau de bord</a>
+        <a href="planning.php" class="text-gray-600">Mon planning</a>
+        <a href="boutique.php" class="text-gray-600">Boutique</a>
+        <a href="messagerie.php" class="text-gray-600">Messagerie</a>
+        <a href="conseils.php" class="text-gray-600">Conseils</a>
         <a href="logout.php" class="text-red-400">Déconnexion</a>
     </div>
 </nav>
@@ -59,46 +55,52 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
                     <div>
                         <p class="text-xl font-bold text-gray-800">
-                            <?php echo date('d/m/Y à H\hi', strtotime($r['date_reservation'])); ?>
+                            <?php echo date('d/m/Y H:i', strtotime($r['date_reservation'])); ?>
                         </p>
+
                         <p class="text-gray-500 mt-1">
-                            Prestataire : <?php echo htmlspecialchars($r['prestataire_email']); ?>
+                            Prestataire : <?php echo $r['prestataire_email']; ?>
                         </p>
 
                         <?php if (!empty($r['description'])) { ?>
                             <p class="text-gray-400 mt-1 italic">
-                                "<?php echo htmlspecialchars($r['description']); ?>"
+                                <?php echo $r['description']; ?>
                             </p>
                         <?php } ?>
                     </div>
 
                     <div class="text-right">
-                        <?php if ($r['statut'] == 'en_attente') { ?>
-                            <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-semibold text-base">
-                                En attente
-                            </span>
+                        <?php
+                        $texte = $r['statut'];
+                        $classe = 'bg-gray-100 text-gray-700';
 
+                        if ($r['statut'] == 'en_attente') {
+                            $texte = 'En attente';
+                            $classe = 'bg-yellow-100 text-yellow-700';
+                        }
+
+                        if ($r['statut'] == 'confirme') {
+                            $texte = 'Confirmé';
+                            $classe = 'bg-green-100 text-green-700';
+                        }
+
+                        if ($r['statut'] == 'annule') {
+                            $texte = 'Annulé';
+                            $classe = 'bg-red-100 text-red-700';
+                        }
+                        ?>
+
+                        <span class="<?php echo $classe; ?> px-4 py-2 rounded-full font-semibold text-base">
+                            <?php echo $texte; ?>
+                        </span>
+
+                        <?php if ($r['statut'] == 'en_attente') { ?>
                             <form action="traitement_annulation.php" method="POST" class="mt-3">
                                 <input type="hidden" name="id_reservation" value="<?php echo $r['id_reservation']; ?>">
                                 <button type="submit" class="text-red-400 text-base underline">
                                     Annuler
                                 </button>
                             </form>
-
-                        <?php } elseif ($r['statut'] == 'confirme') { ?>
-                            <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold text-base">
-                                Confirmé
-                            </span>
-
-                        <?php } elseif ($r['statut'] == 'annule') { ?>
-                            <span class="bg-red-100 text-red-700 px-4 py-2 rounded-full font-semibold text-base">
-                                Annulé
-                            </span>
-
-                        <?php } else { ?>
-                            <span class="bg-gray-100 text-gray-700 px-4 py-2 rounded-full font-semibold text-base">
-                                <?php echo htmlspecialchars($r['statut']); ?>
-                            </span>
                         <?php } ?>
                     </div>
                 </div>
@@ -107,5 +109,6 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php } ?>
 </div>
 
+<script src="onesignal.js"></script>
 </body>
 </html>

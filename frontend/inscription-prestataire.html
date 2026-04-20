@@ -2,38 +2,148 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Inscription Prestataire - Silver Happy</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; }
-        nav { background: #1a6fa3; padding: 14px 20px; display: flex; gap: 20px; }
-        nav a { color: white; text-decoration: none; }
-        .contenu { max-width: 500px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: #1a6fa3; }
-        input { display: block; width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { padding: 10px; background: #1a6fa3; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devenir Prestataire — Silver Happy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'DM Sans', sans-serif; font-size: 18px; }</style>
 </head>
-<body>
-<nav>
-    <a href="index.html">Accueil</a>
-    <a href="connexion.html">Connexion</a>
-</nav>
-<div class="contenu">
-    <h1>Inscription Prestataire</h1>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="mdp" placeholder="Mot de passe">
-    <button onclick="inscrire()">S inscrire</button>
-    <p id="msg"></p>
+<body class="bg-[#F0F9F4] min-h-screen flex items-center justify-center p-6">
+
+<div class="bg-white w-full max-w-md rounded-3xl shadow-xl p-8">
+    <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-emerald-600" style="font-family:Quicksand,sans-serif">Silver Happy PRO</h1>
+        <p class="text-slate-500 mt-2">Devenir prestataire partenaire</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Prénom</label>
+            <input type="text" id="prenom" placeholder="Jean" class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Nom</label>
+            <input type="text" id="nom" placeholder="Dupont" class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300">
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Email professionnel</label>
+        <input type="email" id="email" placeholder="jean.dupont@exemple.fr" class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300">
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Mot de passe</label>
+        <input type="password" id="mdp" placeholder="8 caractères minimum" class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300">
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Catégorie de prestation</label>
+        <select id="categorie" class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300">
+            <option value="">— Choisir —</option>
+            <option value="Aide à domicile">Aide à domicile</option>
+            <option value="Santé">Santé / Bien-être</option>
+            <option value="Cours">Cours / Formation</option>
+            <option value="Transport">Transport</option>
+            <option value="Jardinage">Jardinage</option>
+            <option value="Cuisine">Cuisine</option>
+            <option value="Ménage">Ménage</option>
+            <option value="Informatique">Informatique</option>
+            <option value="Kinésithérapie">Kinésithérapie</option>
+            <option value="Autre">Autre</option>
+        </select>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Ville</label>
+            <input type="text" id="ville" placeholder="Paris" class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300">
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">Tarif horaire (€)</label>
+            <input type="number" id="tarif" placeholder="35" min="1" max="500" class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300">
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Présentation (optionnel)</label>
+        <textarea id="description" placeholder="Décrivez votre expérience et vos compétences..." rows="3"
+                  class="w-full border rounded-xl p-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-300"></textarea>
+    </div>
+
+    <div class="bg-emerald-50 rounded-xl p-4 mb-6 text-sm text-emerald-800">
+        <strong>⚠️ Attention :</strong> Votre candidature sera examinée par l'équipe Silver Happy avant validation.
+        Vous devrez fournir casier judiciaire, diplômes et lettres de recommandation.
+    </div>
+
+    <button onclick="inscrire()" id="btn-inscription"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-2xl font-bold text-lg transition-all">
+        Soumettre ma candidature
+    </button>
+
+    <p id="msg" class="mt-4 text-center text-sm font-semibold hidden"></p>
+
+    <p class="text-center text-sm text-slate-400 mt-6">
+        Déjà inscrit ? <a href="/connexionpres.php" class="text-emerald-600 font-bold hover:underline">Se connecter</a>
+    </p>
 </div>
+
 <script>
 async function inscrire() {
-    const res = await fetch("http://localhost/PA_2EME_ANNEE/api/index.php/register/prestataire", {
+    const prenom      = document.getElementById("prenom").value.trim();
+    const nom         = document.getElementById("nom").value.trim();
+    const email       = document.getElementById("email").value.trim();
+    const mdp         = document.getElementById("mdp").value;
+    const categorie   = document.getElementById("categorie").value;
+    const ville       = document.getElementById("ville").value.trim();
+    const tarif       = document.getElementById("tarif").value;
+    const description = document.getElementById("description").value.trim();
+    const msg         = document.getElementById("msg");
+    const btn         = document.getElementById("btn-inscription");
+
+    if (!prenom || !nom || !email || !mdp || !categorie) {
+        msg.textContent = "Veuillez remplir tous les champs obligatoires.";
+        msg.className = "mt-4 text-center text-sm font-semibold text-red-500";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    if (mdp.length < 8) {
+        msg.textContent = "Le mot de passe doit faire au moins 8 caractères.";
+        msg.className = "mt-4 text-center text-sm font-semibold text-red-500";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Envoi en cours...";
+
+    const res = await fetch("/api/register/prestataire", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: document.getElementById("email").value, mot_de_passe: document.getElementById("mdp").value })
+        body: JSON.stringify({
+            prenom, nom, email,
+            mot_de_passe: mdp,
+            categorie,
+            ville: ville || "",
+            tarif_horaire: parseFloat(tarif) || 30,
+            description: description || ""
+        })
     });
+
     const data = await res.json();
-    document.getElementById("msg").innerText = data.message;
+    msg.classList.remove("hidden");
+
+    if (res.ok) {
+        msg.textContent = "✓ Candidature envoyée ! L'équipe Silver Happy vous contactera.";
+        msg.className = "mt-4 text-center text-sm font-semibold text-emerald-700";
+        setTimeout(() => window.location.href = "/connexionpres.php?inscrit=1", 2000);
+    } else {
+        msg.textContent = data.message || "Erreur lors de l'inscription.";
+        msg.className = "mt-4 text-center text-sm font-semibold text-red-500";
+        btn.disabled = false;
+        btn.textContent = "Soumettre ma candidature";
+    }
 }
 </script>
 </body>

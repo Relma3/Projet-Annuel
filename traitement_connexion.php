@@ -5,12 +5,12 @@ require_once 'db_connect.php';
 require_once 'api/middleware.php';
 
 if (isset($_POST['email']) && isset($_POST['password'])) {
-    $email = trim($_POST['email']);
+    $email = $_POST['email'];
     $password = $_POST['password'];
-    $source = "connexion.php";
+    $source = 'connexion.php';
 
-    if (isset($_POST['source']) && $_POST['source'] == "prestataire") {
-        $source = "connexionpres.php";
+    if (isset($_POST['source']) && $_POST['source'] == 'prestataire') {
+        $source = 'connexionpres.php';
     }
 
     try {
@@ -20,7 +20,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
 
         if ($user && password_verify($password, $user['mot_de_passe'])) {
 
-            if (isset($_POST['source']) && $_POST['source'] == "admin" && $user['type_utilisateur'] != "admin") {
+            if (isset($_POST['source']) && $_POST['source'] == 'admin' && $user['type_utilisateur'] != 'admin') {
                 header("Location: connexion_admin.php?error=403");
                 exit();
             }
@@ -30,6 +30,8 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
                 exit();
             }
 
+            session_regenerate_id(true);
+
             $_SESSION['id'] = $user['id_utilisateur'];
             $_SESSION['type'] = $user['type_utilisateur'];
 
@@ -37,14 +39,24 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
                 $stmtS = $pdo->prepare("SELECT prenom FROM senior WHERE id_senior = ?");
                 $stmtS->execute([$user['id_utilisateur']]);
                 $senior = $stmtS->fetch();
-                $_SESSION['prenom'] = $senior['prenom'] ? $senior['prenom'] : 'Adherent';
+
+                if ($senior && $senior['prenom']) {
+                    $_SESSION['prenom'] = $senior['prenom'];
+                } else {
+                    $_SESSION['prenom'] = 'Adherent';
+                }
             }
 
             if ($user['type_utilisateur'] == 'prestataire') {
                 $stmtP = $pdo->prepare("SELECT nom FROM prestataire WHERE id_prestataire = ?");
                 $stmtP->execute([$user['id_utilisateur']]);
                 $pres = $stmtP->fetch();
-                $_SESSION['prenom'] = $pres['nom'] ? $pres['nom'] : 'Prestataire';
+
+                if ($pres && $pres['nom']) {
+                    $_SESSION['prenom'] = $pres['nom'];
+                } else {
+                    $_SESSION['prenom'] = 'Prestataire';
+                }
             }
 
             if ($user['type_utilisateur'] == 'admin') {

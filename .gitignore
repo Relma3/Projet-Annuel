@@ -1,3 +1,8 @@
 .env
 .env.php
-/vendor/
+/vendor
+db_data
+storage
+.DS_Store
+Thumbs.db
+*.log

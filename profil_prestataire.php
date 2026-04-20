@@ -18,14 +18,7 @@ try {
         die("Prestataire introuvable.");
     }
 
-    $nom_categorie = "Intervenant Silver Happy";
-    if (!empty($p['id_categorie'])) {
-        $stmtCat = $pdo->prepare("SELECT nom FROM categories_prestations WHERE id = ?");
-        $stmtCat->execute([$p['id_categorie']]);
-        $cat = $stmtCat->fetch();
-        if ($cat) {
-            $nom_categorie = $cat['nom'];
-        }
+    $nom_categorie = !empty($p['categorie']) ? $p['categorie'] : "Intervenant Silver Happy";
     }
 
 } catch (PDOException $e) {

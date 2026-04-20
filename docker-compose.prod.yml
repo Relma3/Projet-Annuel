@@ -1,0 +1,70 @@
+services:
+
+  web:
+    image: ghcr.io/VOTRE_USERNAME/silverhappy-web:latest
+    container_name: silverhappy_web
+    ports:
+      - "80:80"
+    volumes:
+      - storage_factures:/var/www/html/storage/factures
+      - storage_logs:/var/www/html/storage/logs
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      go-api:
+        condition: service_healthy
+    networks:
+      - silverhappy_net
+    restart: always
+
+  go-api:
+    image: ghcr.io/VOTRE_USERNAME/silverhappy-goapi:latest
+    container_name: silverhappy_goapi
+    expose:
+      - "8080"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - silverhappy_net
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  db:
+    image: mariadb:10.11
+    container_name: silverhappy_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - silverhappy_net
+    restart: always
+
+networks:
+  silverhappy_net:
+    driver: bridge
+
+volumes:
+  db_data:
+  storage_factures:
+  storage_logs:

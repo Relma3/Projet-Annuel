@@ -29,13 +29,9 @@ function verifier_token() {
 
     if (isset($headers["Authorization"])) {
         $auth = $headers["Authorization"];
-    }
-
-    if (!$auth && isset($headers["authorization"])) {
+    } elseif (isset($headers["authorization"])) {
         $auth = $headers["authorization"];
-    }
-
-    if (!$auth && isset($_SERVER["HTTP_AUTHORIZATION"])) {
+    } elseif (isset($_SERVER["HTTP_AUTHORIZATION"])) {
         $auth = $_SERVER["HTTP_AUTHORIZATION"];
     }
 
@@ -54,7 +50,25 @@ function verifier_token() {
         exit;
     }
 
-    $payload = json_decode(base64_decode($parties[1]), true);
+    $entete = $parties[0];
+    $payload64 = $parties[1];
+    $signatureRecue = $parties[2];
+
+    $signatureAttendue = base64_encode(hash_hmac('sha256', $entete . "." . $payload64, CLE_JWT, true));
+
+    if ($signatureAttendue != $signatureRecue) {
+        http_response_code(401);
+        echo json_encode(["message" => "Token invalide"]);
+        exit;
+    }
+
+    $payload = json_decode(base64_decode($payload64), true);
+
+    if (!$payload || !isset($payload["expiration"])) {
+        http_response_code(401);
+        echo json_encode(["message" => "Token invalide"]);
+        exit;
+    }
 
     if ($payload["expiration"] < time()) {
         http_response_code(401);
@@ -69,6 +83,30 @@ function verifier_admin() {
     $donnees = verifier_token();
 
     if ($donnees["type_utilisateur"] != "admin") {
+        http_response_code(403);
+        echo json_encode(["message" => "Acces refuse"]);
+        exit;
+    }
+
+    return $donnees;
+}
+
+function verifier_senior() {
+    $donnees = verifier_token();
+
+    if ($donnees["type_utilisateur"] != "senior") {
+        http_response_code(403);
+        echo json_encode(["message" => "Acces refuse"]);
+        exit;
+    }
+
+    return $donnees;
+}
+
+function verifier_prestataire() {
+    $donnees = verifier_token();
+
+    if ($donnees["type_utilisateur"] != "prestataire") {
         http_response_code(403);
         echo json_encode(["message" => "Acces refuse"]);
         exit;

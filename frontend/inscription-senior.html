@@ -2,38 +2,108 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Inscription Senior - Silver Happy</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; }
-        nav { background: #1a6fa3; padding: 14px 20px; display: flex; gap: 20px; }
-        nav a { color: white; text-decoration: none; }
-        .contenu { max-width: 500px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: #1a6fa3; }
-        input { display: block; width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { padding: 10px; background: #1a6fa3; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Senior</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<nav>
-    <a href="index.html">Accueil</a>
-    <a href="connexion.html">Connexion</a>
-</nav>
-<div class="contenu">
-    <h1>Inscription Senior</h1>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="mdp" placeholder="Mot de passe">
-    <button onclick="inscrire()">S inscrire</button>
-    <p id="msg"></p>
+<body class="bg-orange-50 min-h-screen flex items-center justify-center p-6">
+
+<div class="bg-white w-full max-w-md rounded-2xl shadow p-8">
+    <h1 class="text-2xl font-bold text-orange-500 text-center mb-2">Silver Happy</h1>
+    <p class="text-center text-gray-500 mb-6">Créer mon espace adhérent</p>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <input type="text" id="prenom" placeholder="Prénom" class="border rounded-xl p-3">
+        <input type="text" id="nom" placeholder="Nom" class="border rounded-xl p-3">
+    </div>
+
+    <div class="mb-4">
+        <input type="email" id="email" placeholder="Email" class="w-full border rounded-xl p-3">
+    </div>
+
+    <div class="mb-4">
+        <input type="password" id="mdp" placeholder="Mot de passe" class="w-full border rounded-xl p-3">
+    </div>
+
+    <div class="mb-6">
+        <input type="tel" id="telephone" placeholder="Téléphone (optionnel)" class="w-full border rounded-xl p-3">
+    </div>
+
+    <button onclick="inscrire()" id="btn-inscription" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold">
+        Créer mon compte
+    </button>
+
+    <p id="msg" class="mt-4 text-center hidden"></p>
+
+    <p class="text-center text-sm text-gray-500 mt-6">
+        Déjà membre ? <a href="/connexion.php" class="text-orange-500 font-bold">Se connecter</a>
+    </p>
 </div>
+
 <script>
 async function inscrire() {
-    const res = await fetch("http://localhost/PA_2EME_ANNEE/api/index.php/register/senior", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: document.getElementById("email").value, mot_de_passe: document.getElementById("mdp").value })
-    });
-    const data = await res.json();
-    document.getElementById("msg").innerText = data.message;
+    const prenom = document.getElementById("prenom").value.trim();
+    const nom = document.getElementById("nom").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const mdp = document.getElementById("mdp").value;
+    const telephone = document.getElementById("telephone").value.trim();
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("btn-inscription");
+
+    if (!prenom || !nom || !email || !mdp) {
+        msg.textContent = "Veuillez remplir les champs obligatoires";
+        msg.className = "mt-4 text-center text-red-500";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    if (mdp.length < 8) {
+        msg.textContent = "Mot de passe trop court";
+        msg.className = "mt-4 text-center text-red-500";
+        msg.classList.remove("hidden");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Inscription...";
+
+    try {
+        const res = await fetch("/api/register/senior", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                prenom: prenom,
+                nom: nom,
+                email: email,
+                mot_de_passe: mdp,
+                telephone: telephone || null
+            })
+        });
+
+        const data = await res.json();
+        msg.classList.remove("hidden");
+
+        if (res.ok) {
+            msg.textContent = "Inscription réussie";
+            msg.className = "mt-4 text-center text-green-600";
+            setTimeout(function() {
+                window.location.href = "/connexion.php?inscrit=1";
+            }, 1500);
+        } else {
+            msg.textContent = data.message || "Erreur inscription";
+            msg.className = "mt-4 text-center text-red-500";
+            btn.disabled = false;
+            btn.textContent = "Créer mon compte";
+        }
+    } catch (e) {
+        msg.textContent = "Erreur serveur";
+        msg.className = "mt-4 text-center text-red-500";
+        msg.classList.remove("hidden");
+        btn.disabled = false;
+        btn.textContent = "Créer mon compte";
+    }
 }
 </script>
 </body>

@@ -9,7 +9,6 @@ if (!$is_connected || $_SESSION['type'] != 'senior') {
 require_once 'db_connect.php';
 
 $db = getDB();
-
 $stmt = $db->query("SELECT * FROM article ORDER BY id_article DESC");
 $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -21,6 +20,11 @@ $exemples = [
     ['nom' => 'Lampe Loupe LED', 'prix' => 29.99, 'description' => 'Loupe avec lumiere integree'],
     ['nom' => 'Boite a Medicaments', 'prix' => 19.99, 'description' => 'Pilulier simple pour la semaine']
 ];
+
+$liste = $articles;
+if (empty($articles)) {
+    $liste = $exemples;
+}
 ?>
 
 <!DOCTYPE html>
@@ -36,6 +40,10 @@ $exemples = [
     <span class="text-orange-500 font-bold text-2xl">Silver Happy</span>
     <div class="flex gap-4">
         <a href="dashboardS.php" class="text-gray-600">Tableau de bord</a>
+        <a href="planning.php" class="text-gray-600">Mon planning</a>
+        <a href="boutique.php" class="text-gray-600">Boutique</a>
+        <a href="messagerie.php" class="text-gray-600">Messagerie</a>
+        <a href="conseils.php" class="text-gray-600">Conseils</a>
         <a href="logout.php" class="text-red-400">Déconnexion</a>
     </div>
 </nav>
@@ -51,59 +59,36 @@ $exemples = [
     <?php } ?>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <?php foreach ($liste as $a) { ?>
+            <div class="bg-white rounded-2xl shadow p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-2">
+                    <?php echo htmlspecialchars($a['nom'], ENT_QUOTES, 'UTF-8'); ?>
+                </h3>
 
-        <?php if (empty($articles)) { ?>
+                <p class="text-gray-500 mb-4 text-base">
+                    <?php echo htmlspecialchars($a['description'], ENT_QUOTES, 'UTF-8'); ?>
+                </p>
 
-            <?php foreach ($exemples as $a) { ?>
-                <div class="bg-white rounded-2xl shadow p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2"><?php echo $a['nom']; ?></h3>
-                    <p class="text-gray-500 mb-4 text-base"><?php echo $a['description']; ?></p>
+                <div class="flex justify-between items-center">
+                    <span class="text-2xl font-bold text-orange-500">
+                        <?php echo number_format($a['prix'], 2); ?>€
+                    </span>
 
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-orange-500">
-                            <?php echo number_format($a['prix'], 2); ?>€
-                        </span>
-
-                        <form method="POST" action="traitement_commande.php">
-                            <input type="hidden" name="nom_article" value="<?php echo htmlspecialchars($a['nom']); ?>">
+                    <form method="POST" action="traitement_commande.php">
+                        <?php if (isset($a['id_article'])) { ?>
+                            <input type="hidden" name="id_article" value="<?php echo htmlspecialchars($a['id_article'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php } else { ?>
+                            <input type="hidden" name="nom_article" value="<?php echo htmlspecialchars($a['nom'], ENT_QUOTES, 'UTF-8'); ?>">
                             <input type="hidden" name="prix" value="<?php echo $a['prix']; ?>">
-                            <button type="submit" class="bg-orange-500 text-white px-6 py-3 rounded-xl font-bold text-base">
-                                Commander
-                            </button>
-                        </form>
-                    </div>
+                        <?php } ?>
+
+                        <button type="submit" class="bg-orange-500 text-white px-6 py-3 rounded-xl font-bold text-base">
+                            Commander
+                        </button>
+                    </form>
                 </div>
-            <?php } ?>
-
-        <?php } else { ?>
-
-            <?php foreach ($articles as $a) { ?>
-                <div class="bg-white rounded-2xl shadow p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">
-                        <?php echo htmlspecialchars($a['nom'] ?? $a['titre'] ?? 'Article'); ?>
-                    </h3>
-
-                    <p class="text-gray-500 mb-4 text-base">
-                        <?php echo htmlspecialchars($a['description'] ?? ''); ?>
-                    </p>
-
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-orange-500">
-                            <?php echo number_format($a['prix'] ?? 0, 2); ?>€
-                        </span>
-
-                        <form method="POST" action="traitement_commande.php">
-                            <input type="hidden" name="id_article" value="<?php echo $a['id_article']; ?>">
-                            <button type="submit" class="bg-orange-500 text-white px-6 py-3 rounded-xl font-bold text-base">
-                                Commander
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            <?php } ?>
-
+            </div>
         <?php } ?>
-
     </div>
 </div>
 

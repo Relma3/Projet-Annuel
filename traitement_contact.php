@@ -18,7 +18,7 @@ if (!$nom || !$email || !$message) {
 
 try {
     $db = getDB();
-    $stmt = $db->prepare("INSERT INTO message_contact (nom, email, message, date_envoi) VALUES (?, ?, ?, NOW())");
+    $stmt = $db->prepare("INSERT INTO message_contact (nom, email, message) VALUES (?, ?, ?)");
     $stmt->execute([$nom, $email, $message]);
     header('Location: contact.php?succes=1');
 } catch (Exception $e) {

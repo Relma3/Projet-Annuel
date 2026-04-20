@@ -2,6 +2,11 @@
 session_start();
 require_once 'db_connect.php';
 
+if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'prestataire') {
+    header('Location: connexion.php');
+    exit();
+}
+
 if(isset($_GET['id']) && isset($_GET['action'])) {
     $id_res = intval($_GET['id']);
     $action = $_GET['action']; 
@@ -13,8 +18,8 @@ if(isset($_GET['id']) && isset($_GET['action'])) {
     }
 
     try {
-        $stmt = $pdo->prepare("UPDATE reservation SET statut = ? WHERE id_reservation = ?");
-        $stmt->execute([$action, $id_res]);
+        $stmt = $pdo->prepare("UPDATE reservation SET statut = ? WHERE id_reservation = ? AND id_prestataire = ?");
+        $stmt->execute([$action, $id_res, $_SESSION['id']]);
         
         header('Location: dashboardP.php?msg=success#demandes');
         exit();

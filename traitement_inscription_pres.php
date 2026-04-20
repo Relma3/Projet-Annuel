@@ -24,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $description = $description . " | SIRET : " . $siret;
         }
 
-        $stmtPres = $pdo->prepare("INSERT INTO prestataire (id_prestataire, nom, prenom, ville, description, statut) VALUES (?, ?, 'Pro', 'A definir', ?, 'en_attente')");
-        $stmtPres->execute([$id_utilisateur, $nom, $description]);
+        $stmtPres = $pdo->prepare("INSERT INTO prestataire (id_prestataire, nom, prenom, ville, categorie, description, statut) VALUES (?, ?, '', '', ?, ?, 'en_attente')");
+        $stmtPres->execute([$id_utilisateur, $nom, $categorie, $description]);
 
         $pdo->commit();
 

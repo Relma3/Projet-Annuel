@@ -2,38 +2,60 @@
 
 require_once 'db_connect.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    header("Location: inscription.php");
+    exit();
+}
 
-    if (!empty($_POST['prenom']) && !empty($_POST['nom']) && !empty($_POST['email']) && !empty($_POST['password'])) {
+$prenom = isset($_POST['prenom']) ? $_POST['prenom'] : '';
+$nom = isset($_POST['nom']) ? $_POST['nom'] : '';
+$email = isset($_POST['email']) ? $_POST['email'] : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
 
-        $prenom = $_POST['prenom'];
-        $nom = $_POST['nom'];
-        $email = $_POST['email'];
-        $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+if (!$prenom || !$nom || !$email || !$password) {
+    header("Location: inscription.php?error=champs_manquants");
+    exit();
+}
 
-        try {
-            $pdo->beginTransaction();
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    header("Location: inscription.php?error=email_invalide");
+    exit();
+}
 
-            $stmtUser = $pdo->prepare("INSERT INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) VALUES (?, ?, 'senior', 1)");
-            $stmtUser->execute([$email, $password]);
+if (strlen($password) < 8) {
+    header("Location: inscription.php?error=mdp_trop_court");
+    exit();
+}
 
-            $id_utilisateur = $pdo->lastInsertId();
+$hash = password_hash($password, PASSWORD_BCRYPT);
 
-            $stmtSenior = $pdo->prepare("INSERT INTO senior (id_senior, nom, prenom) VALUES (?, ?, ?)");
-            $stmtSenior->execute([$id_utilisateur, $nom, $prenom]);
+try {
+    $pdo->beginTransaction();
 
-            $pdo->commit();
+    $check = $pdo->prepare("SELECT id_utilisateur FROM utilisateur WHERE email = ?");
+    $check->execute([$email]);
 
-            header("Location: connexion.php?inscrit=1");
-            exit();
-
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            die("Erreur inscription");
-        }
-
-    } else {
-        header("Location: inscription.php?error=champs_manquants");
+    if ($check->fetch()) {
+        $pdo->rollBack();
+        header("Location: inscription.php?error=email_existe");
         exit();
     }
+
+    $stmtUser = $pdo->prepare("INSERT INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) VALUES (?, ?, 'senior', 1)");
+    $stmtUser->execute([$email, $hash]);
+
+    $id_utilisateur = $pdo->lastInsertId();
+
+    $stmtSenior = $pdo->prepare("INSERT INTO senior (id_senior, nom, prenom) VALUES (?, ?, ?)");
+    $stmtSenior->execute([$id_utilisateur, $nom, $prenom]);
+
+    $pdo->commit();
+
+    header("Location: connexion.php?inscrit=1");
+    exit();
+
+} catch (Exception $e) {
+    $pdo->rollBack();
+    header("Location: inscription.php?error=erreur_serveur");
+    exit();
 }

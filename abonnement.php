@@ -62,7 +62,7 @@ if (!$is_connected || $_SESSION['type'] != 'senior') {
 
     <div id="zone-paiement" class="hidden bg-white rounded-2xl shadow p-6">
         <h3 class="text-xl font-bold mb-4">Paiement</h3>
-        <div id="card-element" class="border-2 border-gray-200 rounded-xl p-4 mb-4"></div>
+        <div id="card-element" class="border border-gray-300 rounded-xl p-4 mb-4"></div>
         <div id="card-errors" class="text-red-500 mb-4"></div>
         <button id="btn-payer" class="w-full bg-green-500 text-white text-xl font-bold py-4 rounded-xl">
             Confirmer
@@ -71,7 +71,7 @@ if (!$is_connected || $_SESSION['type'] != 'senior') {
 </div>
 
 <script>
-const stripe = Stripe('<?php echo getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique"; ?>');
+const stripe = Stripe("<?php echo getenv('STRIPE_PUBLIC_KEY') ?: 'pk_test_votre_cle_publique'; ?>");
 const elements = stripe.elements();
 const card = elements.create("card");
 
@@ -81,17 +81,16 @@ let typeChoisi = "";
 function payer(montant, type) {
     montantChoisi = montant;
     typeChoisi = type;
-
     document.getElementById("zone-paiement").classList.remove("hidden");
     card.mount("#card-element");
 }
 
-document.getElementById("btn-payer").addEventListener("click", async function () {
+async function lancerPaiement() {
     const btn = document.getElementById("btn-payer");
     btn.textContent = "Traitement...";
     btn.disabled = true;
 
-    const res = await fetch("/api/paiements.php", {
+    const res = await fetch("/api/paiements/abonnement", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -122,10 +121,13 @@ document.getElementById("btn-payer").addEventListener("click", async function ()
         btn.textContent = "Confirmer";
         btn.disabled = false;
     } else {
-        window.location.href = "/abonnement.php?succes=1";
+        window.location.href = "abonnement.php?succes=1";
     }
-});
+}
+
+document.getElementById("btn-payer").addEventListener("click", lancerPaiement);
 </script>
 
+<script src="onesignal.js"></script>
 </body>
 </html>
