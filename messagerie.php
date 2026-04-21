@@ -57,7 +57,7 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php if (!$moi) { ?>
                             <p class="text-sm font-semibold text-orange-500 mb-1">Equipe Silver Happy</p>
                         <?php } ?>
-
+                             <!-- htmlspecialchars convertit < en &lt; — le script ne s'exécute plus, il s'affiche en texte. -->
                         <p><?php echo htmlspecialchars($m['contenu'], ENT_QUOTES, 'UTF-8'); ?></p>
 
                         <p class="text-xs mt-1 <?php echo $moi ? 'text-orange-100' : 'text-gray-400'; ?>">

@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION
     $nom      = htmlspecialchars($_POST['nom'] ?? '');
     $ville    = htmlspecialchars($_POST['ville'] ?? '');
     $desc     = htmlspecialchars($_POST['description'] ?? '');
+    // si tarif est NULL (non envoyé), la valeur existante est conservée.
     $categorie = htmlspecialchars($_POST['categorie'] ?? '');
     $tarif    = isset($_POST['tarif_horaire']) && is_numeric($_POST['tarif_horaire'])
                 ? (float)$_POST['tarif_horaire'] : null;

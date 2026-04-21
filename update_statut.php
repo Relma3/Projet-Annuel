@@ -2,6 +2,7 @@
 session_start();
 require_once 'db_connect.php';
 
+// filtre par ID prestataires
 if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'prestataire') {
     header('Location: connexion.php');
     exit();

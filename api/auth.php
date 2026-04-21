@@ -98,6 +98,7 @@ function registerSenior() {
     $hash = password_hash($data["mot_de_passe"], PASSWORD_BCRYPT);
     $token = bin2hex(random_bytes(32));
 
+       //insserer compte user dans presta / senios — si le deuxième INSERT échoue, le premier est annulé.
     try {
         $pdo->beginTransaction();
 

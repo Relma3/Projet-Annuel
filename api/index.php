@@ -8,6 +8,7 @@ $origin = $_SERVER["HTTP_ORIGIN"] ?? "";
 if (in_array($origin, $allowed)) {
     header("Access-Control-Allow-Origin: $origin");
 } else {
+    //
     header("Access-Control-Allow-Origin: http://51.210.12.40");
 }
 header("Access-Control-Allow-Headers: Authorization, Content-Type");

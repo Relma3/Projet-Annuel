@@ -29,7 +29,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
                 header("Location: " . $source . "?pending=1");
                 exit();
             }
-
+             //
             session_regenerate_id(true);
 
             $_SESSION['id'] = $user['id_utilisateur'];

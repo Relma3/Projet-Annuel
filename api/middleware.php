@@ -17,7 +17,7 @@ function generer_token($id_utilisateur, $type_utilisateur) {
         'type_utilisateur' => $type_utilisateur,
         'expiration' => time() + 86400
     ]));
-
+    //
     $signature = base64_encode(hash_hmac('sha256', $entete . "." . $payload, CLE_JWT, true));
 
     return $entete . "." . $payload . "." . $signature;

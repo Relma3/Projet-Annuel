@@ -1,3 +1,9 @@
+<?php
+if (isset($_GET['error'])) echo '<div class="bg-red-100 text-red-700 p-4 rounded-xl mb-4 text-lg">Email ou mot de passe incorrect.</div>';
+if (isset($_GET['pending'])) echo '<div class="bg-yellow-100 text-yellow-700 p-4 rounded-xl mb-4 text-lg">Compte en attente de validation.</div>';
+if (isset($_GET['inscrit'])) echo '<div class="bg-green-100 text-green-700 p-4 rounded-xl mb-4 text-lg">Inscription réussie ! Connectez-vous.</div>';
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>

@@ -23,6 +23,7 @@ require_once 'db_connect.php';
 
 $db = getDB();
 
+//ID adminplus hardocodé : est maintenant récupéré dynamiquement à chaque envoi de message.
 $stmtAdmin = $db->prepare("SELECT id_utilisateur FROM utilisateur WHERE type_utilisateur = 'admin' LIMIT 1");
 $stmtAdmin->execute();
 $admin = $stmtAdmin->fetch(PDO::FETCH_ASSOC);
