@@ -5,6 +5,14 @@ if (!$is_connected || $_SESSION['type'] != 'senior') {
     header('Location: connexion.php');
     exit;
 }
+
+require_once 'db_connect.php';
+
+$db = getDB();
+
+$stmt = $db->prepare("SELECT * FROM senior WHERE id_utilisateur = ?");
+$stmt->execute([$_SESSION['id']]);
+$senior = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -27,85 +35,98 @@ if (!$is_connected || $_SESSION['type'] != 'senior') {
 
 <div class="max-w-3xl mx-auto mt-10 px-4">
     <h1 class="text-3xl font-bold text-orange-500 mb-2">Mon Abonnement</h1>
-    <p class="text-gray-500 mb-8">Gerez votre abonnement</p>
+    <p class="text-gray-500 mb-8">Gérez votre adhésion Silver Happy</p>
 
     <?php if (isset($_GET['succes'])) { ?>
         <div class="bg-green-100 text-green-700 p-4 rounded-xl mb-6 text-lg">
-            Paiement effectue
+            Paiement effectué ! Votre abonnement est actif.
         </div>
     <?php } ?>
 
     <div class="bg-white rounded-2xl shadow p-6 mb-8">
         <h2 class="text-xl font-bold mb-4">Statut actuel</h2>
-        <p class="text-green-700 font-semibold">Membre actif</p>
+        <div class="flex items-center gap-4">
+            <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold text-lg">
+                Membre actif
+            </span>
+            <span class="text-gray-500">Compte Silver Happy</span>
+        </div>
     </div>
 
-    <h2 class="text-2xl font-bold mb-4">Choisir un abonnement</h2>
+    <h2 class="text-2xl font-bold mb-4">Renouveler votre abonnement</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white rounded-2xl shadow p-8 border">
+
+        <div class="bg-white rounded-2xl shadow p-8 border-2 border-gray-200">
             <h3 class="text-xl font-bold mb-2">Mensuel</h3>
-            <p class="text-4xl font-bold text-orange-500 mb-4">4€ / mois</p>
+            <p class="text-4xl font-bold text-orange-500 mb-2">4€ <span class="text-lg text-gray-400 font-normal">/ mois</span></p>
+            <ul class="text-gray-600 space-y-2 mb-6 text-base">
+                <li>Accès à tous les services</li>
+                <li>Résiliable à tout moment</li>
+                <li>Support prioritaire</li>
+            </ul>
             <button onclick="payer(400, 'mensuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
-                Choisir
+                Choisir Mensuel
             </button>
         </div>
 
-        <div class="bg-white rounded-2xl shadow p-8 border">
+        <div class="bg-orange-50 rounded-2xl shadow p-8 border-2 border-orange-400">
             <h3 class="text-xl font-bold mb-2">Annuel</h3>
-            <p class="text-4xl font-bold text-orange-500 mb-4">40€ / an</p>
+            <p class="text-4xl font-bold text-orange-500 mb-2">40€ <span class="text-lg text-gray-400 font-normal">/ an</span></p>
+            <ul class="text-gray-600 space-y-2 mb-6 text-base">
+                <li>2 mois offerts</li>
+                <li>Accès à tous les services</li>
+                <li>Support prioritaire</li>
+            </ul>
             <button onclick="payer(4000, 'annuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
-                Choisir
+                Choisir Annuel
             </button>
         </div>
+
     </div>
 
     <div id="zone-paiement" class="hidden bg-white rounded-2xl shadow p-6">
-        <h3 class="text-xl font-bold mb-4">Paiement</h3>
-        <div id="card-element" class="border border-gray-300 rounded-xl p-4 mb-4"></div>
+        <h3 class="text-xl font-bold mb-4">Informations de paiement</h3>
+        <div id="card-element" class="border-2 border-gray-200 rounded-xl p-4 mb-4"></div>
         <div id="card-errors" class="text-red-500 mb-4"></div>
         <button id="btn-payer" class="w-full bg-green-500 text-white text-xl font-bold py-4 rounded-xl">
-            Confirmer
+            Confirmer le paiement
         </button>
     </div>
 </div>
 
 <script>
-const stripe = Stripe("<?php echo getenv('STRIPE_PUBLIC_KEY') ?: 'pk_test_votre_cle_publique'; ?>");
+const stripe = Stripe('<?php echo getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique"; ?>');
 const elements = stripe.elements();
-const card = elements.create("card");
+const card = elements.create('card');
 
 let montantChoisi = 0;
-let typeChoisi = "";
+let typeChoisi = '';
 
 function payer(montant, type) {
     montantChoisi = montant;
     typeChoisi = type;
-    document.getElementById("zone-paiement").classList.remove("hidden");
-    card.mount("#card-element");
+
+    document.getElementById('zone-paiement').classList.remove('hidden');
+    card.mount('#card-element');
 }
 
-async function lancerPaiement() {
-    const btn = document.getElementById("btn-payer");
-    btn.textContent = "Traitement...";
+document.getElementById('btn-payer').addEventListener('click', async function () {
+    const btn = document.getElementById('btn-payer');
+    btn.textContent = 'Traitement...';
     btn.disabled = true;
 
-    const res = await fetch("/api/paiements/abonnement", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            montant: montantChoisi,
-            type: typeChoisi
-        })
+    const res = await fetch('/api/paiements.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ montant: montantChoisi, type: typeChoisi })
     });
 
     const data = await res.json();
 
     if (!data.clientSecret) {
-        document.getElementById("card-errors").textContent = "Erreur paiement";
-        btn.textContent = "Confirmer";
+        document.getElementById('card-errors').textContent = 'Erreur lors du paiement';
+        btn.textContent = 'Confirmer le paiement';
         btn.disabled = false;
         return;
     }
@@ -117,17 +138,14 @@ async function lancerPaiement() {
     });
 
     if (result.error) {
-        document.getElementById("card-errors").textContent = result.error.message;
-        btn.textContent = "Confirmer";
+        document.getElementById('card-errors').textContent = result.error.message;
+        btn.textContent = 'Confirmer le paiement';
         btn.disabled = false;
     } else {
-        window.location.href = "abonnement.php?succes=1";
+        window.location.href = '/abonnement.php?succes=1';
     }
-}
-
-document.getElementById("btn-payer").addEventListener("click", lancerPaiement);
+});
 </script>
 
-<script src="onesignal.js"></script>
 </body>
 </html>

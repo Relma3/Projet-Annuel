@@ -1,15 +1,14 @@
 <?php
-
 session_start();
 require_once 'db_connect.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nom = $_POST['nom'];
-    $email = $_POST['email'];
-    $siret = isset($_POST['siret']) ? $_POST['siret'] : '';
-    $categorie = isset($_POST['categorie']) ? $_POST['categorie'] : '';
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $nom       = htmlspecialchars($_POST['nom']);
+    $email     = htmlspecialchars($_POST['email']);
+    $siret     = htmlspecialchars($_POST['siret'] ?? '');
+    $categorie = htmlspecialchars($_POST['categorie'] ?? '');
+    $password  = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
     try {
         $pdo->beginTransaction();
@@ -19,27 +18,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $id_utilisateur = $pdo->lastInsertId();
 
-        $description = "Domaine : " . $categorie;
-        if ($siret != '') {
-            $description = $description . " | SIRET : " . $siret;
-        }
+        $description = "Domaine : " . $categorie . ($siret ? " | SIRET : " . $siret : "");
 
-        $stmtPres = $pdo->prepare("INSERT INTO prestataire (id_prestataire, nom, prenom, ville, categorie, description, statut) VALUES (?, ?, '', '', ?, ?, 'en_attente')");
-        $stmtPres->execute([$id_utilisateur, $nom, $categorie, $description]);
+        $stmtPres = $pdo->prepare("INSERT INTO prestataire (id_prestataire, nom, prenom, ville, description, statut) VALUES (?, ?, 'Pro', 'À définir', ?, 'en_attente')");
+        $stmtPres->execute([$id_utilisateur, $nom, $description]);
 
         $pdo->commit();
 
-        header("Location: connexionpres.php?inscrit=1");
+        header('Location: connexionpres.php?inscrit=1');
         exit();
 
     } catch (Exception $e) {
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
-        }
-        die("Erreur inscription");
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        die("Erreur lors de l'inscription : " . $e->getMessage());
     }
 
 } else {
-    header("Location: inscriptionpres.php");
+    header('Location: inscriptionpres.php');
     exit();
 }

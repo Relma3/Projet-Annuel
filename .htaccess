@@ -1,13 +1,21 @@
 Options -Indexes
 RewriteEngine On
 
-RewriteCond %{REQUEST_URI} ^/api/
+# Rediriger les appels /api/* vers api/index.php
+RewriteCond %{REQUEST_URI} ^/PA_2EME_ANNEE/api/
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^api/(.*)$ api/index.php [QSA,L]
+RewriteRule ^ api/index.php [QSA,L]
 
+# Protéger les fichiers sensibles
 <FilesMatch "\.(env|env\.php|sql|log)$">
     Require all denied
 </FilesMatch>
 
-ErrorDocument 404 /404.php
-ErrorDocument 500 /500.php
+# Pages d'erreur
+ErrorDocument 404 /PA_2EME_ANNEE/404.php
+ErrorDocument 500 /PA_2EME_ANNEE/500.php
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+</IfModule>

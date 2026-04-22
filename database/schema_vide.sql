@@ -1,42 +1,103 @@
-DROP TABLE IF EXISTS `messages`;
-DROP TABLE IF EXISTS `commandes`;
-DROP TABLE IF EXISTS `devis`;
-DROP TABLE IF EXISTS `rdv_medicaux`;
-DROP TABLE IF EXISTS `reservation`;
-DROP TABLE IF EXISTS `prestataire`;
-DROP TABLE IF EXISTS `senior`;
-DROP TABLE IF EXISTS `conseils`;
-DROP TABLE IF EXISTS `message_contact`;
-DROP TABLE IF EXISTS `evenements`;
-DROP TABLE IF EXISTS `categories_prestations`;
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19  Distrib 10.11.16-MariaDB, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: silver_happy
+-- ------------------------------------------------------
+-- Server version	10.11.16-MariaDB-ubu2204
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `article`
+--
+
 DROP TABLE IF EXISTS `article`;
-DROP TABLE IF EXISTS `utilisateur`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `article` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nom` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `prix` decimal(8,2) NOT NULL,
+  `categorie` varchar(100) DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  `disponible` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `utilisateur` (
-  `id_utilisateur` int NOT NULL AUTO_INCREMENT,
+--
+-- Table structure for table `categories_prestations`
+--
+
+DROP TABLE IF EXISTS `categories_prestations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `categories_prestations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nom` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `evenements`
+--
+
+DROP TABLE IF EXISTS `evenements`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `evenements` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `titre` varchar(200) NOT NULL,
+  `date_debut` datetime DEFAULT NULL,
+  `lieu` varchar(200) DEFAULT NULL,
+  `nombre_places` int(11) DEFAULT 20,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `message_contact`
+--
+
+DROP TABLE IF EXISTS `message_contact`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `message_contact` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nom` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `mot_de_passe` varchar(255) NOT NULL,
-  `type_utilisateur` enum('senior','prestataire','admin') NOT NULL,
-  `est_actif` tinyint(1) DEFAULT 0,
-  `token_confirmation` varchar(255) DEFAULT NULL,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_utilisateur`),
-  UNIQUE (`email`)
-);
+  `sujet` varchar(100) DEFAULT NULL,
+  `message` text NOT NULL,
+  `lu` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `senior` (
-  `id_senior` int NOT NULL,
-  `nom` varchar(100) DEFAULT NULL,
-  `prenom` varchar(100) DEFAULT NULL,
-  `telephone` varchar(20) DEFAULT NULL,
-  `date_naissance` date DEFAULT NULL,
-  `adresse` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id_senior`),
-  FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-);
+--
+-- Table structure for table `prestataire`
+--
 
+DROP TABLE IF EXISTS `prestataire`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `prestataire` (
-  `id_prestataire` int NOT NULL,
+  `id_prestataire` int(11) NOT NULL,
   `nom` varchar(100) DEFAULT NULL,
   `prenom` varchar(100) DEFAULT NULL,
   `ville` varchar(100) DEFAULT NULL,
@@ -46,171 +107,80 @@ CREATE TABLE `prestataire` (
   `photo` varchar(255) DEFAULT NULL,
   `tarif_horaire` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`id_prestataire`),
-  FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-);
+  CONSTRAINT `prestataire_ibfk_1` FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur` (`id_utilisateur`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `article` (
-  `id_article` int NOT NULL AUTO_INCREMENT,
-  `nom` varchar(200) NOT NULL,
-  `description` text DEFAULT NULL,
-  `prix` decimal(8,2) NOT NULL,
-  `categorie` varchar(100) DEFAULT NULL,
-  `photo` varchar(255) DEFAULT NULL,
-  `disponible` tinyint(1) DEFAULT 1,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_article`)
-);
+--
+-- Table structure for table `reservation`
+--
 
-CREATE TABLE `categories_prestations` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nom` varchar(100) NOT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-);
-
-CREATE TABLE `evenements` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `titre` varchar(200) NOT NULL,
-  `date_debut` datetime DEFAULT NULL,
-  `lieu` varchar(200) DEFAULT NULL,
-  `nombre_places` int DEFAULT 20,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-);
-
-CREATE TABLE `message_contact` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nom` varchar(100) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `sujet` varchar(100) DEFAULT NULL,
-  `message` text NOT NULL,
-  `lu` tinyint(1) DEFAULT 0,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-);
-
+DROP TABLE IF EXISTS `reservation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `reservation` (
-  `id_reservation` int NOT NULL AUTO_INCREMENT,
-  `id_senior` int NOT NULL,
-  `id_prestataire` int NOT NULL,
-  `date_reservation` datetime NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_senior` int(11) NOT NULL,
+  `id_prestataire` int(11) NOT NULL,
+  `date_rdv` date NOT NULL,
+  `heure_rdv` time NOT NULL,
   `description` text DEFAULT NULL,
   `statut` enum('en_attente','confirme','termine','annule') DEFAULT 'en_attente',
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_reservation`),
-  FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`),
-  FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur`(`id_utilisateur`)
-);
-
-CREATE TABLE `conseils` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `titre` varchar(200) NOT NULL,
-  `contenu` text NOT NULL,
-  `categorie` varchar(100) DEFAULT 'general',
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-);
-
-CREATE TABLE `devis` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_prestataire` int NOT NULL,
-  `id_senior` int NOT NULL,
-  `montant` decimal(8,2) NOT NULL,
-  `description` text DEFAULT NULL,
-  `statut` enum('en_attente','accepte','refuse') DEFAULT 'en_attente',
-  `created_at` timestamp DEFAULT current_timestamp(),
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE,
-  FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-);
+  KEY `id_senior` (`id_senior`),
+  KEY `id_prestataire` (`id_prestataire`),
+  CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`id_senior`) REFERENCES `utilisateur` (`id_utilisateur`),
+  CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur` (`id_utilisateur`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `rdv_medicaux` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_senior` int NOT NULL,
-  `id_medecin` int NOT NULL,
-  `date_rdv` datetime NOT NULL,
-  `statut` enum('en_attente','confirme','annule') DEFAULT 'en_attente',
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)  
-    FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE,
-  FOREIGN KEY (`id_medecin`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-);
+--
+-- Table structure for table `senior`
+--
 
-CREATE TABLE `messages` (
-  `id_message` int NOT NULL AUTO_INCREMENT,
-  `id_expediteur` int NOT NULL,
-  `id_destinataire` int NOT NULL,
-  `contenu` text NOT NULL,
-  `lu` tinyint(1) DEFAULT 0,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_message`),
-  FOREIGN KEY (`id_expediteur`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE,
-  FOREIGN KEY (`id_destinataire`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-);
+DROP TABLE IF EXISTS `senior`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `senior` (
+  `id_senior` int(11) NOT NULL,
+  `nom` varchar(100) DEFAULT NULL,
+  `prenom` varchar(100) DEFAULT NULL,
+  `telephone` varchar(20) DEFAULT NULL,
+  `date_naissance` date DEFAULT NULL,
+  `adresse` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_senior`),
+  CONSTRAINT `senior_ibfk_1` FOREIGN KEY (`id_senior`) REFERENCES `utilisateur` (`id_utilisateur`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `commandes` (
-  `id_commande` int NOT NULL AUTO_INCREMENT,
-  `id_senior` int NOT NULL,
-  `id_article` int DEFAULT NULL,
-  `nom_article` varchar(200) DEFAULT NULL,
-  `prix` decimal(8,2) NOT NULL,
-  `statut` enum('en_attente','expediee','livree','annulee') DEFAULT 'en_attente',
-  `stripe_payment_intent` varchar(255) DEFAULT NULL,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_commande`),
-  FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-);
+--
+-- Table structure for table `utilisateur`
+--
 
-CREATE TABLE IF NOT EXISTS `evaluations` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_reservation` int NOT NULL,
-  `id_senior` int NOT NULL,
-  `id_prestataire` int NOT NULL,
-  `note` tinyint NOT NULL CHECK (`note` BETWEEN 1 AND 5),
-  `commentaire` text DEFAULT NULL,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_reservation` (`id_reservation`),
-  FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE,
-  FOREIGN KEY (`id_prestataire`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+DROP TABLE IF EXISTS `utilisateur`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `utilisateur` (
+  `id_utilisateur` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `mot_de_passe` varchar(255) NOT NULL,
+  `type_utilisateur` enum('senior','prestataire','admin') NOT NULL,
+  `est_actif` tinyint(1) DEFAULT 0,
+  `token_confirmation` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_utilisateur`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-CREATE TABLE IF NOT EXISTS `abonnements` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_senior` int NOT NULL,
-  `type` enum('mensuel','annuel') NOT NULL,
-  `prix` decimal(8,2) NOT NULL,
-  `debut` date NOT NULL,
-  `fin` date NOT NULL,
-  `statut` enum('actif','expire','annule') DEFAULT 'actif',
-  `stripe_subscription_id` varchar(255) DEFAULT NULL,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_reservation`),
-  FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-CREATE TABLE IF NOT EXISTS `notifications` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `id_senior` int NOT NULL,
-  `titre` varchar(200) NOT NULL,
-  `message` text NOT NULL,
-  `lu` tinyint(1) DEFAULT 0,
-  `created_at` timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id_reservation`),
-  FOREIGN KEY (`id_senior`) REFERENCES `utilisateur`(`id_utilisateur`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS `factures_archivees` (
-  `id`             int NOT NULL AUTO_INCREMENT,
-  `num_facture`    varchar(50) NOT NULL,
-  `id_prestataire` int NOT NULL,
-  `mois`           char(7) NOT NULL,
-  `nb_prestations` int DEFAULT 0,
-  `total_net`      decimal(10,2) DEFAULT 0,
-  `pdf_path`       varchar(500) NOT NULL,
-  `created_at`     timestamp DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `facture_unique` (`num_facture`)
-);
+-- Dump completed on 2026-03-24 15:02:04

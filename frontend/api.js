@@ -1,41 +1,33 @@
-document.getElementById("loginForm").addEventListener("submit", function(e) {
+document.getElementById("loginForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const email = document.getElementById("email").value;
     const mot_de_passe = document.getElementById("password").value;
 
-    fetch("/api/login", {
+    fetch("http://localhost/PA_2EME_ANNEE/api/index.php/login", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            email: email,
-            mot_de_passe: mot_de_passe
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, mot_de_passe: mot_de_passe })
     })
-    .then(function(res) {
-        return res.json();
-    })
-    .then(function(data) {
+    .then(res => res.json())
+    .then(data => {
         if (data.token) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("type", data.type_utilisateur);
-            localStorage.setItem("id_utilisateur", data.id_utilisateur);
-            localStorage.setItem("prenom", data.prenom || "");
+            document.getElementById("message").innerText = "Connexion réussie";
 
-            if (data.type_utilisateur == "admin") {
-                window.location.href = "/frontend/admin/dashboard.html?token=" + encodeURIComponent(data.token);
-            } else if (data.type_utilisateur == "senior") {
-                window.location.href = "/dashboardS.php";
-            } else if (data.type_utilisateur == "prestataire") {
-                window.location.href = "/dashboardP.php";
+            if (data.type_utilisateur === "admin") {
+                window.location.href = "admin/dashboard.html";
+            } else if (data.type_utilisateur === "senior") {
+                window.location.href = "senior/profil.html";
+            } else if (data.type_utilisateur === "prestataire") {
+                window.location.href = "prestataire/profil.html";
             }
         } else {
-            document.getElementById("message").innerText = data.message || "Erreur de connexion";
+            document.getElementById("message").innerText = data.message;
         }
     })
-    .catch(function() {
-        document.getElementById("message").innerText = "Impossible de joindre le serveur";
+    .catch(() => {
+        document.getElementById("message").innerText = "Erreur de connexion à l'API";
     });
 });

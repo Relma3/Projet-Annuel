@@ -1,15 +1,3 @@
-<?php
-$msgs = [
-  'email_existe'    => 'Cet email est déjà utilisé.',
-  'erreur_serveur'  => 'Erreur serveur — réessayez.',
-  'champs_manquants'=> 'Veuillez remplir tous les champs.',
-  'mdp_trop_court'  => 'Mot de passe trop court (8 car. min).',
-  'email_invalide'  => 'Email invalide.',
-];
-$err = $_GET['error'] ?? '';
-if ($err && isset($msgs[$err])) echo '<div class="bg-red-100 text-red-700 p-4 rounded-xl mb-4 text-lg">' . $msgs[$err] . '</div>';
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -41,6 +29,7 @@ if ($err && isset($msgs[$err])) echo '<div class="bg-red-100 text-red-700 p-4 ro
             }
         }
 
+        // Fonction pour vérifier si les mots de passe correspondent
         function validateForm() {
             const password = document.getElementsByName('password')[0].value;
             const confirm = document.getElementsByName('confirm_password')[0].value;

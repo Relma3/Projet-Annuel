@@ -1,37 +1,27 @@
-FROM php:8.2-apache AS dev
+FROM php:8.2-apache
 
-RUN apt-get update && apt-get install -y curl unzip \
-    && docker-php-ext-install mysqli pdo_mysql \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Dépendances système + extensions PHP
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    libzip-dev \
+    libonig-dev \
+    zip \
+    unzip \
+    curl \
+    && docker-php-ext-install pdo pdo_mysql mysqli curl zip mbstring
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
+# Activer mod_rewrite
 RUN a2enmod rewrite
-RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
-WORKDIR /var/www/html
+# Copier le code
+COPY . /var/www/html/
 
-FROM php:8.2-apache AS prod
+# Permissions
+RUN chown -R www-data:www-data /var/www/html
 
-RUN apt-get update && apt-get install -y curl unzip \
-    && docker-php-ext-install mysqli pdo_mysql \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-RUN a2enmod rewrite
-RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
-
-WORKDIR /var/www/html
-
-COPY . .
-
-RUN if [ -f composer.json ]; then composer install --no-dev --optimize-autoloader --no-interaction; fi
-
-RUN mkdir -p storage/factures storage/logs \
-    && chown -R www-data:www-data storage \
-    && chmod -R 755 storage
-
-RUN rm -rf .git tests *.md docker-compose*.yml Dockerfile*
+# Config Apache AllowOverride
+RUN echo '<Directory /var/www/html>\nAllowOverride All\nRequire all granted\n</Directory>' \
+    > /etc/apache2/conf-available/silverhappy.conf \
+    && a2enconf silverhappy
 
 EXPOSE 80

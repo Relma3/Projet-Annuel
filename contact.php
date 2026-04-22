@@ -90,7 +90,7 @@
                         <h3 class="font-bold text-xl">Téléphone</h3>
                     </div>
                     <p class="text-slate-600">Permanence téléphonique dédiée aux seniors.</p>
-                    <p class="text-2xl font-bold text-slate-900 mt-2">06 69 44 80 98</p>
+                    <p class="text-2xl font-bold text-slate-900 mt-2">01 4X XX XX XX</p>
                 </div>
             </div>
 
