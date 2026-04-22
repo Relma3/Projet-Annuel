@@ -2,7 +2,7 @@ FROM php:8.2-apache
 
 # Dépendances système + extensions PHP
 RUN apt-get update && apt-get install -y \
-    libcurl4-openssl-dev \
+    libcurl4-gnutls-dev \
     libzip-dev \
     libonig-dev \
     zip \
