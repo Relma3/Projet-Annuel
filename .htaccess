@@ -1,5 +1,6 @@
 Options -Indexes
 RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 # Rediriger les appels /api/* vers api/index.php
 RewriteCond %{REQUEST_URI} ^/PA_2EME_ANNEE/api/

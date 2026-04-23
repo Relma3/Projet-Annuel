@@ -34,6 +34,8 @@ function verifier_token() {
         $auth = $headers["authorization"];
     } elseif (isset($_SERVER["HTTP_AUTHORIZATION"])) {
         $auth = $_SERVER["HTTP_AUTHORIZATION"];
+    } elseif (isset($_SERVER["REDIRECT_HTTP_AUTHORIZATION"])) {
+    $auth = $_SERVER["REDIRECT_HTTP_AUTHORIZATION"];
     }
 
     if (!$auth) {
