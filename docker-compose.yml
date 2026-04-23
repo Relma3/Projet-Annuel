@@ -5,7 +5,7 @@ services:
       - "80:80"
       - "3307:3306"
     volumes:
-      - .:/var/www/html
+      - .:/app
     depends_on:
       - db
     environment:
