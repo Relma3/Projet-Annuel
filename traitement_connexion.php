@@ -1,5 +1,4 @@
 <?php
-// Mmina
 session_start();
 require_once 'db_connect.php';
 require_once 'api/middleware.php';
@@ -7,7 +6,11 @@ require_once 'api/middleware.php';
 if (isset($_POST['email'], $_POST['password'])) {
     $email    = htmlspecialchars(trim($_POST['email']));
     $password = $_POST['password'];
-    $source   = ($_POST['source'] ?? '') === 'prestataire' ? 'connexionpres.php' : 'connexion.php';
+    $source = match($_POST['source'] ?? '') {
+    'prestataire' => 'connexionpres.php',
+    'admin'       => 'connexion_admin.php',
+    default       => 'connexion.php'
+};
 
     try {
         $stmt = $pdo->prepare(
