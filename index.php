@@ -93,7 +93,7 @@
             <?php endif; ?>
             <a href="#services" class="border-2 border-slate-200 px-8 py-4 rounded-senior text-lg font-bold hover:bg-slate-50 transition-colors"
                data-i18n="our_services">
-                Nos Services
+                Nos Services12
             </a>
         </div>
     </div>
