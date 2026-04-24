@@ -1,48 +1,48 @@
 <?php
 require_once 'db_connect.php';
-
 set_time_limit(300);
 
 try {
     $villes = ['Paris', 'Lyon', 'Marseille', 'Bordeaux', 'Lille', 'Nice'];
-    $categories = ['domicile', 'loisirs', 'sante', 'boutique'];
-    $pass_hash = password_hash('Demo123!', PASSWORD_DEFAULT);
+    $cats = ['domicile', 'loisirs', 'sante', 'boutique'];
+    $pass = password_hash('Demo123!', PASSWORD_DEFAULT);
 
-    for ($i = 1; $i <= 50; $i++) {
-        $email = "senior$i@example.com";
-        $stmt = $pdo->prepare("INSERT INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) VALUES (?, ?, 'senior', 1)");
-        $stmt->execute([$email, $pass_hash]);
-        $id_user = $pdo->lastInsertId();
-
-        $stmtS = $pdo->prepare("INSERT INTO senior (id_senior, nom, prenom, telephone, adresse, ville) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmtS->execute([$id_user, "NomS$i", "PrenomS$i", "0601020304", "$i Rue de la Paix", $villes[array_rand($villes)]]);
+    for ($i = 1; $i <= 40; $i++) {
+        $email = "senior_test_$i@silverhappy.fr";
+        $stmt = $pdo->prepare("INSERT IGNORE INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) VALUES (?, ?, 'senior', 1)");
+        $stmt->execute([$email, $pass]);
+        $id = $pdo->lastInsertId();
+        if($id) {
+            $stmtS = $pdo->prepare("INSERT IGNORE INTO senior (id_senior, nom, prenom, ville) VALUES (?, ?, ?, ?)");
+            $stmtS->execute([$id, "NomS$i", "PrenomS$i", $villes[array_rand($villes)]]);
+        }
     }
 
-    for ($i = 1; $i <= 30; $i++) {
-        $email = "presta$i@example.com";
-        $stmt = $pdo->prepare("INSERT INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) VALUES (?, ?, 'prestataire', 1)");
-        $stmt->execute([$email, $pass_hash]);
-        $id_user = $pdo->lastInsertId();
-
-        $stmtP = $pdo->prepare("INSERT INTO prestataire (id_prestataire, nom, prenom, ville, categorie, tarif_horaire, statut) VALUES (?, ?, ?, ?, ?, ?, 'valide')");
-        $stmtP->execute([$id_user, "NomP$i", "PrenomP$i", $villes[array_rand($villes)], $categories[array_rand($categories)], rand(20, 50)]);
+    for ($j = 1; $j <= 30; $j++) {
+        $email = "presta_test_$j@silverhappy.fr";
+        $stmt = $pdo->prepare("INSERT IGNORE INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) VALUES (?, ?, 'prestataire', 1)");
+        $stmt->execute([$email, $pass]);
+        $id_p = $pdo->lastInsertId();
+        if($id_p) {
+            $stmtP = $pdo->prepare("INSERT IGNORE INTO prestataire (id_prestataire, nom, prenom, ville, categorie, tarif_horaire, statut) VALUES (?, ?, ?, ?, ?, ?, 'valide')");
+            $stmtP->execute([$id_p, "NomP$j", "PrenomP$j", $villes[array_rand($villes)], $cats[array_rand($cats)], rand(25, 60)]);
+            
+            $stmtServ = $pdo->prepare("INSERT INTO services (id_prestataire, nom_service, prix, ville, description) VALUES (?, ?, ?, ?, ?)");
+            $stmtServ->execute([$id_p, "Service de " . $cats[array_rand($cats)], rand(20, 50), $villes[array_rand($villes)], "Description pro $j"]);
+        }
     }
 
     $seniors = $pdo->query("SELECT id_senior FROM senior")->fetchAll(PDO::FETCH_COLUMN);
     $prestas = $pdo->query("SELECT id_prestataire FROM prestataire")->fetchAll(PDO::FETCH_COLUMN);
 
-    for ($i = 1; $i <= 420; $i++) {
-        $id_s = $seniors[array_rand($seniors)];
-        $id_p = $prestas[array_rand($prestas)];
-        $date = date('Y-m-d H:i:s', strtotime("-" . rand(0, 30) . " days +" . rand(0, 24) . " hours"));
-        $statuts = ['en_attente', 'confirme', 'termine', 'annule'];
-
-        $stmtR = $pdo->prepare("INSERT INTO reservation (id_senior, id_prestataire, date_reservation, description, statut) VALUES (?, ?, ?, ?, ?)");
-        $stmtR->execute([$id_s, $id_p, $date, "Prestation de service numéro $i", $statuts[array_rand($statuts)]]);
+    for ($k = 1; $k <= 430; $k++) {
+        $stmtR = $pdo->prepare("INSERT INTO reservation (id_senior, id_prestataire, date_reservation, statut, description) VALUES (?, ?, ?, ?, ?)");
+        $date = date('Y-m-d H:i:s', strtotime("-" . rand(0, 30) . " days"));
+        $stmtR->execute([$seniors[array_rand($seniors)], $prestas[array_rand($prestas)], $date, 'termine', "Mission auto $k"]);
     }
 
-    echo "Peuplement terminé : +500 lignes insérées.";
+    echo "Injection réussie : Seniors, Prestataires, Services et Réservations créés.";
 
 } catch (Exception $e) {
-    die($e->getMessage());
+    die("Erreur : " . $e->getMessage());
 }
