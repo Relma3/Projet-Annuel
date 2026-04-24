@@ -9,6 +9,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION
     $ville = htmlspecialchars($_POST['ville'] ?? '');
     $description = htmlspecialchars($_POST['description'] ?? '');
 
+    if ($prix <= 0) {
+        header('Location: dashboardP.php?error=prix_invalide#services');
+        exit();
+    }
+
+    if (strlen($description) < 10) {
+        header('Location: dashboardP.php?error=desc_courte#services');
+        exit();
+    }
+
     try {
         $stmt = $pdo->prepare("INSERT INTO services (id_prestataire, nom_service, prix, ville, description) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$id_pres, $nom_service, $prix, $ville, $description]);
@@ -16,7 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION
         header('Location: dashboardP.php?msg=service_ajoute#services');
         exit();
     } catch (PDOException $e) {
-        die("Erreur SQL : " . $e->getMessage());
+        error_log($e->getMessage());
+        header('Location: dashboardP.php?error=sql');
+        exit();
     }
 }
 
