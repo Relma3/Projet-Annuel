@@ -1,7 +1,7 @@
 function initTutoriel() {
-    if (localStorage.getItem("tutoriel_vu")) {
-        return;
-    }
+    if (tutorielDejavu) {
+    return;
+}
 
     const etapes = [
         {
@@ -83,7 +83,7 @@ function initTutoriel() {
 
         btn.onclick = function () {
             if (i == etapes.length - 1) {
-                localStorage.setItem("tutoriel_vu", "1");
+                fetch('/update_senior.php?action=tutoriel', { method: 'POST' });
                 overlay.remove();
             } else {
                 i++;

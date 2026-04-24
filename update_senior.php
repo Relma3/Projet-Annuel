@@ -1,6 +1,13 @@
 <?php
 session_start();
 require_once 'db_connect.php';
+
+if (isset($_GET['action']) && $_GET['action'] === 'tutoriel' && isset($_SESSION['id'])) {
+    $pdo->prepare("UPDATE senior SET tutoriel_vu = 1 WHERE id_senior = ?")
+        ->execute([$_SESSION['id']]);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION['type'] === 'senior') {
     $id_senior = $_SESSION['id'];
     $telephone = htmlspecialchars($_POST['telephone']);

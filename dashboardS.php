@@ -31,6 +31,9 @@ try {
     $stmtProfil = $pdo->prepare("SELECT * FROM senior WHERE id_senior = ?");
     $stmtProfil->execute([$id_senior]);
     $profil = $stmtProfil->fetch();
+    $stmtConseils = $pdo->prepare("SELECT * FROM conseil WHERE visible = 1 ORDER BY created_at DESC LIMIT 6");
+    $stmtConseils->execute();
+    $conseils = $stmtConseils->fetchAll();
 
 } catch (PDOException $e) {
     die("Erreur de base de données : " . $e->getMessage());
@@ -90,6 +93,8 @@ try {
                 <button onclick="showTab('commandes', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-box"></i> Mes Achats</button>
                 <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-comment-dots"></i> Messagerie</button>
                 <button onclick="showTab('abonnement', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-id-card"></i> Mon Abonnement</button>
+                <button onclick="showTab('conseils', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-lightbulb"></i> Conseils
+</button>
                 <button onclick="showTab('profil', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-user"></i> Mon Profil</button>
             </div>
         </aside>
@@ -207,6 +212,30 @@ try {
                 </form>
             </div>
 
+            <div id="conseils" class="tab-content space-y-6">
+    <h2 class="text-2xl font-title font-bold text-corail">Espace Conseils</h2>
+    <?php if (empty($conseils)): ?>
+        <div class="bg-white p-10 rounded-senior shadow-sm text-center text-slate-300 italic">
+            Aucun conseil disponible pour le moment.
+        </div>
+    <?php else: ?>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <?php foreach($conseils as $c): ?>
+            <div class="bg-white p-8 rounded-senior shadow-sm border-l-8 border-corail">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <?php echo htmlspecialchars($c['categorie'] ?? 'Général'); ?>
+                </span>
+                <h3 class="text-xl font-bold mt-2 mb-3"><?php echo htmlspecialchars($c['titre']); ?></h3>
+                <p class="text-slate-500 leading-relaxed"><?php echo nl2br(htmlspecialchars($c['contenu'])); ?></p>
+                <?php if ($c['auteur']): ?>
+                    <p class="text-xs text-slate-400 mt-4 italic">Par <?php echo htmlspecialchars($c['auteur']); ?></p>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>
+
         </section>
     </main>
 
@@ -222,5 +251,11 @@ try {
             btn.classList.remove('text-slate-400');
         }
     </script>
+
+    <script>
+    const tutorielDejavu = <?php echo $profil['tutoriel_vu'] ? 'true' : 'false'; ?>;
+</script>
+
+<script src="frontend/tutoriel.js"></script>
 </body>
 </html>
