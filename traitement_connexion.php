@@ -49,15 +49,16 @@ if (isset($_POST['email'], $_POST['password'])) {
                 $_SESSION['prenom'] = 'Admin';
             }
 
-            $token = generer_token($user['id_utilisateur'], $user['type_utilisateur']);
-            $_SESSION['jwt_token'] = $token;
+           // $token = generer_token($user['id_utilisateur'], $user['type_utilisateur']);
+           // $_SESSION['jwt_token'] = $token;
 
             if ($user['type_utilisateur'] === 'senior') {
                 header('Location: dashboardS.php');
             } elseif ($user['type_utilisateur'] === 'prestataire') {
                 header('Location: dashboardP.php');
             } else {
-                header('Location: /frontend/admin/dashboard.php?token=' . urlencode($token));
+               // header('Location: /frontend/admin/dashboard.php?token=' . urlencode($token));
+                header('Location: /frontend/admin/dashboard.php');
             }
             exit();
 
