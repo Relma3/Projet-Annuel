@@ -1,6 +1,8 @@
 <?php
-var_dump($user);
-var_dump($pdo);
+$stmt = $pdo->query("SELECT email FROM utilisateur");
+$data = $stmt->fetchAll();
+
+var_dump($data);
 exit;
 
 session_start();
