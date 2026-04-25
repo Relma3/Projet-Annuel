@@ -1,10 +1,8 @@
 <?php
-// Mmina
-
+// Mmina 
 if (file_exists(__DIR__ . '/.env.php')) {
     require_once __DIR__ . '/.env.php';
 }
-
 $host    = getenv('DB_HOST') ?: 'localhost';
 $dbname  = getenv('DB_NAME') ?: 'silver_happy';
 $db_user = getenv('DB_USER') ?: 'sh_user';
@@ -16,7 +14,6 @@ $options = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
-
 try {
     $pdo = new PDO($dsn, $db_user, $db_pass, $options);
 } catch (\PDOException $e) {
@@ -29,5 +26,5 @@ if (!function_exists('getDB')) {
         return $pdo;
     }
 }
-
 ?>
+
