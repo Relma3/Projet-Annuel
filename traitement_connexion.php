@@ -58,7 +58,7 @@ if (isset($_POST['email'], $_POST['password'])) {
             } elseif ($user['type_utilisateur'] === 'prestataire') {
                 header('Location: dashboardP.php');
             } else {
-                header('Location: frontend/admin/dashboard.php?token=' . urlencode($token));
+                header('Location: /frontend/admin/dashboard.php?token=' . urlencode($token));
             }
             exit();
 
