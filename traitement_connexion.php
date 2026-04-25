@@ -1,4 +1,7 @@
 <?php
+var_dump($user);
+exit;
+
 session_start();
 require_once 'db_connect.php';
 require_once 'api/middleware.php';
