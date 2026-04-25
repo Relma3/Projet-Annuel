@@ -1,5 +1,6 @@
 <?php
 var_dump($user);
+var_dump($pdo);
 exit;
 
 session_start();
