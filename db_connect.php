@@ -27,4 +27,3 @@ if (!function_exists('getDB')) {
     }
 }
 ?>
-
