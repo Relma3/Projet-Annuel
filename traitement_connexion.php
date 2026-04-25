@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 require_once 'db_connect.php';
 require_once 'api/middleware.php';
@@ -58,7 +57,7 @@ if (isset($_POST['email'], $_POST['password'])) {
             } elseif ($user['type_utilisateur'] === 'prestataire') {
                 header('Location: dashboardP.php');
             } else {
-                header('Location: frontend/admin/dashboard.php?token=' . urlencode($token));
+                header('Location: frontend/admin/dashboard.html?token=' . urlencode($token));
             }
             exit();
 
