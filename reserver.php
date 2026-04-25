@@ -67,12 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->rollBack();
                 $erreur = "Ce créneau vient d'être pris. Veuillez en choisir un autre.";
             } else {
-                // Créer la réservation
-                $stmtRes = $pdo->prepare("
-                    INSERT INTO reservation (id_senior, id_prestataire, date_reservation, description, statut)
-                    VALUES (?, ?, ?, ?, 'en_attente')
-                ");
-                $stmtRes->execute([$id_senior, $id_pres, $debut, $description]);
+        
+               $stmtRes = $pdo->prepare("
+    INSERT INTO reservation (id_senior, id_prestataire, date_reservation, date_fin, id_disponibilite, description, statut)
+    VALUES (?, ?, ?, ?, ?, ?, 'en_attente')
+");
+$stmtRes->execute([$id_senior, $id_pres, $debut, $fin, $id_dispo, $description]);
                 $idReservation = $pdo->lastInsertId();
  
                 $pdo->prepare("
