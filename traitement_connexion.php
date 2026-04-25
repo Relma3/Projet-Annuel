@@ -9,7 +9,7 @@ if (isset($_POST['email'], $_POST['password'])) {
     $source = match($_POST['source'] ?? '') {
     'prestataire' => 'connexionpres.php',
     'admin'       => 'connexion_admin.php',
-    default       => 'connexion.php'
+     default       => 'connexion.php'
 };
 
     try {
@@ -57,7 +57,7 @@ if (isset($_POST['email'], $_POST['password'])) {
             } elseif ($user['type_utilisateur'] === 'prestataire') {
                 header('Location: dashboardP.php');
             } else {
-                header('Location: frontend/admin/dashboard.php?token=' . urlencode($token));
+                header('Location: /frontend/admin/dashboard.php?token=' . urlencode($token));
             }
             exit();
 
