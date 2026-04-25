@@ -1,13 +1,9 @@
 <?php
-$stmt = $pdo->query("SELECT email FROM utilisateur");
-$data = $stmt->fetchAll();
-
-var_dump($data);
-exit;
 
 session_start();
 require_once 'db_connect.php';
 require_once 'api/middleware.php';
+$pdo = getDB();
 
 if (isset($_POST['email'], $_POST['password'])) {
     $email    = htmlspecialchars(trim($_POST['email']));
