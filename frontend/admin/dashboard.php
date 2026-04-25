@@ -1,9 +1,10 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['admin'])) {
+if (!isset($_SESSION['type']) || $_SESSION['type'] !== 'admin') {
     header('Location: /connexion_admin.php');
     exit;
+
 }
 ?>
 
