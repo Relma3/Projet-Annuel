@@ -135,28 +135,88 @@ $medecins = $stmtMedecins->fetchAll();
             </div>
 
             <div id="planning" class="tab-content space-y-6">
-                <h2 class="text-2xl font-title font-bold text-corail">Mes Rendez-vous</h2>
-                <div class="bg-white rounded-senior shadow-sm overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            <tr><th class="p-6">Date</th><th class="p-6">Prestataire</th><th class="p-6">Statut</th></tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <?php foreach($planning as $p): ?>
-                            <tr>
-                                <td class="p-6 font-bold"><?php echo date('d/m/Y à H:i', strtotime($p['date_reservation'])); ?></td>
-                                <td class="p-6"><?php echo htmlspecialchars($p['p_prenom'] . ' ' . $p['p_nom']); ?></td>
-                                <td class="p-6">
-                                    <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full <?php echo $p['statut'] == 'confirme' ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'; ?>">
-                                        <?php echo $p['statut']; ?>
-                                    </span>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+    <h2 class="text-2xl font-title font-bold text-corail">Mes Rendez-vous</h2>
+
+    <!-- RDV Prestataires -->
+    <h3 class="font-bold text-slate-600">Services réservés</h3>
+    <div class="bg-white rounded-senior shadow-sm overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <tr><th class="p-6">Date</th><th class="p-6">Prestataire</th><th class="p-6">Statut</th></tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                <?php if (empty($planning)): ?>
+                <tr><td colspan="3" class="p-6 text-center text-slate-300 italic">Aucun service réservé</td></tr>
+                <?php else: foreach($planning as $p): ?>
+                <tr>
+                    <td class="p-6 font-bold"><?php echo date('d/m/Y à H:i', strtotime($p['date_reservation'])); ?></td>
+                    <td class="p-6"><?php echo htmlspecialchars($p['p_prenom'] . ' ' . $p['p_nom']); ?></td>
+                    <td class="p-6">
+                        <span class="text-[10px] font-bold uppercase px-3 py-1 rounded-full <?php echo $p['statut'] == 'confirme' ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'; ?>">
+                            <?php echo $p['statut']; ?>
+                        </span>
+                    </td>
+                </tr>
+                <?php endforeach; endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- RDV Médicaux -->
+    <h3 class="font-bold text-slate-600 mt-8">Télé-rendez-vous médicaux</h3>
+    <div class="bg-white rounded-senior shadow-sm overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <tr><th class="p-6">Date</th><th class="p-6">Médecin</th><th class="p-6">Spécialité</th><th class="p-6">Action</th></tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                <?php if (empty($rdv_medicaux)): ?>
+                <tr><td colspan="4" class="p-6 text-center text-slate-300 italic">Aucun RDV médical planifié</td></tr>
+                <?php else: foreach($rdv_medicaux as $r): ?>
+                <tr>
+                    <td class="p-6 font-bold"><?php echo date('d/m/Y à H:i', strtotime($r['date_rdv'])); ?></td>
+                    <td class="p-6">Dr <?php echo htmlspecialchars($r['medecin_prenom'] . ' ' . $r['medecin_nom']); ?></td>
+                    <td class="p-6 italic text-slate-400"><?php echo htmlspecialchars($r['specialite'] ?? '—'); ?></td>
+                    <td class="p-6">
+                        <button onclick="annulerRdv(<?php echo $r['id_rdv']; ?>)" 
+                            class="text-xs text-red-400 hover:text-red-600 font-bold">
+                            Annuler
+                        </button>
+                    </td>
+                </tr>
+                <?php endforeach; endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Formulaire prendre un RDV -->
+    <h3 class="font-bold text-slate-600 mt-8">Prendre un télé-rendez-vous</h3>
+    <div class="bg-white p-8 rounded-senior shadow-sm space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Médecin</label>
+                <select id="select-medecin" class="w-full bg-peche-pale/50 p-4 rounded-2xl font-bold text-corail outline-none">
+                    <option value="">-- Choisir un médecin --</option>
+                    <?php foreach($medecins as $m): ?>
+                    <option value="<?php echo $m['id_prestataire']; ?>">
+                        Dr <?php echo htmlspecialchars($m['prenom'] . ' ' . $m['nom']); ?> — <?php echo htmlspecialchars($m['specialite'] ?? ''); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Date et heure</label>
+                <input type="datetime-local" id="input-date-rdv" 
+                    class="w-full bg-peche-pale/50 p-4 rounded-2xl font-bold text-corail outline-none">
+            </div>
+        </div>
+        <button onclick="prendreRdv()" 
+            class="bg-corail text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">
+            Confirmer le rendez-vous
+        </button>
+        <p id="rdv-message" class="text-sm font-bold hidden"></p>
+    </div>
+</div>
 
             <div id="commandes" class="tab-content space-y-6">
                 <h2 class="text-2xl font-title font-bold text-corail">Mes Commandes Boutique</h2>
@@ -220,10 +280,6 @@ $medecins = $stmtMedecins->fetchAll();
                                 <input type="text" name="adresse" value="<?php echo htmlspecialchars($profil['adresse'] ?? ''); ?>" class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
                         </div>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Adresse de livraison</label>
-                        <input type="text" name="adresse" value="<?php echo htmlspecialchars($profil['adresse'] ?? ''); ?>" class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
-                    </div>
                     <button type="submit" class="bg-corail text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">
                         Enregistrer les modifications
                     </button>
@@ -279,7 +335,6 @@ $medecins = $stmtMedecins->fetchAll();
 <script>
 document.getElementById('form-profil').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     const res = await fetch('/api/seniors/me', {
         method: 'PUT',
         headers: {
@@ -297,6 +352,49 @@ document.getElementById('form-profil').addEventListener('submit', async function
         alert('Erreur lors de la mise à jour du profil.');
     }
 });
+</script>
+
+<script>
+const token = localStorage.getItem('token');
+
+async function prendreRdv() {
+    const id_prestataire = document.getElementById('select-medecin').value;
+    const date_rdv = document.getElementById('input-date-rdv').value;
+    const msg = document.getElementById('rdv-message');
+
+    if (!id_prestataire || !date_rdv) {
+        msg.textContent = 'Veuillez choisir un médecin et une date.';
+        msg.className = 'text-sm font-bold text-red-500';
+        msg.classList.remove('hidden');
+        return;
+    }
+
+    const res = await fetch('/api/rdv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ id_prestataire, date_rdv })
+    });
+
+    if (res.ok) {
+        msg.textContent = 'RDV confirmé ! Rechargement...';
+        msg.className = 'text-sm font-bold text-emerald-500';
+        msg.classList.remove('hidden');
+        setTimeout(() => location.reload(), 1500);
+    } else {
+        msg.textContent = 'Erreur lors de la prise de RDV.';
+        msg.className = 'text-sm font-bold text-red-500';
+        msg.classList.remove('hidden');
+    }
+}
+
+async function annulerRdv(id_rdv) {
+    if (!confirm('Confirmer l\'annulation ?')) return;
+    const res = await fetch('/api/rdv/' + id_rdv + '/annuler', {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.ok) location.reload();
+}
 </script>
 
 </body>
