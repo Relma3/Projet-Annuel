@@ -54,6 +54,7 @@ $description_finale = ($db_cat && !empty($db_cat['description'])) ? $db_cat['des
     </script>
 </head>
 <body class="bg-sable-doux font-sans text-slate-800">
+    <?php include 'accessibilite.php'; ?>
 
     <nav class="fixed w-full bg-white/80 backdrop-blur-md shadow-sm z-50 px-8 py-4 flex justify-between items-center">
         <a href="services.php" class="font-bold text-slate-600 hover:text-orange-corail transition-colors">

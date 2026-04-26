@@ -31,6 +31,7 @@ $exemples = [
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen" style="font-size:18px;">
+    <?php include 'accessibilite.php'; ?>
 
 <nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
     <span class="text-orange-500 font-bold text-2xl">Silver Happy</span>

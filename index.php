@@ -39,6 +39,7 @@
     </style>
 </head>
 <body class="bg-sable-doux text-slate-800">
+    <?php include 'accessibilite.php'; ?>
 
     <nav class="fixed w-full bg-white/80 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-4">
