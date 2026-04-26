@@ -8,7 +8,7 @@ if(!isset($_SESSION['id']) || $_SESSION['type'] !== 'prestataire') {
 }
  
 $id_pres = $_SESSION['id'];
-$nom_pres = $_SESSION['nom'] ?? 'Prestataire';
+$nom_pres = $_SESSION['prenom'] ?? 'Prestataire';
  
 try {
     $stmtProfil = $pdo->prepare("SELECT * FROM prestataire WHERE id_prestataire = ?");
