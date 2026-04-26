@@ -34,6 +34,23 @@ try {
     $stmtConseils = $pdo->prepare("SELECT * FROM conseil WHERE visible = 1 ORDER BY created_at DESC LIMIT 6");
     $stmtConseils->execute();
     $conseils = $stmtConseils->fetchAll();
+    
+    $stmtRdv = $pdo->prepare("
+    SELECT r.*, p.nom as medecin_nom, p.prenom as medecin_prenom, p.specialite
+    FROM rdv_medical r
+    JOIN prestataire p ON r.id_prestataire = p.id_prestataire
+    WHERE r.id_senior = ? AND r.statut != 'annule'
+    ORDER BY r.date_rdv ASC
+");
+$stmtRdv->execute([$id_senior]);
+$rdv_medicaux = $stmtRdv->fetchAll();
+
+$stmtMedecins = $pdo->query("
+    SELECT id_prestataire, nom, prenom, specialite 
+    FROM prestataire 
+    WHERE statut = 'valide' AND est_medecin = 1
+");
+$medecins = $stmtMedecins->fetchAll();
 
 } catch (PDOException $e) {
     die("Erreur de base de données : " . $e->getMessage());
