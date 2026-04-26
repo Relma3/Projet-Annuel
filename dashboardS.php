@@ -39,23 +39,30 @@ try {
     $stmtConseils = $pdo->prepare("SELECT * FROM conseil WHERE visible = 1 ORDER BY created_at DESC LIMIT 6");
     $stmtConseils->execute();
     $conseils = $stmtConseils->fetchAll();
-    
     $stmtRdv = $pdo->prepare("
     SELECT r.*, p.nom as medecin_nom, p.prenom as medecin_prenom, p.specialite
     FROM rdv_medical r
     JOIN prestataire p ON r.id_prestataire = p.id_prestataire
     WHERE r.id_senior = ? AND r.statut != 'annule'
     ORDER BY r.date_rdv ASC
-");
-$stmtRdv->execute([$id_senior]);
-$rdv_medicaux = $stmtRdv->fetchAll();
-
-$stmtMedecins = $pdo->query("
-    SELECT id_prestataire, nom, prenom, specialite 
-    FROM prestataire 
-    WHERE statut = 'valide' AND est_medecin = 1
-");
-$medecins = $stmtMedecins->fetchAll();
+    ");
+    $stmtRdv->execute([$id_senior]);
+    $rdv_medicaux = $stmtRdv->fetchAll();
+    $stmtMedecins = $pdo->query("
+        SELECT id_prestataire, nom, prenom, specialite 
+        FROM prestataire 
+        WHERE statut = 'valide' AND est_medecin = 1
+    ");
+    $medecins = $stmtMedecins->fetchAll();
+    $stmtEvents = $pdo->prepare("
+    SELECT e.id, e.titre, e.date_debut as date_event, e.lieu, 'evenement' as type_rdv
+    FROM inscription_evenement ie
+    JOIN evenements e ON ie.id_evenement = e.id
+    WHERE ie.id_senior = ? AND e.date_debut >= NOW()
+    ORDER BY e.date_debut ASC
+    ");
+    $stmtEvents->execute([$id_senior]);
+    $evenements_inscrits = $stmtEvents->fetchAll();
 
 } catch (PDOException $e) {
     die("Erreur de base de données : " . $e->getMessage());
@@ -139,19 +146,20 @@ $medecins = $stmtMedecins->fetchAll();
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Prochain RDV</p>
                         <p class="text-lg font-bold">
                             <?php 
-                                $prochain = null;
-                                if (!empty($planning)) $prochain = $planning[0]['date_reservation'];
-                                    if (!empty($rdv_medicaux) && (!$prochain || $rdv_medicaux[0]['date_rdv'] < $prochain)) {
+                            $prochain = null;
+                            if (!empty($planning)) $prochain = $planning[0]['date_reservation'];
+                            if (!empty($rdv_medicaux) && (!$prochain || $rdv_medicaux[0]['date_rdv'] < $prochain))
                                 $prochain = $rdv_medicaux[0]['date_rdv'];
-                                }
-                                echo $prochain ? date('H:i - d/m', strtotime($prochain)) : 'Aucun rendez-vous à venir';
+                            if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date_event'] < $prochain))
+                                $prochain = $evenements_inscrits[0]['date_event'];
+                            echo $prochain ? date('H:i - d/m', strtotime($prochain)) : 'Aucun rendez-vous à venir';
                             ?>
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div id="planning" class="tab-content space-y-6">
+    <div id="planning" class="tab-content space-y-6">
     <h2 class="text-2xl font-title font-bold text-corail">Mes Rendez-vous</h2>
 
     <!-- RDV Prestataires -->
@@ -205,6 +213,27 @@ $medecins = $stmtMedecins->fetchAll();
             </tbody>
         </table>
     </div>
+
+    <!-- Événements inscrits -->
+<h3 class="font-bold text-slate-600 mt-8">Mes événements</h3>
+<div class="bg-white rounded-senior shadow-sm overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <tr><th class="p-6">Date</th><th class="p-6">Événement</th><th class="p-6">Lieu</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            <?php if (empty($evenements_inscrits)): ?>
+            <tr><td colspan="3" class="p-6 text-center text-slate-300 italic">Aucun événement à venir</td></tr>
+            <?php else: foreach($evenements_inscrits as $e): ?>
+            <tr>
+                <td class="p-6 font-bold"><?php echo date('d/m/Y à H:i', strtotime($e['date_event'])); ?></td>
+                <td class="p-6"><?php echo htmlspecialchars($e['titre']); ?></td>
+                <td class="p-6 italic text-slate-400"><?php echo htmlspecialchars($e['lieu'] ?? '—'); ?></td>
+            </tr>
+            <?php endforeach; endif; ?>
+        </tbody>
+    </table>
+</div>
 
     <!-- Formulaire prendre un RDV -->
     <h3 class="font-bold text-slate-600 mt-8">Prendre un télé-rendez-vous</h3>
