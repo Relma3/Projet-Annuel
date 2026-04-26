@@ -41,10 +41,11 @@ if (isset($_POST['email'], $_POST['password'])) {
                 $senior = $stmtS->fetch();
                 $_SESSION['prenom'] = $senior['prenom'] ?? 'Adhérent';
             } elseif ($user['type_utilisateur'] === 'prestataire') {
-                $stmtP = $pdo->prepare("SELECT nom FROM prestataire WHERE id_prestataire = ?");
-                $stmtP->execute([$user['id_utilisateur']]);
-                $pres = $stmtP->fetch();
-                $_SESSION['prenom'] = $pres['nom'] ?? 'Prestataire';
+             $stmtP = $pdo->prepare("SELECT nom, prenom FROM prestataire WHERE id_prestataire = ?");
+$stmtP->execute([$user['id_utilisateur']]);
+$pres = $stmtP->fetch();
+$_SESSION['nom']    = $pres['nom']    ?? '';
+$_SESSION['prenom'] = $pres['prenom'] ?? 'Prestataire';
             } else {
                 $_SESSION['prenom'] = 'Admin';
             }
