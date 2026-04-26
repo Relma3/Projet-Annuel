@@ -62,6 +62,7 @@ try {
     </style>
 </head>
 <body class="bg-sable font-sans text-slate-800">
+    <?php include 'accessibilite.php'; ?>
 
     <nav class="fixed w-full bg-white/95 backdrop-blur-md shadow-md z-50 px-8 py-4 flex justify-between items-center">
         <div class="flex items-center gap-10">

@@ -58,6 +58,7 @@ try {
     </script>
 </head>
 <body class="bg-sable font-sans text-slate-800">
+    <?php include 'accessibilite.php'; ?>
  
 <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 px-8 py-4 flex justify-between items-center">
     <a href="index.php" class="text-2xl font-bold text-corail font-title">Silver Happy</a>
