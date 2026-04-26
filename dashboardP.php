@@ -144,6 +144,56 @@ try {
                     <?php endif; ?>
                 </div>
             </div>
+         <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50 mt-6">
+    <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Réservations reçues</h2>
+    <?php foreach($reservations as $r): 
+        $debut = strtotime($r['date_reservation']);
+        $fin   = $r['date_fin'] ? strtotime($r['date_fin']) : null;
+    ?>
+    <div class="flex justify-between items-center p-5 border border-slate-100 rounded-2xl bg-slate-50 mb-3">
+        <div>
+            <p class="font-bold"><?php echo htmlspecialchars($r['prenom'].' '.$r['nom']); ?></p>
+            <p class="text-sm text-slate-400">
+                <?php echo date('d/m/Y à H:i', $debut); ?>
+                <?php if($fin): ?> → <?php echo date('H:i', $fin); ?><?php endif; ?>
+            </p>
+        </div>
+        <div class="flex gap-2 items-center">
+            <span class="text-xs font-bold px-3 py-1 rounded-full 
+                <?php echo match($r['statut']) {
+                    'en_attente' => 'bg-yellow-100 text-yellow-700',
+                    'confirme'   => 'bg-emerald-100 text-emerald-700',
+                    'termine'    => 'bg-slate-100 text-slate-500',
+                    'annule'     => 'bg-red-100 text-red-500',
+                    default      => 'bg-slate-100 text-slate-400'
+                }; ?>">
+                <?php echo match($r['statut']) {
+                    'en_attente' => 'En attente',
+                    'confirme'   => 'Confirmé',
+                    'termine'    => 'Terminé',
+                    'annule'     => 'Annulé',
+                    default      => $r['statut']
+                }; ?>
+            </span>
+            <?php if($r['statut'] === 'en_attente'): ?>
+                <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=accepter"
+                   class="bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-600">
+                    ✓ Accepter
+                </a>
+                <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=refuser"
+                   class="bg-red-100 text-red-500 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-red-200">
+                    ✗ Refuser
+                </a>
+            <?php elseif($r['statut'] === 'confirme'): ?>
+                <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=terminer"
+                   class="bg-slate-200 text-slate-600 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-slate-300">
+                    Marquer terminé
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
  
             <div id="planning" class="tab-content space-y-6">
                 <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
