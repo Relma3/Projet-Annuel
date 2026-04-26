@@ -19,7 +19,7 @@ try {
         LEFT JOIN disponibilites d 
             ON d.id_prestataire = p.id_prestataire
             AND d.type          = 'libre'
-            AND d.date_debut    BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
+            AND d.date_debut BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 14 DAY)
         WHERE p.statut = 'valide'
     ";
  
