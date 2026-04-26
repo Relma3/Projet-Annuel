@@ -89,5 +89,10 @@ if (preg_match("#/admin/evenements/([0-9]+)#", $uri, $m) && $method === "DELETE"
     exit;
 }
 
+if (strpos($uri, "/webhook/stripe") !== false && $method === "POST") {
+    require_once __DIR__ . "/webhook_stripe.php";
+    exit;
+}
+
 http_response_code(404);
 echo json_encode(["message" => "Route non trouvée"]);

@@ -116,7 +116,7 @@ document.getElementById('btn-payer').addEventListener('click', async function ()
     btn.textContent = 'Traitement...';
     btn.disabled = true;
 
-    const res = await fetch('/api/paiements.php', {
+    const res = await fetch('/api/paiements/creer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ montant: montantChoisi, type: typeChoisi })
@@ -124,14 +124,14 @@ document.getElementById('btn-payer').addEventListener('click', async function ()
 
     const data = await res.json();
 
-    if (!data.clientSecret) {
+    if (!data.client_secret) {
         document.getElementById('card-errors').textContent = 'Erreur lors du paiement';
         btn.textContent = 'Confirmer le paiement';
         btn.disabled = false;
         return;
     }
 
-    const result = await stripe.confirmCardPayment(data.clientSecret, {
+    const result = await stripe.confirmCardPayment(data.client_secret, {
         payment_method: {
             card: card
         }

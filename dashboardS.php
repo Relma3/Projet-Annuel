@@ -191,15 +191,15 @@ try {
 
             <div id="profil" class="tab-content space-y-6">
                 <h2 class="text-2xl font-title font-bold text-corail">Mes Informations</h2>
-                <form action="update_senior.php" method="POST" class="bg-white p-10 rounded-senior shadow-sm space-y-6">
+                <form id="form-profil" class="bg-white p-10 rounded-senior shadow-sm space-y-6">
                     <div class="grid grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Téléphone</label>
                             <input type="text" name="telephone" value="<?php echo htmlspecialchars($profil['telephone'] ?? ''); ?>" class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Ville</label>
-                            <input type="text" name="ville" value="<?php echo htmlspecialchars($profil['ville'] ?? ''); ?>" class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Adresse</label>
+                                <input type="text" name="adresse" value="<?php echo htmlspecialchars($profil['adresse'] ?? ''); ?>" class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
                         </div>
                     </div>
                     <div class="space-y-2">
@@ -257,5 +257,29 @@ try {
 </script>
 
 <script src="frontend/tutoriel.js"></script>
+
+<script>
+document.getElementById('form-profil').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    const res = await fetch('/api/seniors/me', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+            telephone: document.querySelector('[name=telephone]').value,
+            adresse: document.querySelector('[name=adresse]').value
+        })
+    });
+    if (res.ok) {
+        window.location.href = 'dashboardS.php?msg=profil_mis_a_jour#profil';
+    } else {
+        alert('Erreur lors de la mise à jour du profil.');
+    }
+});
+</script>
+
 </body>
 </html>
