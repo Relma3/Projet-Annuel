@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once 'db_connect.php';
+require_once 'api/middleware.php';
+$jwt_token = generer_token($_SESSION['id'], $_SESSION['type']);
 
 if(!isset($_SESSION['id']) || $_SESSION['type'] !== 'senior') {
     header('Location: connexion.php');
@@ -77,6 +79,11 @@ $medecins = $stmtMedecins->fetchAll();
         .tab-content.active { display: block; }
         .nav-active { background: #E37A55 !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(227, 122, 85, 0.2); }
     </style>
+
+    <script>
+    localStorage.setItem('token', '<?php echo $jwt_token; ?>');
+</script>
+
 </head>
 <body class="bg-sable font-sans text-slate-800">
     <?php include 'accessibilite.php'; ?>
