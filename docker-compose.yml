@@ -57,3 +57,8 @@ services:
 
 volumes:
   db_data:
+
+  environment:
+  STRIPE_PUBLIC_KEY: pk_test_51T5pPERqQkycFSLTciSHfSVXvlgAQya2M2oXZP88RhJLW4ifMwI4ZkjwnOzRfJTd4mha3fj4Ly7M5R27FAnPfw4g00PLuD4ae1
+  STRIPE_SECRET: sk_test_whsec_lSvvQUDSrTJJPYBCrr6FDj9S3yTdbmSn
+  STRIPE_WEBHOOK_SECRET: sk_test_51T5pPERqQkycFSLTAokCaxFmgtYQbqbKZyCfA79MYtLW9p8lT5eJ8moThY0dQXPGvKj9t8uRtfBULSoRrUAOoGDK00voWXPDyR

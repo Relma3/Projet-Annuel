@@ -6,7 +6,13 @@ function get_profil_senior() {
     $payload = verifier_token();
     $pdo = getDB();
 
-    $stmt = $pdo->prepare("SELECT id_utilisateur, email, type_utilisateur, created_at FROM utilisateur WHERE id_utilisateur = ?");
+    $stmt = $pdo->prepare("
+        SELECT u.id_utilisateur, u.email, u.type_utilisateur, u.created_at,
+               s.nom, s.prenom, s.telephone, s.adresse, s.date_naissance, s.tutoriel_vu
+        FROM utilisateur u
+        LEFT JOIN senior s ON s.id_senior = u.id_utilisateur
+        WHERE u.id_utilisateur = ?
+    ");
     $stmt->execute([$payload["id_utilisateur"]]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -24,14 +30,27 @@ function modifier_profil_senior() {
     $pdo = getDB();
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (!isset($data["email"])) {
-        http_response_code(400);
-        echo json_encode(["message" => "Email requis"]);
-        return;
+    if (!empty($data["email"])) {
+        $pdo->prepare("UPDATE utilisateur SET email = ? WHERE id_utilisateur = ?")
+            ->execute([$data["email"], $payload["id_utilisateur"]]);
     }
 
-    $stmt = $pdo->prepare("UPDATE utilisateur SET email = ? WHERE id_utilisateur = ?");
-    $stmt->execute([$data["email"], $payload["id_utilisateur"]]);
+    $pdo->prepare("
+        UPDATE senior 
+        SET nom = COALESCE(?, nom),
+            prenom = COALESCE(?, prenom),
+            telephone = COALESCE(?, telephone),
+            adresse = COALESCE(?, adresse),
+            date_naissance = COALESCE(?, date_naissance)
+        WHERE id_senior = ?
+    ")->execute([
+        $data["nom"] ?? null,
+        $data["prenom"] ?? null,
+        $data["telephone"] ?? null,
+        $data["adresse"] ?? null,
+        $data["date_naissance"] ?? null,
+        $payload["id_utilisateur"]
+    ]);
 
     echo json_encode(["message" => "Profil mis à jour"]);
 }
