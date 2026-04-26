@@ -18,6 +18,7 @@
 </div>
 
 <style>
+body { font-size: 18px !important; line-height: 1.7 !important; }
 body.font-large { font-size: 120% !important; }
 body.font-xlarge { font-size: 145% !important; }
 body.contrast-high { filter: contrast(1.4) !important; }
@@ -47,8 +48,3 @@ function toggleContraste() {
 appliquerTaille();
 if (localStorage.getItem('sh_contrast') === '1') document.body.classList.add('contrast-high');
 </script>
-
-body {
-    font-size: 18px !important;
-    line-height: 1.7 !important;
-}

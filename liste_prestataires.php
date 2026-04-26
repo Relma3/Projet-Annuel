@@ -162,6 +162,7 @@ try {
                     <i class="fa-regular fa-calendar-check mr-1"></i>
                     Prochaine dispo : <?php echo $prochaineDate; ?>
                 </p>
+                <?php endif; ?>
 
                 <?php if ($nbDispos > 0): ?>
                     <a href="reserver.php?id_service=<?php echo $o['id_service']; ?>"
@@ -174,12 +175,11 @@ try {
                         Aucune disponibilité
                     </button>
                 <?php endif; ?>
- 
+
             </div>
         <?php endforeach; endif; ?>
     </div>
 </main>
- 
+
 </body>
 </html>
- 
