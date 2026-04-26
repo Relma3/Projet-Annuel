@@ -103,7 +103,18 @@ try {
                         + Ajouter un service
                     </button>
                 </div>
-
+<?php if (isset($_GET['error'])): ?>
+<div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-4 font-bold text-sm">
+    <?php
+    echo match($_GET['error']) {
+        'desc_courte'  => 'La description doit faire au moins 10 caractères.',
+        'prix_invalide'=> 'Le prix doit être supérieur à 0.',
+        'sql'          => 'Erreur base de données.',
+        default        => 'Une erreur est survenue.'
+    };
+    ?>
+</div>
+<?php endif; ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <?php if(empty($mes_services)): ?>
                         <div class="col-span-2 bg-white p-10 rounded-senior text-center border-2 border-dashed border-emerald-200">
