@@ -94,5 +94,20 @@ if (strpos($uri, "/webhook/stripe") !== false && $method === "POST") {
     exit;
 }
 
+require_once __DIR__ . "/rdv.php";
+
+if (strpos($uri, "/rdv/medecins") !== false && $method === "GET") {
+    lister_medecins(); exit;
+}
+if (strpos($uri, "/rdv") !== false && $method === "GET") {
+    lister_rdv(); exit;
+}
+if (strpos($uri, "/rdv") !== false && $method === "POST") {
+    creer_rdv(); exit;
+}
+if (preg_match("#/rdv/([0-9]+)/annuler#", $uri, $m) && $method === "PUT") {
+    annuler_rdv($m[1]); exit;
+}
+
 http_response_code(404);
 echo json_encode(["message" => "Route non trouvée"]);
