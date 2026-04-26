@@ -24,10 +24,11 @@ try {
     ";
  
     $params = [];
-    if ($id_cat_filter > 0) {
-        $sql .= " AND p.id_categorie = ?";
-        $params[] = $id_cat_filter;
-    }
+    $cat_filter = $_GET['cat'] ?? '';
+if ($cat_filter !== '') {
+    $sql .= " AND p.categorie = ?";
+    $params[] = $cat_filter;
+}
  
     $sql .= " GROUP BY s.id_service, p.id_prestataire ORDER BY nb_dispos_semaine DESC, p.note_moyenne DESC";
  
@@ -87,7 +88,7 @@ try {
             Tous
         </a>
         <?php foreach ($categories as $cat): ?>
-        <a href="?cat=<?php echo $cat['id_categorie']; ?>"
+        <a href="?cat=<?php echo urlencode($cat['nom']); ?>">
            class="px-5 py-2 rounded-full font-bold text-sm transition-all <?php echo $id_cat_filter === (int)$cat['id_categorie'] ? 'bg-corail text-white shadow-md' : 'bg-white text-slate-500 hover:bg-peche'; ?>">
             <?php echo htmlspecialchars($cat['nom']); ?>
         </a>
