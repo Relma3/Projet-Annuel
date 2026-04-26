@@ -3,7 +3,7 @@ RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 # Rediriger les appels /api/* vers api/index.php
-RewriteCond %{REQUEST_URI} ^/PA_2EME_ANNEE/api/
+RewriteCond %{REQUEST_URI} ^/api/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ api/index.php [QSA,L]
 

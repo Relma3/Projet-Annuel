@@ -1,13 +1,16 @@
 <?php
 session_start();
 require_once 'db_connect.php';
-require_once 'api/middleware.php';
-$jwt_token = generer_token($_SESSION['id'], $_SESSION['type']);
 
+// Vérification session EN PREMIER
 if(!isset($_SESSION['id']) || $_SESSION['type'] !== 'senior') {
     header('Location: connexion.php');
     exit();
 }
+
+// Token généré APRÈS
+require_once 'api/middleware.php';
+$jwt_token = generer_token($_SESSION['id'], $_SESSION['type']);
 
 $id_senior = $_SESSION['id'];
 $prenom_user = $_SESSION['prenom'] ?? 'Senior';
