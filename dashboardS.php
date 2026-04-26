@@ -138,7 +138,14 @@ $medecins = $stmtMedecins->fetchAll();
                     <div class="bg-white p-8 rounded-senior shadow-sm border-l-8 border-corail">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Prochain RDV</p>
                         <p class="text-lg font-bold">
-                            <?php echo !empty($planning) ? date('H:i - d/m', strtotime($planning[0]['date_reservation'])) : 'Aucun rendez-vous à venir'; ?>
+                            <?php 
+                                $prochain = null;
+                                if (!empty($planning)) $prochain = $planning[0]['date_reservation'];
+                                    if (!empty($rdv_medicaux) && (!$prochain || $rdv_medicaux[0]['date_rdv'] < $prochain)) {
+                                $prochain = $rdv_medicaux[0]['date_rdv'];
+                                }
+                                echo $prochain ? date('H:i - d/m', strtotime($prochain)) : 'Aucun rendez-vous à venir';
+                            ?>
                         </p>
                     </div>
                 </div>
