@@ -75,34 +75,36 @@ function supprimer_evenement($id) {
 }
 
 
-$method = $_SERVER['REQUEST_METHOD'];
-$action = $_GET['action'] ?? '';
-$id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
+if (isset($_GET['action'])) {
+    $method = $_SERVER['REQUEST_METHOD'];
+    $action = $_GET['action'] ?? '';
+    $id     = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
-switch ($action) {
-    case 'seniors':
-        lister_seniors();
-        break;
+    switch ($action) {
+        case 'seniors':
+            lister_seniors();
+            break;
 
-    case 'prestataires':
-        lister_prestataires();
-        break;
+        case 'prestataires':
+            lister_prestataires();
+            break;
 
-    case 'categories':
-        if ($method === 'GET')    { lister_categories(); }
-        elseif ($method === 'POST')   { creer_categorie(); }
-        elseif ($method === 'DELETE' && $id) { supprimer_categorie($id); }
-        else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
-        break;
+        case 'categories':
+            if ($method === 'GET')    { lister_categories(); }
+            elseif ($method === 'POST')   { creer_categorie(); }
+            elseif ($method === 'DELETE' && $id) { supprimer_categorie($id); }
+            else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
+            break;
 
-    case 'evenements':
-        if ($method === 'GET')    { lister_evenements(); }
-        elseif ($method === 'POST')   { creer_evenement(); }
-        elseif ($method === 'DELETE' && $id) { supprimer_evenement($id); }
-        else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
-        break;
+        case 'evenements':
+            if ($method === 'GET')    { lister_evenements(); }
+            elseif ($method === 'POST')   { creer_evenement(); }
+            elseif ($method === 'DELETE' && $id) { supprimer_evenement($id); }
+            else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
+            break;
 
-    default:
-        http_response_code(404);
-        echo json_encode(['erreur' => 'Action inconnue : ' . $action]);
+        default:
+            http_response_code(404);
+            echo json_encode(['erreur' => 'Action inconnue : ' . $action]);
+    }
 }
