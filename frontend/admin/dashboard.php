@@ -470,5 +470,90 @@ chargerEvenements = async function() {
 
 window.addEventListener('load', () => { chargerStats(); chargerCategories(); chargerEvenements(); });
 </script>
+<script>
+    //malikat
+
+// NAVIGATION
+function showSection(name){
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+
+    if(name === 'articles') chargerArticles();
+}
+
+// CHARGER ARTICLES
+async function chargerArticles(){
+    const res = await fetch('/api/admin/articles.php');
+    const data = await res.json();
+
+    const table = document.getElementById('table-articles');
+
+    table.innerHTML = data.map(a => `
+        <tr>
+            <td>${a.id_article}</td>
+            <td>${a.nom}</td>
+            <td>${a.prix}€</td>
+
+            <td>
+                <button onclick="toggle(${a.id_article})">
+                    ${a.disponible ? '🟢' : '🔴'}
+                </button>
+            </td>
+
+            <td>
+                <button onclick="supprimer(${a.id_article})">❌</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// TOGGLE
+async function toggle(id){
+    await fetch('/api/admin/articles.php', {
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({id_article:id})
+    });
+
+    chargerArticles();
+}
+
+// DELETE
+async function supprimer(id){
+    if(!confirm("Supprimer ?")) return;
+
+    await fetch('/api/admin/articles.php', {
+        method:'DELETE',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({id_article:id})
+    });
+
+    chargerArticles();
+}
+
+// MODAL
+function openModal(){
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+// ADD
+async function ajouterArticle(){
+
+    const nom = document.getElementById('nom').value;
+    const prix = document.getElementById('prix').value;
+    const description = document.getElementById('desc').value;
+
+    await fetch('/api/admin/articles.php', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({nom, prix, description})
+    });
+
+    document.getElementById('modal').classList.add('hidden');
+    chargerArticles();
+}
+
+</script>
+
 </body>
 </html>
