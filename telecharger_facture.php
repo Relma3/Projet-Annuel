@@ -21,7 +21,7 @@ if ($_SESSION['type'] === 'senior') {
         SELECT pdf_path FROM factures WHERE id_facture = ? AND id_prestataire = ?
     ");
     // récupère l'id_prestataire depuis la session ou BDD
-    $stmt->execute([$id, $_SESSION['id_prestataire']]);
+    $stmt->execute([$id, $_SESSION['id']]);
 } elseif ($_SESSION['type'] === 'admin') {
     $stmt = $db->prepare("SELECT pdf_path FROM factures WHERE id_facture = ?");
     $stmt->execute([$id]);

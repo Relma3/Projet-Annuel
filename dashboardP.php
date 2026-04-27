@@ -161,53 +161,50 @@ $factures_presta = $stmtFact->fetchAll();
             </div>
         </aside>
 
-        <!-- Section Mes Factures -->
-                <div class="bg-white rounded-2xl shadow p-6 mt-6">
-                    <h2 class="text-xl font-bold text-corail mb-4">
-                        <i class="fa-solid fa-file-invoice mr-2"></i>Mes relevés mensuels
-                    </h2>
-
-                    <?php if (empty($factures_presta)): ?>
-                        <p class="text-gray-400 text-sm">
-                            Aucun relevé disponible. Les relevés sont générés automatiquement
-                            le 1er de chaque mois.
-                        </p>
-                    <?php else: ?>
-                        <ul class="space-y-2">
-                            <?php foreach ($factures_presta as $f): ?>
-                                <li class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
-                                    <span class="text-sm font-medium text-gray-700">
-                                        📄 <?= htmlspecialchars($f['numero_facture']) ?>
-                                    </span>
-                                    <span class="text-xs text-gray-400 mx-4">
-                                        <?= str_pad($f['mois'], 2, '0', STR_PAD_LEFT) ?>/<?= $f['annee'] ?>
-                                        — Net : <?= number_format($f['montant_net_cents'] / 100, 2, ',', ' ') ?> €
-                                    </span>
-                                    <a href="telecharger_facture.php?id=<?= $f['id_facture'] ?>"
-                                    target="_blank"
-                                    class="text-sm text-corail font-semibold hover:underline">
-                                        Télécharger
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </div>
-
         <!-- Contenu principal -->
-        <section class="lg:col-span-3 space-y-6">
-
             <div id="dashboard" class="tab-content active space-y-6">
-                <div class="bg-emerald-600 p-10 rounded-senior shadow-lg text-white">
-                    <h1 class="text-3xl font-title font-bold">
-                        Bonjour, <?php echo htmlspecialchars($nom_pres); ?>
-                    </h1>
 
-                    <p class="opacity-90 mt-2">
-                        Vous avez <?php echo count($reservations); ?> mission(s) prévue(s).
-                    </p>
-                </div>
-            </div>
+        <div class="bg-emerald-600 p-10 rounded-senior shadow-lg text-white">
+            <h1 class="text-3xl font-title font-bold">
+                Bonjour, <?php echo htmlspecialchars($nom_pres); ?>
+            </h1>
+            <p class="opacity-90 mt-2">
+                Vous avez <?php echo count($reservations); ?> mission(s) prévue(s).
+            </p>
+        </div>
+
+        <!-- ✅ Section factures ICI -->
+        <div class="bg-white rounded-2xl shadow p-6">
+            <h2 class="text-xl font-bold text-emerald-700 mb-4">
+                <i class="fa-solid fa-file-invoice mr-2"></i>Mes relevés mensuels
+            </h2>
+            <?php if (empty($factures_presta)): ?>
+                <p class="text-gray-400 text-sm">
+                    Aucun relevé disponible. Les relevés sont générés automatiquement le 1er de chaque mois.
+                </p>
+            <?php else: ?>
+                <ul class="space-y-2">
+                    <?php foreach ($factures_presta as $f): ?>
+                        <li class="flex items-center justify-between bg-emerald-50 rounded-xl px-4 py-3">
+                            <span class="text-sm font-medium text-gray-700">
+                                📄 <?= htmlspecialchars($f['numero_facture']) ?>
+                            </span>
+                            <span class="text-xs text-gray-400 mx-4">
+                                <?= str_pad($f['mois'], 2, '0', STR_PAD_LEFT) ?>/<?= $f['annee'] ?>
+                                — Net : <?= number_format($f['montant_net_cents'] / 100, 2, ',', ' ') ?> €
+                            </span>
+                            <a href="telecharger_facture.php?id=<?= $f['id_facture'] ?>"
+                            target="_blank"
+                            class="text-sm text-emerald-600 font-semibold hover:underline">
+                                Télécharger
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
+
+    </div>
 
             <div id="services" class="tab-content space-y-6">
                 <div class="flex justify-between items-center">
