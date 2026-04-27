@@ -456,7 +456,7 @@ chargerSeniors = async function() {
 const _origPres = chargerPrestataires;
 chargerPrestataires = async function() {
   try {
-    const res = await fetch('/api/admin.php?action=prestataires', { headers: { Authorization: 'Bearer ' + token() } });
+    const res = await fetch('/api/admin.php?action=prestataires');
     const data = await res.json();
     const tbody = document.getElementById('table-pres');
     if (!Array.isArray(data)) { tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Erreur de chargement</td></tr>'; return; }
