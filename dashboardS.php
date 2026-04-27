@@ -218,7 +218,31 @@ $factures = $stmt->fetchAll();
             </div>
         </aside>
 
-        <!-- Section Mes Factures -->
+        <!-- Contenu principal -->
+        <section class="lg:col-span-3 space-y-6">
+
+            <div id="actu" class="tab-content active space-y-6">
+                <div class="bg-corail p-10 rounded-senior shadow-lg text-white">
+                    <h1 class="text-3xl font-title font-bold">
+                        Ravi de vous voir, <?php echo htmlspecialchars($prenom_user); ?>
+                    </h1>
+                    <p class="opacity-80 mt-2 italic">
+                        Votre espace personnel Silver Happy est prêt.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-8 rounded-senior shadow-sm border-l-8 border-corail">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                            Prochain RDV
+                        </p>
+                        <p class="text-lg font-bold">
+                            <?php echo $prochain ? date('H:i - d/m', strtotime($prochain)) : 'Aucun rendez-vous à venir'; ?>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section Mes Factures -->
         <div class="bg-white rounded-2xl shadow p-6 mt-6">
             <h2 class="text-xl font-bold text-corail mb-4">
                 <i class="fa-solid fa-file-invoice mr-2"></i>Mes factures
@@ -246,30 +270,6 @@ $factures = $stmt->fetchAll();
                 </ul>
             <?php endif; ?>
         </div>
-
-        <!-- Contenu principal -->
-        <section class="lg:col-span-3 space-y-6">
-
-            <div id="actu" class="tab-content active space-y-6">
-                <div class="bg-corail p-10 rounded-senior shadow-lg text-white">
-                    <h1 class="text-3xl font-title font-bold">
-                        Ravi de vous voir, <?php echo htmlspecialchars($prenom_user); ?>
-                    </h1>
-                    <p class="opacity-80 mt-2 italic">
-                        Votre espace personnel Silver Happy est prêt.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-8 rounded-senior shadow-sm border-l-8 border-corail">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                            Prochain RDV
-                        </p>
-                        <p class="text-lg font-bold">
-                            <?php echo $prochain ? date('H:i - d/m', strtotime($prochain)) : 'Aucun rendez-vous à venir'; ?>
-                        </p>
-                    </div>
-                </div>
             </div>
 
             <div id="planning" class="tab-content space-y-6">
