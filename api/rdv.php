@@ -71,3 +71,13 @@ function lister_medecins() {
     ");
     echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
+
+
+//annuler un evenement 
+function annuler_inscription_evenement($id_evenement) {
+    $payload = verifier_token();
+    $pdo = getDB();
+    $pdo->prepare("DELETE FROM inscription_evenement WHERE id_senior = ? AND id_evenement = ?")
+        ->execute([$payload["id_utilisateur"], $id_evenement]);
+    echo json_encode(["message" => "Inscription annulée"]);
+}
