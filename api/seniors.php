@@ -60,5 +60,7 @@ function supprimer_compte_senior() {
     $pdo = getDB();
     $pdo->prepare("DELETE FROM utilisateur WHERE id_utilisateur = ?")
         ->execute([$payload["id_utilisateur"]]);
+    http_response_code(200);
     echo json_encode(["message" => "Compte supprimé"]);
+    exit;
 }
