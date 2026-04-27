@@ -281,7 +281,7 @@ class PdfGenerator
 
         $stmt = $pdo->prepare("
             SELECT r.*, s.nom AS senior_nom, s.prenom AS senior_prenom,
-                   srv.nom_service, srv.tarif_horaire
+                   srv.nom_service, srv.prix
             FROM reservation r
             JOIN senior s ON s.id_senior = r.id_senior
             LEFT JOIN services srv ON srv.id_prestataire = r.id_prestataire
@@ -299,7 +299,7 @@ class PdfGenerator
         $lignes = '';
 
         foreach ($reservations as $reservation) {
-            $tarif = (float) ($reservation['tarif_horaire'] ?? 30);
+            $tarif = (float) ($reservation['prix'] ?? 30);
             $montantBrut += $tarif;
 
             $lignes .= '
