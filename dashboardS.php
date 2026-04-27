@@ -665,15 +665,20 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
 
         async function supprimerCompte() {
             if (!confirm('Êtes-vous sûr ? Cette action est irréversible.')) return;
-            const res = await fetch('/api/seniors/me', {
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            if (res.ok) {
-                localStorage.removeItem('token');
-                window.location.href = 'index.php?compte=supprime';
-            } else {
-                alert('Erreur lors de la suppression du compte.');
+            try {
+                const res = await fetch('/api/seniors/me', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'index.php?compte=supprime';
+                } else {
+                    const data = await res.json();
+                    alert('Erreur : ' + (data.message || res.status));
+                }
+            } catch (e) {
+                alert('Erreur réseau : ' + e.message);
             }
         }
     </script>
