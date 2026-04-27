@@ -327,6 +327,7 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
                                 <th class="p-6">Date</th>
                                 <th class="p-6">Événement</th>
                                 <th class="p-6">Lieu</th>
+                                <th class="p-6">Action</th>
                             </tr>
                         </thead>
 
@@ -348,6 +349,15 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
                                         </td>
                                         <td class="p-6 italic text-slate-400">
                                             <?php echo htmlspecialchars($e['lieu'] ?? '—'); ?>
+                                        </td>
+                                        <td class="p-6 italic text-slate-400">
+                                            <?php echo htmlspecialchars($e['lieu'] ?? '—'); ?>
+                                        </td>
+                                        <td class="p-6">
+                                            <button onclick="annulerEvenement(<?php echo (int)$e['id']; ?>)"
+                                                class="text-xs text-red-400 hover:text-red-600 font-bold">
+                                                Annuler
+                                            </button>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -638,6 +648,15 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
             if (res.ok) {
                 location.reload();
             }
+        }
+
+        async function annulerEvenement(id_evenement) {
+            if (!confirm('Confirmer l\'annulation de cet événement ?')) return;
+            const res = await fetch('/api/rdv/evenement/' + id_evenement + '/annuler', {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) location.reload();
         }
     </script>
 
