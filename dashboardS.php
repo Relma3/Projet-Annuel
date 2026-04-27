@@ -670,12 +670,11 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
                     method: 'DELETE',
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
-                if (res.ok) {
+                if (res.status === 200) {
                     localStorage.removeItem('token');
                     window.location.href = 'index.php?compte=supprime';
                 } else {
-                    const data = await res.json();
-                    alert('Erreur : ' + (data.message || res.status));
+                    alert('Erreur lors de la suppression.');
                 }
             } catch (e) {
                 alert('Erreur réseau : ' + e.message);
