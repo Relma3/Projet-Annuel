@@ -166,7 +166,7 @@ class PdfGenerator
             SELECT p.*, u.email, s.nom, s.prenom, s.adresse, s.ville
             FROM paiements p
             JOIN utilisateur u ON u.id_utilisateur = p.id_payeur
-            JOIN senior s ON s.id_utilisateur = u.id_utilisateur
+            JOIN senior s ON s.id_senior = p.id_payeur
             WHERE p.id_paiement = ?
         ");
         $stmt->execute([$id_paiement]);
@@ -269,7 +269,7 @@ class PdfGenerator
         $stmt = $pdo->prepare("
             SELECT p.*, u.email
             FROM prestataire p
-            JOIN utilisateur u ON u.id_utilisateur = p.id_utilisateur
+            JOIN utilisateur u ON u.id_utilisateur = p.id_prestataire
             WHERE p.id_prestataire = ?
         ");
         $stmt->execute([$id_prestataire]);
