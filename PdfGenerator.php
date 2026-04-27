@@ -247,7 +247,7 @@ class PdfGenerator
                 pdf_path,
                 id_paiement
             )
-            VALUES (?, 0, ?, ?, ?, ?, 'generee', ?, ?)
+            VALUES (?, NULL, ?, ?, ?, ?, 'generee', ?, ?)
             ON DUPLICATE KEY UPDATE pdf_path = VALUES(pdf_path)
         ");
 
