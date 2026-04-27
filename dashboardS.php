@@ -91,6 +91,15 @@ if (!empty($rdv_medicaux) && (!$prochain || $rdv_medicaux[0]['date_rdv'] < $proc
 if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date_event'] < $prochain)) {
     $prochain = $evenements_inscrits[0]['date_event'];
 }
+// Récupérer les factures du senior connecté
+$stmt = $pdo->prepare("
+    SELECT f.* FROM factures f
+    JOIN paiements p ON p.id_paiement = f.id_paiement
+    WHERE p.id_payeur = ?
+    ORDER BY f.date_generation DESC
+");
+$stmt->execute([$_SESSION['id']]);
+$factures = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -208,6 +217,35 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
                 </button>
             </div>
         </aside>
+
+        <!-- Section Mes Factures -->
+        <div class="bg-white rounded-2xl shadow p-6 mt-6">
+            <h2 class="text-xl font-bold text-corail mb-4">
+                <i class="fa-solid fa-file-invoice mr-2"></i>Mes factures
+            </h2>
+
+            <?php if (empty($factures)): ?>
+                <p class="text-gray-400 text-sm">Aucune facture disponible pour le moment.</p>
+            <?php else: ?>
+                <ul class="space-y-2">
+                    <?php foreach ($factures as $f): ?>
+                        <li class="flex items-center justify-between bg-peche-pale rounded-xl px-4 py-3">
+                            <span class="text-sm font-medium text-gray-700">
+                                📄 <?= htmlspecialchars($f['numero_facture']) ?>
+                            </span>
+                            <span class="text-xs text-gray-400 mx-4">
+                                <?= date('d/m/Y', strtotime($f['date_generation'])) ?>
+                            </span>
+                            <a href="telecharger_facture.php?id=<?= $f['id_facture'] ?>"
+                            target="_blank"
+                            class="text-sm text-corail font-semibold hover:underline">
+                                Télécharger
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
 
         <!-- Contenu principal -->
         <section class="lg:col-span-3 space-y-6">

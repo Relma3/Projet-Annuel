@@ -46,6 +46,15 @@ try {
 } catch (PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }
+
+// Récupérer les factures du prestataire
+$stmtFact = $pdo->prepare("
+    SELECT * FROM factures
+    WHERE id_prestataire = ?
+    ORDER BY annee DESC, mois DESC
+");
+$stmtFact->execute([$id_pres]);
+$factures_presta = $stmtFact->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -151,6 +160,39 @@ try {
                 </button>
             </div>
         </aside>
+
+        <!-- Section Mes Factures -->
+                <div class="bg-white rounded-2xl shadow p-6 mt-6">
+                    <h2 class="text-xl font-bold text-corail mb-4">
+                        <i class="fa-solid fa-file-invoice mr-2"></i>Mes relevés mensuels
+                    </h2>
+
+                    <?php if (empty($factures_presta)): ?>
+                        <p class="text-gray-400 text-sm">
+                            Aucun relevé disponible. Les relevés sont générés automatiquement
+                            le 1er de chaque mois.
+                        </p>
+                    <?php else: ?>
+                        <ul class="space-y-2">
+                            <?php foreach ($factures_presta as $f): ?>
+                                <li class="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+                                    <span class="text-sm font-medium text-gray-700">
+                                        📄 <?= htmlspecialchars($f['numero_facture']) ?>
+                                    </span>
+                                    <span class="text-xs text-gray-400 mx-4">
+                                        <?= str_pad($f['mois'], 2, '0', STR_PAD_LEFT) ?>/<?= $f['annee'] ?>
+                                        — Net : <?= number_format($f['montant_net_cents'] / 100, 2, ',', ' ') ?> €
+                                    </span>
+                                    <a href="telecharger_facture.php?id=<?= $f['id_facture'] ?>"
+                                    target="_blank"
+                                    class="text-sm text-corail font-semibold hover:underline">
+                                        Télécharger
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
 
         <!-- Contenu principal -->
         <section class="lg:col-span-3 space-y-6">
