@@ -41,6 +41,11 @@
 <body class="bg-sable-doux text-slate-800">
     <?php include 'accessibilite.php'; ?>
 
+    <?php if (isset($_GET['compte']) && $_GET['compte'] === 'supprime'): ?>
+    <div class="bg-red-50 text-red-600 text-center py-4 font-bold">
+        Votre compte a bien été supprimé. À bientôt !
+    </div>
+    <?php endif; ?>
     <nav class="fixed w-full bg-white/80 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-4">
             <img src="logo.png" alt="Silver Happy" class="h-12">

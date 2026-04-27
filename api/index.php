@@ -38,6 +38,9 @@ if (strpos($uri, "/admin/prestataires") !== false && $method === "GET") {
     exit; 
     }
 
+if (strpos($uri, "/seniors/me") !== false && $method === "DELETE") {
+    supprimer_compte_senior(); exit;
+}
 if (strpos($uri, "/seniors/me") !== false && $method === "GET") {
     get_profil_senior();
     exit;
@@ -46,6 +49,7 @@ if (strpos($uri, "/seniors/me") !== false && $method === "PUT") {
     modifier_profil_senior();
     exit;
 }
+
 if (strpos($uri, "/paiements/creer") !== false && $method === "POST") {
     creer_paiement();
     exit;

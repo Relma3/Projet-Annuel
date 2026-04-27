@@ -664,13 +664,16 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
         }
 
         async function supprimerCompte() {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) return;
+            if (!confirm('Êtes-vous sûr ? Cette action est irréversible.')) return;
             const res = await fetch('/api/seniors/me', {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             });
             if (res.ok) {
-                window.location.href = 'logout.php';
+                localStorage.removeItem('token');
+                window.location.href = 'index.php?compte=supprime';
+            } else {
+                alert('Erreur lors de la suppression du compte.');
             }
         }
     </script>
