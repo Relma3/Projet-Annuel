@@ -3,5 +3,5 @@ require_once 'db_connect.php';
 require_once 'PdfGenerator.php';
 
 $pdf = new PdfGenerator();
-$chemin = $pdf->genererFacturePrestataire(getDB(), 1, 4, 2026);
+$chemin = $pdf->genererFacturePrestataire(getDB(), 100, 4, 2026);
 echo 'PDF créé : ' . $chemin;
