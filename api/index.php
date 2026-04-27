@@ -112,6 +112,9 @@ if (preg_match("#/rdv/([0-9]+)/annuler#", $uri, $m) && $method === "PUT") {
 if (preg_match("#/rdv/evenement/([0-9]+)/annuler#", $uri, $m) && $method === "DELETE") {
     annuler_inscription_evenement($m[1]); exit;
 }
+if (strpos($uri, "/seniors/me") !== false && $method === "DELETE") {
+    supprimer_compte_senior(); exit;
+}
 
 http_response_code(404);
 echo json_encode(["message" => "Route non trouvée"]);

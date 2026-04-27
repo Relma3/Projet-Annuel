@@ -547,6 +547,13 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
                     <button type="submit" class="bg-corail text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">
                         Enregistrer les modifications
                     </button>
+                    <button type="submit" class="bg-corail text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">
+                        Enregistrer les modifications
+                    </button>
+                    <button type="button" onclick="supprimerCompte()"
+                        class="bg-red-50 text-red-500 px-10 py-4 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition-all">
+                        Supprimer mon compte
+                    </button>
                 </form>
             </div>
 
@@ -657,6 +664,17 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
                 headers: { 'Authorization': 'Bearer ' + token }
             });
             if (res.ok) location.reload();
+        }
+
+        async function supprimerCompte() {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) return;
+            const res = await fetch('/api/seniors/me', {
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                window.location.href = 'logout.php';
+            }
         }
     </script>
 
