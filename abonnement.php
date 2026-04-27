@@ -10,9 +10,16 @@ require_once 'db_connect.php';
 
 $db = getDB();
 
-$stmt = $db->prepare("SELECT * FROM senior WHERE id_utilisateur = ?");
+$stmt = $db->prepare("
+    SELECT *
+    FROM senior
+    WHERE id_utilisateur = ?
+");
 $stmt->execute([$_SESSION['id']]);
+
 $senior = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$stripe_public_key = getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique";
 ?>
 
 <!DOCTYPE html>
@@ -20,133 +27,198 @@ $senior = $stmt->fetch(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <title>Mon Abonnement - Silver Happy</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://js.stripe.com/v3/"></script>
 </head>
+
 <body class="bg-gray-50 min-h-screen" style="font-size:18px;">
     <?php include 'accessibilite.php'; ?>
 
-<nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
-    <span class="text-orange-500 font-bold text-2xl">Silver Happy</span>
-    <div class="flex gap-4">
-        <a href="dashboardS.php" class="text-gray-600">Tableau de bord</a>
-        <a href="logout.php" class="text-red-400">Déconnexion</a>
-    </div>
-</nav>
+    <!-- Navigation -->
+    <nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <span class="text-orange-500 font-bold text-2xl">
+            Silver Happy
+        </span>
 
-<div class="max-w-3xl mx-auto mt-10 px-4">
-    <h1 class="text-3xl font-bold text-orange-500 mb-2">Mon Abonnement</h1>
-    <p class="text-gray-500 mb-8">Gérez votre adhésion Silver Happy</p>
+        <div class="flex gap-4">
+            <a href="dashboardS.php" class="text-gray-600">
+                Tableau de bord
+            </a>
 
-    <?php if (isset($_GET['succes'])) { ?>
-        <div class="bg-green-100 text-green-700 p-4 rounded-xl mb-6 text-lg">
-            Paiement effectué ! Votre abonnement est actif.
+            <a href="logout.php" class="text-red-400">
+                Déconnexion
+            </a>
         </div>
-    <?php } ?>
+    </nav>
 
-    <div class="bg-white rounded-2xl shadow p-6 mb-8">
-        <h2 class="text-xl font-bold mb-4">Statut actuel</h2>
-        <div class="flex items-center gap-4">
-            <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold text-lg">
-                Membre actif
-            </span>
-            <span class="text-gray-500">Compte Silver Happy</span>
-        </div>
-    </div>
+    <!-- Contenu principal -->
+    <main class="max-w-3xl mx-auto mt-10 px-4">
+        <h1 class="text-3xl font-bold text-orange-500 mb-2">
+            Mon Abonnement
+        </h1>
 
-    <h2 class="text-2xl font-bold mb-4">Renouveler votre abonnement</h2>
+        <p class="text-gray-500 mb-8">
+            Gérez votre adhésion Silver Happy
+        </p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <?php if (isset($_GET['succes'])): ?>
+            <div class="bg-green-100 text-green-700 p-4 rounded-xl mb-6 text-lg">
+                Paiement effectué ! Votre abonnement est actif.
+            </div>
+        <?php endif; ?>
 
-        <div class="bg-white rounded-2xl shadow p-8 border-2 border-gray-200">
-            <h3 class="text-xl font-bold mb-2">Mensuel</h3>
-            <p class="text-4xl font-bold text-orange-500 mb-2">4€ <span class="text-lg text-gray-400 font-normal">/ mois</span></p>
-            <ul class="text-gray-600 space-y-2 mb-6 text-base">
-                <li>Accès à tous les services</li>
-                <li>Résiliable à tout moment</li>
-                <li>Support prioritaire</li>
-            </ul>
-            <button onclick="payer(400, 'mensuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
-                Choisir Mensuel
+        <section class="bg-white rounded-2xl shadow p-6 mb-8">
+            <h2 class="text-xl font-bold mb-4">
+                Statut actuel
+            </h2>
+
+            <div class="flex items-center gap-4">
+                <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold text-lg">
+                    Membre actif
+                </span>
+
+                <span class="text-gray-500">
+                    Compte Silver Happy
+                </span>
+            </div>
+        </section>
+
+        <!-- Offres d'abonnement -->
+        <section>
+            <h2 class="text-2xl font-bold mb-4">
+                Renouveler votre abonnement
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <article class="bg-white rounded-2xl shadow p-8 border-2 border-gray-200">
+                    <h3 class="text-xl font-bold mb-2">
+                        Mensuel
+                    </h3>
+
+                    <p class="text-4xl font-bold text-orange-500 mb-2">
+                        4€
+                        <span class="text-lg text-gray-400 font-normal">
+                            / mois
+                        </span>
+                    </p>
+
+                    <ul class="text-gray-600 space-y-2 mb-6 text-base">
+                        <li>Accès à tous les services</li>
+                        <li>Résiliable à tout moment</li>
+                        <li>Support prioritaire</li>
+                    </ul>
+
+                    <button onclick="payer(400, 'mensuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
+                        Choisir Mensuel
+                    </button>
+                </article>
+
+                <article class="bg-orange-50 rounded-2xl shadow p-8 border-2 border-orange-400">
+                    <h3 class="text-xl font-bold mb-2">
+                        Annuel
+                    </h3>
+
+                    <p class="text-4xl font-bold text-orange-500 mb-2">
+                        40€
+                        <span class="text-lg text-gray-400 font-normal">
+                            / an
+                        </span>
+                    </p>
+
+                    <ul class="text-gray-600 space-y-2 mb-6 text-base">
+                        <li>2 mois offerts</li>
+                        <li>Accès à tous les services</li>
+                        <li>Support prioritaire</li>
+                    </ul>
+
+                    <button onclick="payer(4000, 'annuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
+                        Choisir Annuel
+                    </button>
+                </article>
+            </div>
+        </section>
+
+        <!-- Paiement -->
+        <section id="zone-paiement" class="hidden bg-white rounded-2xl shadow p-6">
+            <h3 class="text-xl font-bold mb-4">
+                Informations de paiement
+            </h3>
+
+            <div id="card-element" class="border-2 border-gray-200 rounded-xl p-4 mb-4"></div>
+            <div id="card-errors" class="text-red-500 mb-4"></div>
+
+            <button id="btn-payer" class="w-full bg-green-500 text-white text-xl font-bold py-4 rounded-xl">
+                Confirmer le paiement
             </button>
-        </div>
+        </section>
+    </main>
 
-        <div class="bg-orange-50 rounded-2xl shadow p-8 border-2 border-orange-400">
-            <h3 class="text-xl font-bold mb-2">Annuel</h3>
-            <p class="text-4xl font-bold text-orange-500 mb-2">40€ <span class="text-lg text-gray-400 font-normal">/ an</span></p>
-            <ul class="text-gray-600 space-y-2 mb-6 text-base">
-                <li>2 mois offerts</li>
-                <li>Accès à tous les services</li>
-                <li>Support prioritaire</li>
-            </ul>
-            <button onclick="payer(4000, 'annuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
-                Choisir Annuel
-            </button>
-        </div>
+    <!-- Scripts -->
+    <script>
+        const stripe = Stripe(<?php echo json_encode($stripe_public_key); ?>);
+        const elements = stripe.elements();
+        const card = elements.create('card');
 
-    </div>
+        let montantChoisi = 0;
+        let typeChoisi = '';
+        let carteMontee = false;
 
-    <div id="zone-paiement" class="hidden bg-white rounded-2xl shadow p-6">
-        <h3 class="text-xl font-bold mb-4">Informations de paiement</h3>
-        <div id="card-element" class="border-2 border-gray-200 rounded-xl p-4 mb-4"></div>
-        <div id="card-errors" class="text-red-500 mb-4"></div>
-        <button id="btn-payer" class="w-full bg-green-500 text-white text-xl font-bold py-4 rounded-xl">
-            Confirmer le paiement
-        </button>
-    </div>
-</div>
+        function payer(montant, type) {
+            montantChoisi = montant;
+            typeChoisi = type;
 
-<script>
-const stripe = Stripe('<?php echo getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique"; ?>');
-const elements = stripe.elements();
-const card = elements.create('card');
+            document.getElementById('zone-paiement').classList.remove('hidden');
 
-let montantChoisi = 0;
-let typeChoisi = '';
-
-function payer(montant, type) {
-    montantChoisi = montant;
-    typeChoisi = type;
-
-    document.getElementById('zone-paiement').classList.remove('hidden');
-    card.mount('#card-element');
-}
-
-document.getElementById('btn-payer').addEventListener('click', async function () {
-    const btn = document.getElementById('btn-payer');
-    btn.textContent = 'Traitement...';
-    btn.disabled = true;
-
-    const res = await fetch('/api/paiements/creer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ montant: montantChoisi, type: typeChoisi })
-    });
-
-    const data = await res.json();
-
-    if (!data.client_secret) {
-        document.getElementById('card-errors').textContent = 'Erreur lors du paiement';
-        btn.textContent = 'Confirmer le paiement';
-        btn.disabled = false;
-        return;
-    }
-
-    const result = await stripe.confirmCardPayment(data.client_secret, {
-        payment_method: {
-            card: card
+            if (!carteMontee) {
+                card.mount('#card-element');
+                carteMontee = true;
+            }
         }
-    });
 
-    if (result.error) {
-        document.getElementById('card-errors').textContent = result.error.message;
-        btn.textContent = 'Confirmer le paiement';
-        btn.disabled = false;
-    } else {
-        window.location.href = '/abonnement.php?succes=1';
-    }
-});
-</script>
+        document.getElementById('btn-payer').addEventListener('click', async function () {
+            const btn = document.getElementById('btn-payer');
+            const zoneErreur = document.getElementById('card-errors');
 
+            zoneErreur.textContent = '';
+            btn.textContent = 'Traitement...';
+            btn.disabled = true;
+
+            const res = await fetch('/api/paiements/creer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    montant: montantChoisi,
+                    type: typeChoisi
+                })
+            });
+
+            const data = await res.json();
+
+            if (!data.client_secret) {
+                zoneErreur.textContent = 'Erreur lors du paiement';
+                btn.textContent = 'Confirmer le paiement';
+                btn.disabled = false;
+                return;
+            }
+
+            const result = await stripe.confirmCardPayment(data.client_secret, {
+                payment_method: {
+                    card: card
+                }
+            });
+
+            if (result.error) {
+                zoneErreur.textContent = result.error.message;
+                btn.textContent = 'Confirmer le paiement';
+                btn.disabled = false;
+                return;
+            }
+
+            window.location.href = '/abonnement.php?succes=1';
+        });
+    </script>
 </body>
 </html>
