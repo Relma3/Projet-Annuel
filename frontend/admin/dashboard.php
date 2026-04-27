@@ -196,31 +196,36 @@ tailwind.config = {
       </div>
     </div>
 
-    <div id="section-prestataires" class="section">
-      <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-        <div class="p-6 border-b border-slate-700 flex justify-between items-center">
-          <h2 class="font-bold text-white">Liste des prestataires</h2>
-          <button onclick="chargerPrestataires()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all">
-            <i class="fa-solid fa-rotate-right mr-2"></i>Actualiser
-          </button>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="bg-slate-700/50 text-slate-400 text-xs uppercase tracking-wider">
-                <th class="text-left px-6 py-3">ID</th>
-                <th class="text-left px-6 py-3">Email</th>
-                <th class="text-left px-6 py-3">Type</th>
-                <th class="text-left px-6 py-3">Inscrit le</th>
-              </tr>
-            </thead>
-            <tbody id="table-pres" class="divide-y divide-slate-700">
-              <tr><td colspan="4" class="px-6 py-8 text-center text-slate-400">Cliquez sur Actualiser pour charger</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+   <!-- Prestataires section malikat -->
+   <div id="section-prestataires" class="section">
+
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+
+    <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+      <h2 class="font-bold text-white">Gestion des prestataires</h2>
+
+      <button onclick="chargerPrestataires()" class="bg-blue-500 px-4 py-2 rounded-xl">
+        Actualiser
+      </button>
     </div>
+
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="table-prestataires"></tbody>
+    </table>
+
+  </div>
+
+</div>
+<!-- fin prestataires section malikat -->
 
     <div id="section-categories" class="section">
       <div class="grid grid-cols-3 gap-6">
@@ -355,6 +360,8 @@ function showSection(name) {
   document.getElementById('page-sub').textContent = titles[name][1];
   if (name === 'overview') chargerStats();
   if (name === 'articles') chargerArticles();
+  if (name === 'prestataires') chargerPrestataires();
+  
 }
 
 function deconnexion() {
@@ -589,6 +596,56 @@ async function ajouterArticle(){
 
     document.getElementById('modal').classList.add('hidden');
     chargerArticles();
+}
+async function chargerPrestataires(){
+
+    const res = await fetch('/api/admin/prestataires.php');
+    const data = await res.json();
+
+    const table = document.getElementById('table-prestataires');
+
+    table.innerHTML = data.map(p => `
+        <tr class="border-b border-slate-700">
+
+            <td class="p-3">${p.id_utilisateur}</td>
+            <td class="p-3">${p.email}</td>
+
+            <td class="p-3">
+                ${p.est_valide == 1 
+                    ? '<span class="text-green-400">Validé</span>' 
+                    : '<span class="text-orange-400">En attente</span>'}
+            </td>
+
+            <td class="p-3 flex gap-2">
+
+                <button onclick="validerPrestataire(${p.id_utilisateur},1)"
+                    class="bg-green-500 px-3 py-1 rounded">
+                    ✔
+                </button>
+
+                <button onclick="validerPrestataire(${p.id_utilisateur},0)"
+                    class="bg-red-500 px-3 py-1 rounded">
+                    ✖
+                </button>
+
+            </td>
+
+        </tr>
+    `).join('');
+}
+
+async function validerPrestataire(id, etat){
+
+    await fetch('/api/admin/prestataires.php', {
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            id_utilisateur:id,
+            est_valide:etat
+        })
+    });
+
+    chargerPrestataires();
 }
 // FIN MALIKAT
 </script>
