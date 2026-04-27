@@ -54,12 +54,11 @@ try {
     $conseils = $stmtConseils->fetchAll();
 
     $stmtRdv = $pdo->prepare("
-        SELECT r.*, p.nom AS medecin_nom, p.prenom AS medecin_prenom, p.specialite
-        FROM rdv_medical r
-        JOIN prestataire p ON r.id_prestataire = p.id_prestataire
-        WHERE r.id_senior = ?
-          AND r.statut != 'annule'
-        ORDER BY r.date_rdv ASC
+    SELECT r.*, p.nom as medecin_nom, p.prenom as medecin_prenom, p.specialite
+    FROM rdv_medical r
+    JOIN prestataire p ON r.id_prestataire = p.id_prestataire
+    WHERE r.id_senior = ? AND r.statut != 'annule' AND r.date_rdv >= NOW()
+    ORDER BY r.date_rdv ASC
     ");
     $stmtRdv->execute([$id_senior]);
     $rdv_medicaux = $stmtRdv->fetchAll();
@@ -93,9 +92,9 @@ if (!empty($planning)) {
     $prochain = $planning[0]['date_reservation'];
 }
 
-if (!empty($rdv_medicaux) && (!$prochain || $rdv_medicaux[0]['date_rdv'] < $prochain)) {
-    $prochain = $rdv_medicaux[0]['date_rdv'];
-}
+if (!empty($rdv_medicaux) && (!$prochain || $rdv_medicaux[0]['date_rdv'] < $prochain))
+    if ($rdv_medicaux[0]['date_rdv'] >= date('Y-m-d H:i:s'))
+        $prochain = $rdv_medicaux[0]['date_rdv'];
 
 if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date_event'] < $prochain)) {
     $prochain = $evenements_inscrits[0]['date_event'];
