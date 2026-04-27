@@ -21,14 +21,14 @@ try {
         JOIN prestataire p ON r.id_prestataire = p.id_prestataire
         WHERE r.id_senior = ? 
           AND r.statut IN ('en_attente', 'confirme')
+          AND r.date_reservation >= NOW()
         ORDER BY r.date_reservation ASC
     ");
     $stmtPlan->execute([$id_senior]);
     $planning = $stmtPlan->fetchAll();
 
     $stmtCmd = $pdo->prepare("
-        SELECT *
-        FROM commandes
+        SELECT * FROM commandes
         WHERE id_senior = ?
         ORDER BY created_at DESC
     ");
@@ -36,38 +36,31 @@ try {
     $commandes = $stmtCmd->fetchAll();
 
     $stmtProfil = $pdo->prepare("
-        SELECT *
-        FROM senior
-        WHERE id_senior = ?
+        SELECT * FROM senior WHERE id_senior = ?
     ");
     $stmtProfil->execute([$id_senior]);
     $profil = $stmtProfil->fetch();
 
     $stmtConseils = $pdo->prepare("
-        SELECT *
-        FROM conseil
-        WHERE visible = 1
-        ORDER BY created_at DESC
-        LIMIT 6
+        SELECT * FROM conseil WHERE visible = 1
+        ORDER BY created_at DESC LIMIT 6
     ");
     $stmtConseils->execute();
     $conseils = $stmtConseils->fetchAll();
 
     $stmtRdv = $pdo->prepare("
-    SELECT r.*, p.nom as medecin_nom, p.prenom as medecin_prenom, p.specialite
-    FROM rdv_medical r
-    JOIN prestataire p ON r.id_prestataire = p.id_prestataire
-    WHERE r.id_senior = ? AND r.statut != 'annule' AND r.date_rdv >= NOW()
-    ORDER BY r.date_rdv ASC
+        SELECT r.*, p.nom as medecin_nom, p.prenom as medecin_prenom, p.specialite
+        FROM rdv_medical r
+        JOIN prestataire p ON r.id_prestataire = p.id_prestataire
+        WHERE r.id_senior = ? AND r.statut != 'annule' AND r.date_rdv >= NOW()
+        ORDER BY r.date_rdv ASC
     ");
     $stmtRdv->execute([$id_senior]);
     $rdv_medicaux = $stmtRdv->fetchAll();
 
     $stmtMedecins = $pdo->query("
         SELECT id_prestataire, nom, prenom, specialite
-        FROM prestataire
-        WHERE statut = 'valide'
-          AND est_medecin = 1
+        FROM prestataire WHERE statut = 'valide' AND est_medecin = 1
     ");
     $medecins = $stmtMedecins->fetchAll();
 
@@ -75,8 +68,7 @@ try {
         SELECT e.id, e.titre, e.date_debut AS date_event, e.lieu, 'evenement' AS type_rdv
         FROM inscription_evenement ie
         JOIN evenements e ON ie.id_evenement = e.id
-        WHERE ie.id_senior = ?
-          AND e.date_debut >= NOW()
+        WHERE ie.id_senior = ? AND e.date_debut >= NOW()
         ORDER BY e.date_debut ASC
     ");
     $stmtEvents->execute([$id_senior]);
