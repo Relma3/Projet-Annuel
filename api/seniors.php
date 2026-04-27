@@ -54,3 +54,11 @@ function modifier_profil_senior() {
 
     echo json_encode(["message" => "Profil mis à jour"]);
 }
+
+function supprimer_compte_senior() {
+    $payload = verifier_token();
+    $pdo = getDB();
+    $pdo->prepare("DELETE FROM utilisateur WHERE id_utilisateur = ?")
+        ->execute([$payload["id_utilisateur"]]);
+    echo json_encode(["message" => "Compte supprimé"]);
+}
