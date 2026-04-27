@@ -78,6 +78,10 @@ tailwind.config = {
     <a onclick="showSection('evenements')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
       <i class="fa-solid fa-calendar-days w-4 text-center"></i> Événements
     </a>
+
+    <a onclick="showSection('articles')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
+      <i class="fa-solid fa-box w-4 text-center"></i> Articles
+    </a>
   </nav>
 
   <div class="p-4 border-t border-slate-700">
@@ -294,6 +298,36 @@ tailwind.config = {
       </div>
     </div>
 
+    <!-- malikat section articles -->
+  <div id="section-articles" class="section">
+   <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+
+    <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+      <h2 class="font-bold text-white">Gestion des articles</h2>
+
+      <button onclick="openModal()" class="bg-orange-corail px-4 py-2 rounded-xl">
+         Ajouter
+      </button>
+    </div>
+
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Prix</th>
+          <th>Dispo</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="table-articles"></tbody>
+    </table>
+
+  </div>
+</div>
+<!-- fin malikat section artiicles -->
+
   </div>
 </main>
 
@@ -309,6 +343,7 @@ const titles = {
   prestataires: ['Prestataires', 'Gestion des prestataires partenaires'],
   categories: ['Catégories', 'Gestion des catégories de prestations'],
   evenements: ['Événements', 'Gestion des événements Silver Happy'],
+  articles: ['Articles', 'Gestion des articles']
 };
 
 function showSection(name) {
@@ -319,6 +354,7 @@ function showSection(name) {
   document.getElementById('page-title').textContent = titles[name][0];
   document.getElementById('page-sub').textContent = titles[name][1];
   if (name === 'overview') chargerStats();
+  if (name === 'articles') chargerArticles();
 }
 
 function deconnexion() {
@@ -341,6 +377,8 @@ async function chargerStats() {
       fetch('/api/admin.php?action=prestataires', { headers: { Authorization: 'Bearer ' + token() } }).then(r => r.json()),
       fetch('/api/admin.php?action=categories', { headers: { Authorization: 'Bearer ' + token() } }).then(r => r.json()),
       fetch('/api/admin.php?action=evenements', { headers: { Authorization: 'Bearer ' + token() } }).then(r => r.json()),
+      fetch('/api/admin.php?action=articles', { headers: { Authorization: 'Bearer ' + token() } }).then(r => r.json())
+
     ]);
     const ns = Array.isArray(s) ? s.length : 0;
     const np = Array.isArray(p) ? p.length : 0;
@@ -474,13 +512,13 @@ window.addEventListener('load', () => { chargerStats(); chargerCategories(); cha
     //malikat
 
 // NAVIGATION
-function showSection(name){
+/*function showSection(name){
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('section-' + name).classList.add('active');
 
     if(name === 'articles') chargerArticles();
 }
-
+*/
 // CHARGER ARTICLES
 async function chargerArticles(){
     const res = await fetch('/api/admin/articles.php');
@@ -552,8 +590,25 @@ async function ajouterArticle(){
     document.getElementById('modal').classList.add('hidden');
     chargerArticles();
 }
-
+// FIN MALIKAT
 </script>
+<!-- malikat -->
+<div id="modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
+  <div class="bg-slate-800 p-6 rounded-2xl w-96 border border-slate-700">
+
+    <h2 class="text-white font-bold mb-4">Ajouter un article</h2>
+
+    <input id="nom" class="w-full mb-2 p-2 bg-slate-700 rounded" placeholder="Nom">
+    <input id="prix" class="w-full mb-2 p-2 bg-slate-700 rounded" placeholder="Prix">
+    <textarea id="desc" class="w-full mb-2 p-2 bg-slate-700 rounded"></textarea>
+
+    <button onclick="ajouterArticle()" class="bg-orange-corail px-4 py-2 rounded w-full">
+      Ajouter
+    </button>
+
+  </div>
+</div>
+<!-- fin malikat -->
 </body>
 </html>
