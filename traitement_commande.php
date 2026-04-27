@@ -1,5 +1,4 @@
 <?php
-// Mmina
 require_once 'check_session.php';
 
 if (!$is_connected || $_SESSION['type'] !== 'senior') {
