@@ -8,6 +8,8 @@ services:
       - .:/app
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       DB_HOST: db
       DB_NAME: silver_happy
