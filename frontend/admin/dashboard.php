@@ -458,7 +458,7 @@ chargerPrestataires = async function() {
   try {
     const res = await fetch('/api/admin.php?action=prestataires', { headers: { Authorization: 'Bearer ' + token() } });
     const data = await res.json();
-    const tbody = document.getElementById('table-pres');
+    const tbody = document.getElementById('table-prestataires');
     if (!Array.isArray(data)) { tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Erreur de chargement</td></tr>'; return; }
     tbody.innerHTML = data.map(p => `
       <tr class="hover:bg-slate-700/30 transition-colors">
