@@ -57,8 +57,3 @@ services:
 
 volumes:
   db_data:
-
-  environment:
-  STRIPE_PUBLIC_KEY: "${STRIPE_PUBLIC_KEY}"
-  STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
-  STRIPE_SECRET: "${STRIPE_SECRET}"
