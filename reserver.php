@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 require_once 'db_connect.php';
 
 if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'senior') {
@@ -9,10 +8,8 @@ if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'senior') {
 }
 
 $id_service = isset($_GET['id_service']) ? intval($_GET['id_service']) : 0;
-$id_senior = $_SESSION['id'];
-
-$erreur = null;
-$succes = false;
+$id_senior  = $_SESSION['id'];
+$erreur     = null;
 
 $stmt = $pdo->prepare("
     SELECT s.*, p.prenom, p.nom, p.id_prestataire, p.tarif_horaire, p.note_moyenne, p.categorie
@@ -23,9 +20,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$id_service]);
 $offre = $stmt->fetch();
 
-if (!$offre) {
-    die("Service introuvable.");
-}
+if (!$offre) { die("Service introuvable."); }
 
 $id_pres = $offre['id_prestataire'];
 
@@ -41,25 +36,24 @@ $stmtDispos->execute([$id_pres]);
 $dispos = $stmtDispos->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_dispo = intval($_POST['id_disponibilite'] ?? 0);
-    $debut = $_POST['debut'] ?? '';
-    $fin = $_POST['fin'] ?? '';
+    $id_dispo    = intval($_POST['id_disponibilite'] ?? 0);
+    $debut       = $_POST['debut'] ?? '';
+    $fin         = $_POST['fin']   ?? '';
     $description = trim($_POST['description'] ?? '');
 
     if (!$id_dispo || !$debut || !$fin) {
-        $erreur = "Veuillez sélectionner un créneau.";
+        $erreur = "Veuillez sélectionner un créneau et une heure.";
     } else {
         try {
             $pdo->beginTransaction();
 
             $stmtCheck = $pdo->prepare("
-                SELECT *
-                FROM disponibilites
+                SELECT * FROM disponibilites
                 WHERE id_disponibilite = ?
-                  AND id_prestataire = ?
-                  AND type = 'libre'
-                  AND date_debut <= ?
-                  AND date_fin >= ?
+                  AND id_prestataire   = ?
+                  AND type             = 'libre'
+                  AND date_debut       <= ?
+                  AND date_fin         >= ?
                 FOR UPDATE
             ");
             $stmtCheck->execute([$id_dispo, $id_pres, $debut, $fin]);
@@ -70,72 +64,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $erreur = "Ce créneau vient d'être pris. Veuillez en choisir un autre.";
             } else {
                 $stmtRes = $pdo->prepare("
-                    INSERT INTO reservation (
-                        id_senior,
-                        id_prestataire,
-                        date_reservation,
-                        date_fin,
-                        id_disponibilite,
-                        description,
-                        statut
-                    )
+                    INSERT INTO reservation (id_senior, id_prestataire, date_reservation, date_fin, id_disponibilite, description, statut)
                     VALUES (?, ?, ?, ?, ?, ?, 'en_attente')
                 ");
-                $stmtRes->execute([
-                    $id_senior,
-                    $id_pres,
-                    $debut,
-                    $fin,
-                    $id_dispo,
-                    $description
-                ]);
-
+                $stmtRes->execute([$id_senior, $id_pres, $debut, $fin, $id_dispo, $description]);
                 $idReservation = $pdo->lastInsertId();
 
-                $stmtUpdateDispo = $pdo->prepare("
-                    UPDATE disponibilites
-                    SET type = 'reserve',
-                        id_reservation = ?
+                $pdo->prepare("
+                    UPDATE disponibilites SET type = 'reserve', id_reservation = ?
                     WHERE id_disponibilite = ?
-                ");
-                $stmtUpdateDispo->execute([$idReservation, $id_dispo]);
+                ")->execute([$idReservation, $id_dispo]);
 
                 if ($dispo['date_debut'] < $debut) {
-                    $stmtInsertBefore = $pdo->prepare("
-                        INSERT INTO disponibilites (
-                            id_prestataire,
-                            date_debut,
-                            date_fin,
-                            type
-                        )
-                        VALUES (?, ?, ?, 'libre')
-                    ");
-                    $stmtInsertBefore->execute([
-                        $id_pres,
-                        $dispo['date_debut'],
-                        $debut
-                    ]);
+                    $pdo->prepare("INSERT INTO disponibilites (id_prestataire, date_debut, date_fin, type) VALUES (?, ?, ?, 'libre')")
+                        ->execute([$id_pres, $dispo['date_debut'], $debut]);
                 }
-
                 if ($dispo['date_fin'] > $fin) {
-                    $stmtInsertAfter = $pdo->prepare("
-                        INSERT INTO disponibilites (
-                            id_prestataire,
-                            date_debut,
-                            date_fin,
-                            type
-                        )
-                        VALUES (?, ?, ?, 'libre')
-                    ");
-                    $stmtInsertAfter->execute([
-                        $id_pres,
-                        $fin,
-                        $dispo['date_fin']
-                    ]);
+                    $pdo->prepare("INSERT INTO disponibilites (id_prestataire, date_debut, date_fin, type) VALUES (?, ?, ?, 'libre')")
+                        ->execute([$id_pres, $fin, $dispo['date_fin']]);
                 }
 
                 $pdo->commit();
-
                 header('Location: dashboardS.php?msg=ok#planning');
                 exit();
             }
@@ -146,245 +95,215 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Réserver — Silver Happy</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/168ebc7feb.js" crossorigin="anonymous"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        sable: '#F4EDDE',
-                        corail: '#FF885B',
-                        menthe: '#A0E8AF',
-                        peche: '#FFD9CA'
-                    },
-                    fontFamily: {
-                        sans: ['DM Sans', 'sans-serif'],
-                        title: ['Quicksand', 'sans-serif']
-                    },
-                    borderRadius: {
-                        senior: '28px'
-                    }
-                }
-            }
-        };
+            theme: { extend: {
+                colors: { sable: '#F4EDDE', corail: '#FF885B', menthe: '#A0E8AF', peche: '#FFD9CA' },
+                fontFamily: { sans: ['DM Sans', 'sans-serif'], title: ['Quicksand', 'sans-serif'] },
+                borderRadius: { senior: '28px' }
+            }}
+        }
     </script>
 </head>
-
 <body class="bg-sable font-sans text-slate-800 min-h-screen">
 
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
-        <a href="index.php" class="text-xl font-bold text-corail font-title">
-            Silver Happy
-        </a>
+<nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
+    <a href="index.php" class="text-xl font-bold text-corail font-title">Silver Happy</a>
+    <a href="javascript:history.back()" class="text-slate-500 font-bold hover:text-corail">
+        <i class="fa-solid fa-xmark mr-2"></i>Annuler
+    </a>
+</nav>
 
-        <a href="javascript:history.back()" class="text-slate-500 font-bold hover:text-corail">
-            <i class="fa-solid fa-xmark mr-2"></i>Annuler
-        </a>
-    </nav>
+<main class="pt-28 pb-20 px-4 max-w-2xl mx-auto">
 
-    <main class="pt-28 pb-20 px-4 max-w-2xl mx-auto">
+    <div class="bg-peche rounded-senior p-6 mb-6 flex items-center gap-5 shadow-sm">
+        <div class="w-16 h-16 rounded-full bg-white overflow-hidden border-4 border-white shadow">
+            <img src="perso.png" class="w-full h-full object-cover" alt="Prestataire">
+        </div>
+        <div>
+            <p class="text-xs font-bold uppercase text-corail tracking-wide">Votre prestataire</p>
+            <h1 class="text-xl font-bold"><?php echo htmlspecialchars($offre['prenom'] . ' ' . $offre['nom']); ?></h1>
+            <p class="text-sm text-slate-500"><?php echo htmlspecialchars($offre['nom_service']); ?> · <?php echo $offre['prix']; ?>€/h</p>
+        </div>
+    </div>
 
-        <!-- Prestataire -->
-        <section class="bg-peche rounded-senior p-6 mb-6 flex items-center gap-5 shadow-sm">
-            <div class="w-16 h-16 rounded-full bg-white overflow-hidden border-4 border-white shadow">
-                <img src="perso.png" class="w-full h-full object-cover" alt="Prestataire Silver Happy">
+    <?php if ($erreur): ?>
+    <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-6 font-bold text-sm">
+        <i class="fa-solid fa-triangle-exclamation mr-2"></i><?php echo htmlspecialchars($erreur); ?>
+    </div>
+    <?php endif; ?>
+
+    <form method="POST" class="bg-white rounded-senior shadow-lg p-8 space-y-8">
+
+        <input type="hidden" name="id_disponibilite" id="input-dispo">
+        <input type="hidden" name="debut" id="input-debut">
+        <input type="hidden" name="fin"   id="input-fin">
+
+        <div>
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
+                <span class="bg-corail text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                Choisissez un créneau et une heure
+            </h2>
+
+            <?php if (empty($dispos)): ?>
+                <div class="bg-slate-50 rounded-2xl p-8 text-center text-slate-400">
+                    <i class="fa-solid fa-calendar-xmark text-3xl mb-3 block"></i>
+                    Aucun créneau disponible pour ce prestataire pour le moment.
+                </div>
+            <?php else: ?>
+                <div class="space-y-4">
+                    <?php foreach ($dispos as $d):
+                        $tsDebut  = strtotime($d['date_debut']);
+                        $tsFin    = strtotime($d['date_fin']);
+                        $dureeMax = round(($tsFin - $tsDebut) / 3600, 1);
+                    ?>
+                    <div class="creneau-card p-5 border-2 border-slate-100 rounded-2xl bg-slate-50 transition-all">
+                        <p class="font-bold text-slate-800 mb-3">
+                            <?php echo date('l d F Y', $tsDebut); ?>
+                            <span class="text-xs text-emerald-600 font-bold ml-2 bg-emerald-50 px-2 py-1 rounded-full">
+                                Disponible <?php echo $dureeMax; ?>h (<?php echo date('H:i', $tsDebut); ?> → <?php echo date('H:i', $tsFin); ?>)
+                            </span>
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Heure de début</label>
+                                <input type="time"
+                                       class="heure-debut w-full p-3 bg-white rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-corail outline-none"
+                                       min="<?php echo date('H:i', $tsDebut); ?>"
+                                       max="<?php echo date('H:i', $tsFin); ?>"
+                                       value="<?php echo date('H:i', $tsDebut); ?>"
+                                       data-dispo="<?php echo $d['id_disponibilite']; ?>"
+                                       data-date="<?php echo date('Y-m-d', $tsDebut); ?>"
+                                       data-debut-min="<?php echo date('H:i', $tsDebut); ?>"
+                                       data-fin-ts="<?php echo $tsFin; ?>">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Durée souhaitée</label>
+                                <select class="duree-select w-full p-3 bg-white rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-corail outline-none">
+                                    <option value="1">1 heure</option>
+                                    <option value="2" selected>2 heures</option>
+                                    <option value="3">3 heures</option>
+                                    <option value="4">4 heures</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button"
+                                onclick="selectionnerCreneau(this)"
+                                data-dispo="<?php echo $d['id_disponibilite']; ?>"
+                                data-fin-ts="<?php echo $tsFin; ?>"
+                                class="w-full bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-corail hover:text-white transition-all text-sm">
+                            <i class="fa-solid fa-check mr-2"></i>Choisir ce créneau
+                        </button>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
+                <span class="bg-corail text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                Message pour le prestataire <span class="text-slate-400 font-normal text-sm">(optionnel)</span>
+            </h2>
+            <textarea name="description" placeholder="Précisions sur l'adresse, besoins spécifiques..."
+                      class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-corail outline-none min-h-[100px] resize-none"></textarea>
+        </div>
+
+        <div id="recap-cout" class="bg-slate-50 rounded-2xl p-5 hidden">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-slate-500">Créneau sélectionné :</span>
+                <span id="recap-horaire" class="font-bold text-slate-800"></span>
             </div>
-
-            <div>
-                <p class="text-xs font-bold uppercase text-corail tracking-wide">
-                    Votre prestataire
-                </p>
-
-                <h1 class="text-xl font-bold">
-                    <?php echo htmlspecialchars($offre['prenom'] . ' ' . $offre['nom']); ?>
-                </h1>
-
-                <p class="text-sm text-slate-500">
-                    <?php echo htmlspecialchars($offre['nom_service']); ?>
-                    ·
-                    <?php echo htmlspecialchars($offre['prix']); ?>€/h
-                </p>
+            <div class="flex justify-between items-center">
+                <span class="text-slate-500">Coût estimé :</span>
+                <span id="cout-estime" class="text-2xl font-bold text-corail"></span>
             </div>
-        </section>
+            <p class="text-xs text-slate-400 mt-1">Basé sur <?php echo $offre['prix']; ?>€/h</p>
+        </div>
 
-        <?php if ($erreur): ?>
-            <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-6 font-bold text-sm">
-                <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-                <?php echo htmlspecialchars($erreur); ?>
-            </div>
+        <?php if (!empty($dispos)): ?>
+        <button type="submit" id="btn-confirmer" disabled
+                class="w-full bg-slate-300 text-slate-500 py-5 rounded-senior font-bold text-lg cursor-not-allowed transition-all">
+            <i class="fa-solid fa-check mr-2"></i>Confirmer la réservation
+        </button>
+        <p class="text-center text-slate-400 text-sm">
+            <i class="fa-solid fa-lock mr-1"></i>Paiement sécurisé Silver Happy
+        </p>
         <?php endif; ?>
 
-        <!-- Formulaire réservation -->
-        <form method="POST" class="bg-white rounded-senior shadow-lg p-8 space-y-8">
+    </form>
+</main>
 
-            <section>
-                <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
-                    <span class="bg-corail text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
-                        1
-                    </span>
-                    Choisissez un créneau disponible
-                </h2>
+<script>
+const tarif = <?php echo (float)$offre['prix']; ?>;
 
-                <?php if (empty($dispos)): ?>
-                    <div class="bg-slate-50 rounded-2xl p-8 text-center text-slate-400">
-                        <i class="fa-solid fa-calendar-xmark text-3xl mb-3 block"></i>
-                        Aucun créneau disponible pour ce prestataire pour le moment.
-                    </div>
-                <?php else: ?>
-                    <div class="mb-5 bg-slate-50 rounded-2xl p-4 flex items-center gap-4">
-                        <label class="text-sm font-bold text-slate-500 whitespace-nowrap">
-                            Durée souhaitée :
-                        </label>
+function selectionnerCreneau(btn) {
+    const container = btn.closest('.creneau-card');
+    const heureInput = container.querySelector('.heure-debut');
+    const dureeSelect = container.querySelector('.duree-select');
+    const idDispo = btn.dataset.dispo;
+    const finTs = parseInt(btn.dataset.finTs) * 1000;
 
-                        <select id="duree" onchange="mettreAJourFin()" class="flex-1 p-3 rounded-xl bg-white border border-slate-200 font-bold focus:ring-2 focus:ring-corail outline-none">
-                            <option value="1">1 heure</option>
-                            <option value="2" selected>2 heures</option>
-                            <option value="3">3 heures</option>
-                            <option value="4">4 heures</option>
-                        </select>
-                    </div>
+    if (!heureInput.value) {
+        alert("Veuillez choisir une heure de début.");
+        return;
+    }
 
-                    <div class="space-y-3" id="liste-creneaux">
-                        <?php foreach ($dispos as $d): ?>
-                            <?php
-                            $tsDebut = strtotime($d['date_debut']);
-                            $tsFin = strtotime($d['date_fin']);
-                            $dureeMax = round(($tsFin - $tsDebut) / 3600, 1);
-                            ?>
+    const date    = heureInput.dataset.date;
+    const debut   = new Date(date + 'T' + heureInput.value + ':00');
+    const duree   = parseInt(dureeSelect.value);
+    const finVoulue = new Date(debut.getTime() + duree * 3600 * 1000);
+    const finMax  = new Date(finTs);
+    const fin     = finVoulue <= finMax ? finVoulue : finMax;
 
-                            <label class="block cursor-pointer group">
-                                <input
-                                    type="radio"
-                                    name="id_disponibilite"
-                                    value="<?php echo (int) $d['id_disponibilite']; ?>"
-                                    data-debut="<?php echo htmlspecialchars($d['date_debut']); ?>"
-                                    data-fin="<?php echo htmlspecialchars($d['date_fin']); ?>"
-                                    class="peer sr-only"
-                                    required
-                                >
+    const debutMin = new Date(date + 'T' + heureInput.dataset.debutMin + ':00');
+    if (debut < debutMin) {
+        alert("L'heure choisie est avant le début de la disponibilité.");
+        return;
+    }
 
-                                <div class="flex justify-between items-center p-5 border-2 border-slate-100 rounded-2xl bg-slate-50 peer-checked:border-corail peer-checked:bg-peche transition-all group-hover:bg-peche/50">
-                                    <div>
-                                        <p class="font-bold text-slate-800">
-                                            <?php echo date('l d F', $tsDebut); ?>
-                                        </p>
+    document.getElementById('input-debut').value = toMysql(debut);
+    document.getElementById('input-fin').value   = toMysql(fin);
+    document.getElementById('input-dispo').value = idDispo;
 
-                                        <p class="text-sm text-slate-500 mt-1">
-                                            <i class="fa-regular fa-clock mr-1"></i>
-                                            <?php echo date('H:i', $tsDebut); ?>
-                                            →
-                                            <?php echo date('H:i', $tsFin); ?>
-                                        </p>
-                                    </div>
+    const heures = (fin - debut) / 3600000;
+    const options = { weekday: 'long', day: 'numeric', month: 'long' };
+    document.getElementById('recap-horaire').textContent =
+        debut.toLocaleDateString('fr-FR', options) + ' · ' +
+        debut.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}) + ' → ' +
+        fin.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+    document.getElementById('cout-estime').textContent = (tarif * heures).toFixed(2) + ' €';
+    document.getElementById('recap-cout').classList.remove('hidden');
 
-                                    <div class="text-right">
-                                        <span class="bg-menthe/60 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">
-                                            Dispo <?php echo htmlspecialchars($dureeMax); ?>h
-                                        </span>
-                                    </div>
-                                </div>
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
+    document.querySelectorAll('.creneau-card').forEach(el => {
+        el.classList.remove('border-corail', 'bg-peche');
+        el.classList.add('border-slate-100', 'bg-slate-50');
+    });
+    container.classList.remove('border-slate-100', 'bg-slate-50');
+    container.classList.add('border-corail', 'bg-peche');
 
-                    <input type="hidden" name="debut" id="input-debut">
-                    <input type="hidden" name="fin" id="input-fin">
-                <?php endif; ?>
-            </section>
+    const btnConfirmer = document.getElementById('btn-confirmer');
+    btnConfirmer.disabled = false;
+    btnConfirmer.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+    btnConfirmer.classList.add('bg-corail', 'text-white', 'hover:scale-[1.02]', 'shadow-lg');
 
-            <section>
-                <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
-                    <span class="bg-corail text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
-                        2
-                    </span>
-                    Message pour le prestataire
-                    <span class="text-slate-400 font-normal text-sm">(optionnel)</span>
-                </h2>
+    document.getElementById('recap-cout').scrollIntoView({behavior: 'smooth'});
+}
 
-                <textarea
-                    name="description"
-                    placeholder="Précisions sur l'adresse, besoins spécifiques..."
-                    class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-corail outline-none min-h-[100px] resize-none"
-                ></textarea>
-            </section>
+function toMysql(date) {
+    return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+</script>
 
-            <section id="recap-cout" class="bg-slate-50 rounded-2xl p-5 hidden">
-                <div class="flex justify-between items-center">
-                    <span class="text-slate-500">
-                        Coût estimé :
-                    </span>
-
-                    <span id="cout-estime" class="text-2xl font-bold text-slate-900"></span>
-                </div>
-
-                <p class="text-xs text-slate-400 mt-1">
-                    Basé sur <?php echo htmlspecialchars($offre['prix']); ?>€/h
-                </p>
-            </section>
-
-            <?php if (!empty($dispos)): ?>
-                <button type="submit" class="w-full bg-corail text-white py-5 rounded-senior font-bold text-lg shadow-lg shadow-orange-200 hover:scale-[1.02] transition-all">
-                    <i class="fa-solid fa-check mr-2"></i>
-                    Confirmer la réservation
-                </button>
-
-                <p class="text-center text-slate-400 text-sm">
-                    <i class="fa-solid fa-lock mr-1"></i>
-                    Paiement sécurisé Silver Happy
-                </p>
-            <?php endif; ?>
-
-        </form>
-    </main>
-
-    <!-- Scripts -->
-    <script>
-        const tarif = <?php echo (float) $offre['prix']; ?>;
-
-        document.addEventListener('change', function (e) {
-            if (e.target.name === 'id_disponibilite' || e.target.id === 'duree') {
-                mettreAJourFin();
-            }
-        });
-
-        function mettreAJourFin() {
-            const selected = document.querySelector('input[name="id_disponibilite"]:checked');
-
-            if (!selected) {
-                return;
-            }
-
-            const debut = new Date(selected.dataset.debut);
-            const finDispo = new Date(selected.dataset.fin);
-            const duree = parseInt(document.getElementById('duree').value);
-
-            const finVoulue = new Date(debut.getTime() + duree * 3600 * 1000);
-            const fin = finVoulue <= finDispo ? finVoulue : finDispo;
-
-            document.getElementById('input-debut').value = toMysql(debut);
-            document.getElementById('input-fin').value = toMysql(fin);
-
-            const heuresReelles = (fin - debut) / 3600000;
-
-            document.getElementById('cout-estime').textContent = (tarif * heuresReelles).toFixed(2) + ' €';
-            document.getElementById('recap-cout').classList.remove('hidden');
-        }
-
-        function toMysql(date) {
-            return date.toISOString().slice(0, 19).replace('T', ' ');
-        }
-    </script>
 </body>
 </html>
