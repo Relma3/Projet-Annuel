@@ -82,6 +82,11 @@ tailwind.config = {
     <a onclick="showSection('articles')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
       <i class="fa-solid fa-box w-4 text-center"></i> Articles
     </a>
+
+    <a onclick="showSection('documents')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
+      <i class="fa-solid fa-file-alt w-4 text-center"></i> Documents
+    </a>
+
   </nav>
 
   <div class="p-4 border-t border-slate-700">
@@ -358,6 +363,36 @@ tailwind.config = {
 
   </div>
 </div>
+
+<div id="section-documents" class="section">
+
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+
+    <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+      <h2 class="font-bold text-white">Validation des documents</h2>
+
+      <button onclick="chargerDocuments()" class="bg-blue-500 px-4 py-2 rounded-xl">
+        Actualiser
+      </button>
+    </div>
+
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Type</th>
+          <th>Fichier</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="table-documents"></tbody>
+    </table>
+
+  </div>
+
+</div>
 <!-- fin malikat section artiicles -->
 
   </div>
@@ -388,6 +423,7 @@ function showSection(name) {
   if (name === 'overview') chargerStats();
   if (name === 'articles') chargerArticles();
   if (name === 'prestataires') chargerPrestataires();
+  if (name === 'documents') chargerDocuments();
   
 }
 
