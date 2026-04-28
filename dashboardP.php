@@ -98,7 +98,6 @@ $factures_presta = $stmtFact->fetchAll();
 
 <body class="bg-[#F0F9F4] font-sans text-slate-800 min-h-screen">
 
-    <!-- Navigation -->
     <nav class="fixed w-full bg-white/95 backdrop-blur-md shadow-sm z-50 px-8 py-4 flex justify-between items-center border-b border-emerald-100">
         <div class="flex items-center gap-10">
             <a href="index.php" class="flex items-center gap-2">
@@ -122,7 +121,6 @@ $factures_presta = $stmtFact->fetchAll();
 
     <main class="pt-32 pb-20 px-4 max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-        <!-- Menu latéral -->
         <aside class="lg:col-span-1">
             <div class="bg-white rounded-senior p-6 shadow-sm sticky top-28 space-y-2 border border-emerald-50">
                 <button onclick="showTab('dashboard', this)" class="tab-btn nav-active w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold transition-all">
@@ -143,7 +141,6 @@ $factures_presta = $stmtFact->fetchAll();
             </div>
         </aside>
 
-        <!-- Contenu principal -->
         <section class="lg:col-span-3 space-y-6 w-full">
 
             <div id="dashboard" class="tab-content active space-y-6">
@@ -157,7 +154,6 @@ $factures_presta = $stmtFact->fetchAll();
                     </p>
                 </div>
 
-                <!-- Section Mes Factures -->
                 <div class="bg-white rounded-2xl shadow p-6 w-full">
                     <h2 class="text-xl font-bold text-emerald-700 mb-4">
                         <i class="fa-solid fa-file-invoice mr-2"></i>Mes relevés mensuels
@@ -188,9 +184,7 @@ $factures_presta = $stmtFact->fetchAll();
                     <?php endif; ?>
                 </div>
 
-            </div><!-- fin #dashboard -->
-
-            <div id="services" class="tab-content space-y-6">
+            </div><div id="services" class="tab-content space-y-6">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-title font-bold text-emerald-800">Mes Offres de Services</h2>
                     <button onclick="toggleModal('modalService')" class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-md">
@@ -244,9 +238,7 @@ $factures_presta = $stmtFact->fetchAll();
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
-            </div><!-- fin #services -->
-
-            <div id="planning" class="tab-content space-y-6">
+            </div><div id="planning" class="tab-content space-y-6">
                 <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                     <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Réservations reçues</h2>
                     <?php if (empty($reservations)): ?>
@@ -297,7 +289,17 @@ $factures_presta = $stmtFact->fetchAll();
 
                 <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                     <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Gérer mes disponibilités</h2>
-                    <form id="form-dispo" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 bg-emerald-50/50 p-6 rounded-2xl">
+                    
+                    <form id="form-dispo" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 bg-emerald-50/50 p-6 rounded-2xl">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase ml-2">Service associé</label>
+                            <select id="dispo-service" required class="w-full p-4 rounded-xl border-none focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm bg-white">
+                                <option value="">-- Choisir --</option>
+                                <?php foreach ($mes_services as $srv): ?>
+                                    <option value="<?= $srv['id_service'] ?>"><?= htmlspecialchars($srv['nom_service']) ?> (<?= htmlspecialchars($srv['ville']) ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                         <div class="space-y-2">
                             <label class="text-xs font-bold text-slate-400 uppercase ml-2">Début</label>
                             <input type="datetime-local" id="dispo-debut" required class="w-full p-4 rounded-xl border-none focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
@@ -310,6 +312,7 @@ $factures_presta = $stmtFact->fetchAll();
                             <button type="button" onclick="ajouterDispo()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg">Ajouter</button>
                         </div>
                     </form>
+
                     <div class="space-y-4">
                         <h3 class="font-bold text-slate-600 flex items-center gap-2">
                             <i class="fa-solid fa-calendar-check text-emerald-500"></i> Vos créneaux
@@ -319,16 +322,12 @@ $factures_presta = $stmtFact->fetchAll();
                         </div>
                     </div>
                 </div>
-            </div><!-- fin #planning -->
-
-            <div id="messages" class="tab-content space-y-6">
+            </div><div id="messages" class="tab-content space-y-6">
                 <div class="bg-white p-10 rounded-senior shadow-sm border border-emerald-50 text-center text-slate-400 italic">
                     <i class="fa-solid fa-comment-dots text-4xl mb-4 block text-emerald-100"></i>
                     Messagerie bientôt disponible.
                 </div>
-            </div><!-- fin #messages -->
-
-            <div id="profil" class="tab-content space-y-6">
+            </div><div id="profil" class="tab-content space-y-6">
                 <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                     <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Mon Entreprise</h2>
                     <div class="space-y-3 text-slate-600">
@@ -342,12 +341,9 @@ $factures_presta = $stmtFact->fetchAll();
                         <?php endif; ?>
                     </div>
                 </div>
-            </div><!-- fin #profil -->
-
-        </section>
+            </div></section>
     </main>
 
-    <!-- Modal service -->
     <div id="modalService" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-md rounded-senior shadow-2xl overflow-hidden">
             <div class="bg-emerald-600 p-6 text-white flex justify-between items-center font-bold">
@@ -390,7 +386,10 @@ $factures_presta = $stmtFact->fetchAll();
                     ? '<p class="text-slate-400 italic">Aucun créneau.</p>'
                     : data.map(dispo => `
                         <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                            <span>Du ${new Date(dispo.date_debut).toLocaleString('fr-FR')} au ${new Date(dispo.date_fin).toLocaleString('fr-FR')}</span>
+                            <div>
+                                <span class="block text-xs font-bold text-emerald-600 uppercase mb-1">${dispo.nom_service || 'Service global'}</span>
+                                <span>Du ${new Date(dispo.date_debut).toLocaleString('fr-FR')} au ${new Date(dispo.date_fin).toLocaleString('fr-FR')}</span>
+                            </div>
                             <button onclick="supprimerDispo(${dispo.id_disponibilite})" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     `).join('');
@@ -398,15 +397,27 @@ $factures_presta = $stmtFact->fetchAll();
         }
 
         async function ajouterDispo() {
+            const id_service = document.getElementById('dispo-service').value;
             const debut = document.getElementById('dispo-debut').value;
             const fin = document.getElementById('dispo-fin').value;
-            if (!debut || !fin) { alert('Dates requises'); return; }
+            
+            if (!id_service || !debut || !fin) { 
+                alert('Tous les champs sont requis, y compris le service.'); 
+                return; 
+            }
+            
             const res = await fetch('api/dispos.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_p: PRESTA_ID, debut, fin })
+                body: JSON.stringify({ id_p: PRESTA_ID, id_service: id_service, debut, fin })
             });
-            if (res.ok) { document.getElementById('form-dispo').reset(); chargerDispos(); return; }
+            
+            if (res.ok) { 
+                document.getElementById('form-dispo').reset(); 
+                chargerDispos(); 
+                return; 
+            }
+            
             const err = await res.json();
             alert(err.error);
         }
