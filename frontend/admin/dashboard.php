@@ -226,7 +226,34 @@ tailwind.config = {
 
 </div>
 <!-- fin prestataires section malikat -->
+<!-- malikat section valider docs -->
+ <div id="section-documents" class="section">
 
+  <div class="bg-slate-800 rounded-2xl p-6">
+
+    <h2>Validation documents</h2>
+
+    <button onclick="chargerDocuments()" class="bg-blue-500 px-4 py-2 rounded">
+      Actualiser
+    </button>
+
+    <table class="w-full mt-4">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Type</th>
+          <th>Fichier</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="table-documents"></tbody>
+    </table>
+
+  </div>
+</div>
+<!-- fin malikat section valider docs -->
     <div id="section-categories" class="section">
       <div class="grid grid-cols-3 gap-6">
         <div class="col-span-2 bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
@@ -519,13 +546,6 @@ window.addEventListener('load', () => { chargerStats(); chargerCategories(); cha
     //malikat
 
 // NAVIGATION
-/*function showSection(name){
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('section-' + name).classList.add('active');
-
-    if(name === 'articles') chargerArticles();
-}
-*/
 // CHARGER ARTICLES
 async function chargerArticles(){
     const res = await fetch('/api/admin/articles.php');
@@ -639,6 +659,48 @@ async function validerPrestataire(id, etat){
     });
 
     chargerPrestataires();
+}
+async function chargerDocuments() {
+
+  const res = await fetch('/api/admin/documents.php');
+  const data = await res.json();
+
+  const table = document.getElementById('table-documents');
+
+  table.innerHTML = data.map(d => `
+    <tr>
+      <td>${d.email}</td>
+      <td>${d.type_document}</td>
+
+      <td>
+        <a href="/${d.chemin_fichier}" target="_blank">
+          Voir
+        </a>
+      </td>
+
+      <td>
+        ${d.statut}
+      </td>
+
+      <td>
+        <button onclick="validerDoc(${d.id_document}, 'valide')">oui</button>
+        <button onclick="validerDoc(${d.id_document}, 'refuse')">non</button>
+      </td>
+    </tr>
+  `).join('');
+}
+async function validerDoc(id, statut){
+
+  await fetch('/api/admin/documents.php', {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      id_document: id,
+      statut: statut
+    })
+  });
+
+  chargerDocuments();
 }
 // FIN MALIKAT
 </script>
