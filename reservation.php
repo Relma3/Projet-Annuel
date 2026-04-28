@@ -43,6 +43,9 @@ if(!$pres) {
             }
         }
     </script>
+
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/onesignal.php'; ?>
+
 </head>
 <body class="bg-sable-doux font-sans">
     <?php include 'accessibilite.php'; ?>

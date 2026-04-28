@@ -28,6 +28,9 @@ $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <title>Mon Planning - Silver Happy</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/onesignal.php'; ?>
+    
 </head>
 <body class="bg-gray-50 min-h-screen" style="font-size:18px;">
     <?php include 'accessibilite.php'; ?>
