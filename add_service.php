@@ -8,6 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION
     $prix = floatval($_POST['prix'] ?? 0);
     $ville = htmlspecialchars($_POST['ville'] ?? '');
     $description = htmlspecialchars($_POST['description'] ?? '');
+    $debut = $_POST['debut'] ?? '';
+    $fin = $_POST['fin'] ?? '';
 
     if ($prix <= 0) {
         header('Location: dashboardP.php?error=prix_invalide#services');
@@ -19,15 +21,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION
         exit();
     }
 
+    $time_debut = strtotime($debut);
+    $time_fin = strtotime($fin);
+    $now = time();
+
+    if ($time_debut < $now || $time_fin <= $time_debut) {
+        header('Location: dashboardP.php?error=dates_invalides#services');
+        exit();
+    }
+
     try {
-        $stmt = $pdo->prepare("INSERT INTO services (id_prestataire, nom_service, prix, ville, description) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$id_pres, $nom_service, $prix, $ville, $description]);
-        
+        $pdo->beginTransaction();
+
+        $stmtSrv = $pdo->prepare("INSERT INTO services (id_prestataire, nom_service, prix, ville, description) VALUES (?, ?, ?, ?, ?)");
+        $stmtSrv->execute([$id_pres, $nom_service, $prix, $ville, $description]);
+        $id_service = $pdo->lastInsertId();
+
+        $stmtDispo = $pdo->prepare("INSERT INTO disponibilites (id_prestataire, id_service, date_debut, date_fin, type) VALUES (?, ?, ?, ?, 'libre')");
+        $stmtDispo->execute([$id_pres, $id_service, $debut, $fin]);
+
+        $pdo->commit();
         header('Location: dashboardP.php?msg=service_ajoute#services');
         exit();
     } catch (PDOException $e) {
-        error_log($e->getMessage());
-        header('Location: dashboardP.php?error=sql');
+        $pdo->rollBack();
+        header('Location: dashboardP.php?error=sql#services');
         exit();
     }
 }
