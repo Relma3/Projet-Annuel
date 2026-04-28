@@ -109,7 +109,7 @@ $stripe_public_key = getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique"
                         <li>Support prioritaire</li>
                     </ul>
 
-                    <button onclick="payer(400, 'mensuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
+                    <button onclick="payer('mensuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
                         Choisir Mensuel
                     </button>
                 </article>
@@ -132,93 +132,37 @@ $stripe_public_key = getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique"
                         <li>Support prioritaire</li>
                     </ul>
 
-                    <button onclick="payer(4000, 'annuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
+                    <button onclick="payer('annuel')" class="w-full bg-orange-500 text-white text-lg font-bold py-4 rounded-xl">
                         Choisir Annuel
                     </button>
                 </article>
             </div>
         </section>
-
-        <!-- Paiement -->
-        <section id="zone-paiement" class="hidden bg-white rounded-2xl shadow p-6">
-            <h3 class="text-xl font-bold mb-4">
-                Informations de paiement
-            </h3>
-
-            <div id="card-element" class="border-2 border-gray-200 rounded-xl p-4 mb-4"></div>
-            <div id="card-errors" class="text-red-500 mb-4"></div>
-
-            <button id="btn-payer" class="w-full bg-green-500 text-white text-xl font-bold py-4 rounded-xl">
-                Confirmer le paiement
-            </button>
-        </section>
     </main>
 
     <!-- Scripts -->
     <script>
-        const stripe = Stripe(<?php echo json_encode($stripe_public_key); ?>);
-        const elements = stripe.elements();
-        const card = elements.create('card');
+    async function payer(type) {
+        const btn = document.querySelector(`button[onclick="payer('${type}')"]`);
+        btn.textContent = 'Redirection...';
+        btn.disabled = true;
 
-        let montantChoisi = 0;
-        let typeChoisi = '';
-        let carteMontee = false;
-
-        function payer(montant, type) {
-            montantChoisi = montant;
-            typeChoisi = type;
-
-            document.getElementById('zone-paiement').classList.remove('hidden');
-
-            if (!carteMontee) {
-                card.mount('#card-element');
-                carteMontee = true;
-            }
-        }
-
-        document.getElementById('btn-payer').addEventListener('click', async function () {
-            const btn = document.getElementById('btn-payer');
-            const zoneErreur = document.getElementById('card-errors');
-
-            zoneErreur.textContent = '';
-            btn.textContent = 'Traitement...';
-            btn.disabled = true;
-
-            const res = await fetch('/api/paiements/creer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    montant: montantChoisi,
-                    type: typeChoisi
-                })
-            });
-
-            const data = await res.json();
-
-            if (!data.client_secret) {
-                zoneErreur.textContent = 'Erreur lors du paiement';
-                btn.textContent = 'Confirmer le paiement';
-                btn.disabled = false;
-                return;
-            }
-
-            const result = await stripe.confirmCardPayment(data.client_secret, {
-                payment_method: {
-                    card: card
-                }
-            });
-
-            if (result.error) {
-                zoneErreur.textContent = result.error.message;
-                btn.textContent = 'Confirmer le paiement';
-                btn.disabled = false;
-                return;
-            }
-
-            window.location.href = '/abonnement.php?succes=1';
+        const res = await fetch('/api/creer_subscription.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: type })
         });
-    </script>
+
+        const data = await res.json();
+
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            alert('Erreur : ' + (data.error || 'Impossible de créer l\'abonnement'));
+            btn.textContent = type === 'mensuel' ? 'Choisir Mensuel' : 'Choisir Annuel';
+            btn.disabled = false;
+        }
+    }
+</script>
 </body>
 </html>
