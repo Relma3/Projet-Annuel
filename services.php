@@ -105,7 +105,7 @@
                 </span>
             </a>
 
-            <a href="prestation_details.php?cat=habitat" class="group bg-white p-8 rounded-senior hover:bg-vert-menthe/20 transition-all shadow-sm hover:shadow-xl border border-slate-100">
+            <a href="prestation_details.php?cat=maison" class="group bg-white p-8 rounded-senior hover:bg-vert-menthe/20 transition-all shadow-sm hover:shadow-xl border border-slate-100">
                 <div class="bg-vert-menthe/30 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-screwdriver-wrench text-3xl text-emerald-700"></i>
                 </div>
@@ -116,7 +116,7 @@
                 </span>
             </a>
 
-            <a href="prestation_details.php?cat=formation" class="group bg-white p-8 rounded-senior hover:bg-peche-pastel transition-all shadow-sm hover:shadow-xl border border-slate-100">
+            <a href="prestation_details.php?cat=formations" class="group bg-white p-8 rounded-senior hover:bg-peche-pastel transition-all shadow-sm hover:shadow-xl border border-slate-100">
                 <div class="bg-peche-pastel w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-graduation-cap text-3xl text-orange-corail"></i>
                 </div>
