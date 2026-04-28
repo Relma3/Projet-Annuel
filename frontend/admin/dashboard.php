@@ -360,7 +360,7 @@ function showSection(name) {
   document.getElementById('page-sub').textContent = titles[name][1];
   if (name === 'overview') chargerStats();
   if (name === 'articles') chargerArticles();
-  if (name === 'prestataire') chargerPrestataires();
+  if (name === 'prestataires') chargerPrestataires();
   
 }
 
@@ -456,9 +456,9 @@ chargerSeniors = async function() {
 const _origPres = chargerPrestataires;
 chargerPrestataires = async function() {
   try {
-    const res = await fetch('/api/admin/prestataires.php');
+    const res = await fetch('/api/admin.php?action=prestataires', { headers: { Authorization: 'Bearer ' + token() } });
     const data = await res.json();
-    const tbody = document.getElementById('table-pres');
+    const tbody = document.getElementById('table-prestataires');
     if (!Array.isArray(data)) { tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Erreur de chargement</td></tr>'; return; }
     tbody.innerHTML = data.map(p => `
       <tr class="hover:bg-slate-700/30 transition-colors">
@@ -597,41 +597,34 @@ async function ajouterArticle(){
     document.getElementById('modal').classList.add('hidden');
     chargerArticles();
 }
-async function chargerPrestataires(){
-
+async function chargerPrestataires() {
+  try {
     const res = await fetch('/api/admin/prestataires.php');
     const data = await res.json();
 
+    console.log(data); // DEBUG
+
     const table = document.getElementById('table-prestataires');
 
+    if (!Array.isArray(data)) {
+      table.innerHTML = '<tr><td colspan="4">Erreur</td></tr>';
+      return;
+    }
+
     table.innerHTML = data.map(p => `
-        <tr class="border-b border-slate-700">
-
-            <td class="p-3">${p.id_utilisateur}</td>
-            <td class="p-3">${p.email}</td>
-
-            <td class="p-3">
-                ${p.est_valide == 1 
-                    ? '<span class="text-green-400">Validé</span>' 
-                    : '<span class="text-orange-400">En attente</span>'}
-            </td>
-
-            <td class="p-3 flex gap-2">
-
-                <button onclick="validerPrestataire(${p.id_utilisateur},1)"
-                    class="bg-green-500 px-3 py-1 rounded">
-                    ✔
-                </button>
-
-                <button onclick="validerPrestataire(${p.id_utilisateur},0)"
-                    class="bg-red-500 px-3 py-1 rounded">
-                    ✖
-                </button>
-
-            </td>
-
-        </tr>
+      <tr class="border-b border-slate-700">
+        <td class="p-3">#${p.id_utilisateur}</td>
+        <td class="p-3">${p.email}</td>
+        <td class="p-3">
+          <span class="text-orange-400">En attente</span>
+        </td>
+        <td class="p-3">-</td>
+      </tr>
     `).join('');
+
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 async function validerPrestataire(id, etat){
