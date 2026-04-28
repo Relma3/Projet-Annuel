@@ -15,20 +15,19 @@ if (empty($nom_pres)) {
 }
 
 try {
-    $stmtProfil = $pdo->prepare("
-        SELECT *
-        FROM prestataire
-        WHERE id_prestataire = ?
-    ");
+    $stmtProfil = $pdo->prepare("SELECT * FROM prestataire WHERE id_prestataire = ?");
     $stmtProfil->execute([$id_pres]);
     $profil = $stmtProfil->fetch();
 
     $categorie_pres = $profil['categorie'] ?? 'Service';
 
+    // On récupère le service ET sa disponibilité associée
     $stmtSrv = $pdo->prepare("
-        SELECT *
-        FROM services
-        WHERE id_prestataire = ?
+        SELECT s.*, d.date_debut, d.date_fin 
+        FROM services s
+        LEFT JOIN disponibilites d ON s.id_service = d.id_service
+        WHERE s.id_prestataire = ?
+        ORDER BY d.date_debut ASC
     ");
     $stmtSrv->execute([$id_pres]);
     $mes_services = $stmtSrv->fetchAll();
@@ -43,18 +42,13 @@ try {
     $stmtRes->execute([$id_pres]);
     $reservations = $stmtRes->fetchAll();
 
+    $stmtFact = $pdo->prepare("SELECT * FROM factures WHERE id_prestataire = ? ORDER BY annee DESC, mois DESC");
+    $stmtFact->execute([$id_pres]);
+    $factures_presta = $stmtFact->fetchAll();
+
 } catch (PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }
-
-// Récupérer les factures du prestataire
-$stmtFact = $pdo->prepare("
-    SELECT * FROM factures
-    WHERE id_prestataire = ?
-    ORDER BY annee DESC, mois DESC
-");
-$stmtFact->execute([$id_pres]);
-$factures_presta = $stmtFact->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -62,57 +56,39 @@ $factures_presta = $stmtFact->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Espace Pro — Silver Happy</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/168ebc7feb.js" crossorigin="anonymous"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        'emerald-pro': '#059669',
-                        'menthe-claire': '#A0E8AF',
-                        'fond-pro': '#F0F9F4'
-                    },
-                    fontFamily: {
-                        sans: ['DM Sans', 'sans-serif'],
-                        title: ['Quicksand', 'sans-serif']
-                    },
-                    borderRadius: {
-                        senior: '28px'
-                    }
+                    colors: { 'emerald-pro': '#059669', 'menthe-claire': '#A0E8AF', 'fond-pro': '#F0F9F4' },
+                    fontFamily: { sans: ['DM Sans', 'sans-serif'], title: ['Quicksand', 'sans-serif'] },
+                    borderRadius: { senior: '28px' }
                 }
             }
         };
     </script>
-
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .nav-active { background: #059669 !important; color: white !important; }
     </style>
 </head>
-
 <body class="bg-[#F0F9F4] font-sans text-slate-800 min-h-screen">
 
     <nav class="fixed w-full bg-white/95 backdrop-blur-md shadow-sm z-50 px-8 py-4 flex justify-between items-center border-b border-emerald-100">
         <div class="flex items-center gap-10">
             <a href="index.php" class="flex items-center gap-2">
-                <span class="text-2xl font-bold text-emerald-pro font-title">
-                    Silver Happy <span class="text-slate-400 font-light">PRO</span>
-                </span>
+                <span class="text-2xl font-bold text-emerald-pro font-title">Silver Happy <span class="text-slate-400 font-light">PRO</span></span>
             </a>
             <div class="hidden md:flex gap-8 text-sm font-bold text-slate-500 uppercase">
                 <a href="index.php" class="hover:text-emerald-pro transition-colors">Accueil</a>
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <span class="text-sm font-medium">
-                Expert : <strong><?php echo htmlspecialchars($nom_pres); ?></strong>
-            </span>
+            <span class="text-sm font-medium">Expert : <strong><?php echo htmlspecialchars($nom_pres); ?></strong></span>
             <a href="logout.php" class="bg-emerald-100 text-emerald-700 h-10 w-10 flex items-center justify-center rounded-full hover:bg-emerald-600 hover:text-white transition-all">
                 <i class="fa-solid fa-power-off"></i>
             </a>
@@ -123,83 +99,55 @@ $factures_presta = $stmtFact->fetchAll();
 
         <aside class="lg:col-span-1">
             <div class="bg-white rounded-senior p-6 shadow-sm sticky top-28 space-y-2 border border-emerald-50">
-                <button onclick="showTab('dashboard', this)" class="tab-btn nav-active w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold transition-all">
-                    <i class="fa-solid fa-chart-line"></i> Tableau de bord
-                </button>
-                <button onclick="showTab('services', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all">
-                    <i class="fa-solid fa-briefcase"></i> Mes Services / Offres
-                </button>
-                <button onclick="showTab('planning', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all">
-                    <i class="fa-solid fa-calendar-days"></i> Réservations & Planning
-                </button>
-                <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all">
-                    <i class="fa-solid fa-comment-dots"></i> Messages
-                </button>
-                <button onclick="showTab('profil', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all">
-                    <i class="fa-solid fa-id-card"></i> Mon Entreprise
-                </button>
+                <button onclick="showTab('dashboard', this)" class="tab-btn nav-active w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold transition-all"><i class="fa-solid fa-chart-line"></i> Tableau de bord</button>
+                <button onclick="showTab('services', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-briefcase"></i> Mes Offres & Dispos</button>
+                <button onclick="showTab('planning', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-calendar-days"></i> Réservations reçues</button>
+                <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-comment-dots"></i> Messages</button>
+                <button onclick="showTab('profil', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-id-card"></i> Mon Entreprise</button>
             </div>
         </aside>
 
         <section class="lg:col-span-3 space-y-6 w-full">
 
             <div id="dashboard" class="tab-content active space-y-6">
-
                 <div class="bg-emerald-600 p-10 rounded-senior shadow-lg text-white w-full">
-                    <h1 class="text-3xl font-title font-bold">
-                        Bonjour, <?php echo htmlspecialchars($nom_pres); ?>
-                    </h1>
-                    <p class="opacity-90 mt-2">
-                        Vous avez <?php echo count($reservations); ?> mission(s) prévue(s).
-                    </p>
+                    <h1 class="text-3xl font-title font-bold">Bonjour, <?php echo htmlspecialchars($nom_pres); ?></h1>
+                    <p class="opacity-90 mt-2">Vous avez <?php echo count($reservations); ?> mission(s) prévue(s).</p>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow p-6 w-full">
-                    <h2 class="text-xl font-bold text-emerald-700 mb-4">
-                        <i class="fa-solid fa-file-invoice mr-2"></i>Mes relevés mensuels
-                    </h2>
+                    <h2 class="text-xl font-bold text-emerald-700 mb-4"><i class="fa-solid fa-file-invoice mr-2"></i>Mes relevés mensuels</h2>
                     <?php if (empty($factures_presta)): ?>
-                        <p class="text-gray-400 text-sm">
-                            Aucun relevé disponible. Les relevés sont générés automatiquement le 1er de chaque mois.
-                        </p>
+                        <p class="text-gray-400 text-sm">Aucun relevé disponible. Les relevés sont générés automatiquement le 1er de chaque mois.</p>
                     <?php else: ?>
                         <ul class="space-y-2">
                             <?php foreach ($factures_presta as $f): ?>
                                 <li class="flex items-center justify-between bg-emerald-50 rounded-xl px-4 py-3">
-                                    <span class="text-sm font-medium text-gray-700">
-                                        📄 <?= htmlspecialchars($f['numero_facture']) ?>
-                                    </span>
-                                    <span class="text-xs text-gray-400 mx-4">
-                                        <?= str_pad($f['mois'], 2, '0', STR_PAD_LEFT) ?>/<?= $f['annee'] ?>
-                                        — Net : <?= number_format($f['montant_net_cents'] / 100, 2, ',', ' ') ?> €
-                                    </span>
-                                    <a href="telecharger_facture.php?id=<?= $f['id_facture'] ?>"
-                                       target="_blank"
-                                       class="text-sm text-emerald-600 font-semibold hover:underline">
-                                        Télécharger
-                                    </a>
+                                    <span class="text-sm font-medium text-gray-700">📄 <?= htmlspecialchars($f['numero_facture']) ?></span>
+                                    <span class="text-xs text-gray-400 mx-4"><?= str_pad($f['mois'], 2, '0', STR_PAD_LEFT) ?>/<?= $f['annee'] ?> — Net : <?= number_format($f['montant_net_cents'] / 100, 2, ',', ' ') ?> €</span>
+                                    <a href="telecharger_facture.php?id=<?= $f['id_facture'] ?>" target="_blank" class="text-sm text-emerald-600 font-semibold hover:underline">Télécharger</a>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
                     <?php endif; ?>
                 </div>
+            </div>
 
-            </div><div id="services" class="tab-content space-y-6">
+            <div id="services" class="tab-content space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-2xl font-title font-bold text-emerald-800">Mes Offres de Services</h2>
-                    <button onclick="toggleModal('modalService')" class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-md">
-                        + Ajouter un service
-                    </button>
+                    <h2 class="text-2xl font-title font-bold text-emerald-800">Mes Offres Planifiées</h2>
+                    <button onclick="toggleModal('modalService')" class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-md">+ Publier une offre</button>
                 </div>
 
                 <?php if (isset($_GET['error'])): ?>
                     <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-4 font-bold text-sm">
                         <?php
                         echo match ($_GET['error']) {
-                            'desc_courte'   => 'La description doit faire au moins 10 caractères.',
-                            'prix_invalide' => 'Le prix doit être supérieur à 0.',
-                            'sql'           => 'Erreur base de données.',
-                            default         => 'Une erreur est survenue.'
+                            'desc_courte'     => 'La description doit faire au moins 10 caractères.',
+                            'prix_invalide'   => 'Le prix doit être supérieur à 0.',
+                            'dates_invalides' => 'Les dates doivent être dans le futur et cohérentes.',
+                            'sql'             => 'Erreur base de données.',
+                            default           => 'Une erreur est survenue.'
                         };
                         ?>
                     </div>
@@ -207,7 +155,7 @@ $factures_presta = $stmtFact->fetchAll();
 
                 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'service_ajoute'): ?>
                     <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-2xl mb-4 font-bold text-sm">
-                        <i class="fa-solid fa-check mr-2"></i>Service publié avec succès !
+                        <i class="fa-solid fa-check mr-2"></i>Offre et disponibilité publiées avec succès !
                     </div>
                 <?php endif; ?>
 
@@ -220,16 +168,20 @@ $factures_presta = $stmtFact->fetchAll();
                         <?php foreach ($mes_services as $srv): ?>
                             <div class="bg-white p-6 rounded-senior shadow-sm border border-emerald-50 relative group">
                                 <h3 class="font-bold text-lg text-emerald-700"><?php echo htmlspecialchars($srv['nom_service']); ?></h3>
-                                <p class="text-xs text-emerald-500 font-bold mb-2">
-                                    <i class="fa-solid fa-location-dot"></i>
-                                    <?php echo htmlspecialchars($srv['ville'] ?? 'Non précisée'); ?>
-                                </p>
-                                <p class="text-slate-500 text-sm mt-1"><?php echo htmlspecialchars($srv['description']); ?></p>
+                                <p class="text-xs text-emerald-500 font-bold mb-2"><i class="fa-solid fa-location-dot"></i> <?php echo htmlspecialchars($srv['ville'] ?? 'Non précisée'); ?></p>
+                                
+                                <?php if($srv['date_debut']): ?>
+                                    <div class="bg-emerald-50 text-emerald-800 text-xs font-bold p-3 rounded-xl mb-3 border border-emerald-100">
+                                        <i class="fa-regular fa-clock mr-1"></i> 
+                                        Du <?= date('d/m/Y H:i', strtotime($srv['date_debut'])) ?> <br>
+                                        Au <?= date('d/m/Y H:i', strtotime($srv['date_fin'])) ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <p class="text-slate-500 text-sm mt-1 line-clamp-2"><?php echo htmlspecialchars($srv['description']); ?></p>
+                                
                                 <div class="mt-4 flex justify-between items-center font-bold">
-                                    <span class="text-xl">
-                                        <?php echo htmlspecialchars($srv['prix']); ?>€
-                                        <small class="text-xs text-slate-400">/heure</small>
-                                    </span>
+                                    <span class="text-xl"><?php echo htmlspecialchars($srv['prix']); ?>€ <small class="text-xs text-slate-400">/heure</small></span>
                                     <a href="delete_service.php?id=<?php echo (int) $srv['id_service']; ?>" class="text-red-400 hover:text-red-600 transition-colors">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </a>
@@ -238,7 +190,9 @@ $factures_presta = $stmtFact->fetchAll();
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
-            </div><div id="planning" class="tab-content space-y-6">
+            </div>
+
+            <div id="planning" class="tab-content space-y-6">
                 <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                     <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Réservations reçues</h2>
                     <?php if (empty($reservations)): ?>
@@ -286,48 +240,16 @@ $factures_presta = $stmtFact->fetchAll();
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
+            </div>
 
-                <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
-                    <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Gérer mes disponibilités</h2>
-                    
-                    <form id="form-dispo" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 bg-emerald-50/50 p-6 rounded-2xl">
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase ml-2">Service associé</label>
-                            <select id="dispo-service" required class="w-full p-4 rounded-xl border-none focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm bg-white">
-                                <option value="">-- Choisir --</option>
-                                <?php foreach ($mes_services as $srv): ?>
-                                    <option value="<?= $srv['id_service'] ?>"><?= htmlspecialchars($srv['nom_service']) ?> (<?= htmlspecialchars($srv['ville']) ?>)</option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase ml-2">Début</label>
-                            <input type="datetime-local" id="dispo-debut" required class="w-full p-4 rounded-xl border-none focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-xs font-bold text-slate-400 uppercase ml-2">Fin</label>
-                            <input type="datetime-local" id="dispo-fin" required class="w-full p-4 rounded-xl border-none focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
-                        </div>
-                        <div class="flex items-end">
-                            <button type="button" onclick="ajouterDispo()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg">Ajouter</button>
-                        </div>
-                    </form>
-
-                    <div class="space-y-4">
-                        <h3 class="font-bold text-slate-600 flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-check text-emerald-500"></i> Vos créneaux
-                        </h3>
-                        <div id="liste-dispos" class="grid grid-cols-1 gap-3 text-sm">
-                            <p class="text-slate-400 italic">Chargement...</p>
-                        </div>
-                    </div>
-                </div>
-            </div><div id="messages" class="tab-content space-y-6">
+            <div id="messages" class="tab-content space-y-6">
                 <div class="bg-white p-10 rounded-senior shadow-sm border border-emerald-50 text-center text-slate-400 italic">
                     <i class="fa-solid fa-comment-dots text-4xl mb-4 block text-emerald-100"></i>
                     Messagerie bientôt disponible.
                 </div>
-            </div><div id="profil" class="tab-content space-y-6">
+            </div>
+
+            <div id="profil" class="tab-content space-y-6">
                 <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                     <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Mon Entreprise</h2>
                     <div class="space-y-3 text-slate-600">
@@ -341,28 +263,46 @@ $factures_presta = $stmtFact->fetchAll();
                         <?php endif; ?>
                     </div>
                 </div>
-            </div></section>
+            </div>
+
+        </section>
     </main>
 
     <div id="modalService" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-md rounded-senior shadow-2xl overflow-hidden">
+        <div class="bg-white w-full max-w-lg rounded-senior shadow-2xl overflow-hidden">
             <div class="bg-emerald-600 p-6 text-white flex justify-between items-center font-bold">
-                <h3 class="text-xl">Nouvelle Offre</h3>
+                <h3 class="text-xl">Planifier une Offre</h3>
                 <button onclick="toggleModal('modalService')" class="text-2xl">&times;</button>
             </div>
             <form action="add_service.php" method="POST" class="p-8 space-y-4">
                 <input type="text" name="nom_service" value="<?php echo htmlspecialchars($categorie_pres); ?>" readonly class="w-full p-4 bg-slate-100 border-none rounded-2xl text-slate-500 font-bold cursor-not-allowed outline-none">
-                <input type="text" name="ville" placeholder="Ville d'exercice" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
-                <input type="number" name="prix" placeholder="Prix par heure (€)" min="1" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" name="ville" placeholder="Lieu (Ville)" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <input type="number" name="prix" placeholder="Prix total (€)" min="1" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+
+                <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 space-y-4">
+                    <h4 class="text-xs font-bold text-emerald-800 uppercase">Disponibilité de l'offre</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Début</label>
+                            <input type="datetime-local" id="dispo-debut" name="debut" required class="w-full p-3 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Fin</label>
+                            <input type="datetime-local" id="dispo-fin" name="fin" required class="w-full p-3 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
                 <textarea name="description" placeholder="Description courte (10 caractères min.)" rows="3" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
-                <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-700 transition-all">Publier l'offre</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-700 transition-all">Publier et Planifier</button>
             </form>
         </div>
     </div>
 
     <script>
-        const PRESTA_ID = <?php echo (int) $id_pres; ?>;
-
         function showTab(id, btn) {
             const tab = document.getElementById(id);
             if (!tab) return;
@@ -377,67 +317,25 @@ $factures_presta = $stmtFact->fetchAll();
             document.getElementById(id).classList.toggle('hidden');
         }
 
-        async function chargerDispos() {
-            try {
-                const res = await fetch(`api/dispos.php?id_prestataire=${PRESTA_ID}`);
-                const data = await res.json();
-                const container = document.getElementById('liste-dispos');
-                container.innerHTML = data.length === 0
-                    ? '<p class="text-slate-400 italic">Aucun créneau.</p>'
-                    : data.map(dispo => `
-                        <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                            <div>
-                                <span class="block text-xs font-bold text-emerald-600 uppercase mb-1">${dispo.nom_service || 'Service global'}</span>
-                                <span>Du ${new Date(dispo.date_debut).toLocaleString('fr-FR')} au ${new Date(dispo.date_fin).toLocaleString('fr-FR')}</span>
-                            </div>
-                            <button onclick="supprimerDispo(${dispo.id_disponibilite})" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    `).join('');
-            } catch (e) { console.error(e); }
-        }
-
-        async function ajouterDispo() {
-            const id_service = document.getElementById('dispo-service').value;
-            const debut = document.getElementById('dispo-debut').value;
-            const fin = document.getElementById('dispo-fin').value;
-            
-            if (!id_service || !debut || !fin) { 
-                alert('Tous les champs sont requis, y compris le service.'); 
-                return; 
-            }
-            
-            const res = await fetch('api/dispos.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id_p: PRESTA_ID, id_service: id_service, debut, fin })
-            });
-            
-            if (res.ok) { 
-                document.getElementById('form-dispo').reset(); 
-                chargerDispos(); 
-                return; 
-            }
-            
-            const err = await res.json();
-            alert(err.error);
-        }
-
-        async function supprimerDispo(id) {
-            if (!confirm('Supprimer ce créneau ?')) return;
-            await fetch(`api/dispos.php?id=${id}`, { method: 'DELETE' });
-            chargerDispos();
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             const hash = window.location.hash.replace('#', '');
             if (hash) {
                 const btn = document.querySelector(`.tab-btn[onclick*="'${hash}'"]`);
                 if (btn) showTab(hash, btn);
             }
-            const now = new Date().toISOString().slice(0, 16);
-            document.getElementById('dispo-debut').min = now;
-            document.getElementById('dispo-fin').min = now;
-            chargerDispos();
+            
+            // Bloquer les dates passées dans le formulaire
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const minDate = now.toISOString().slice(0, 16);
+            
+            const debutInput = document.getElementById('dispo-debut');
+            const finInput = document.getElementById('dispo-fin');
+            
+            if(debutInput && finInput) {
+                debutInput.min = minDate;
+                finInput.min = minDate;
+            }
         });
     </script>
 </body>
