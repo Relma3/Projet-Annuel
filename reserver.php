@@ -309,7 +309,8 @@ function selectionnerCreneau(btn) {
 }
 
 function toMysql(date) {
-    return date.toISOString().slice(0, 19).replace('T', ' ');
+    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return localDate.toISOString().slice(0, 19).replace('T', ' ');
 }
 </script>
 </body>
