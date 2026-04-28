@@ -153,6 +153,9 @@ $factures = $stmt->fetchAll();
     <script>
         localStorage.setItem('token', <?php echo json_encode($jwt_token); ?>);
     </script>
+
+    <?php include __DIR__ . '/includes/onesignal.php'; ?>
+
 </head>
 
 <body class="bg-sable font-sans text-slate-800">

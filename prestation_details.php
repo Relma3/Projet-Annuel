@@ -14,18 +14,46 @@ try {
 
 $infos = [
     'domicile' => [
-        'titre' => 'Services à domicile',
-        'tagline' => 'Retrouvez le plaisir d\'un foyer impeccable sans effort.',
-        'image' => 'service.png', 
+        'titre'              => 'Services à domicile',
+        'tagline'            => 'Retrouvez le plaisir d\'un foyer impeccable sans effort.',
+        'image'              => 'service.png',
         'description_defaut' => 'Parce que votre domicile est votre havre de paix, Silver Happy a sélectionné des experts du soin de l\'intérieur. Nos intervenants veillent à votre confort quotidien en respectant vos habitudes.',
-        'points_forts' => ['Produits écoresponsables', 'Ponctualité garantie', 'Personnel formé aux seniors']
+        'points_forts'       => ['Produits écoresponsables', 'Ponctualité garantie', 'Personnel formé aux seniors']
     ],
     'sante' => [
-        'titre' => 'Santé & Bien-être',
-        'tagline' => 'Une approche douce et préventive pour votre vitalité.',
-        'image' => 'images/service-sante.jpg',
+        'titre'              => 'Santé & Bien-être',
+        'tagline'            => 'Une approche douce et préventive pour votre vitalité.',
+        'image'              => 'service.png',
         'description_defaut' => 'La santé après 60 ans demande une attention particulière. Nous vous mettons en relation avec des professionnels de la médecine douce pour maintenir votre autonomie.',
-        'points_forts' => ['Téléconsultation incluse', 'Suivi personnalisé', 'Experts certifiés']
+        'points_forts'       => ['Téléconsultation incluse', 'Suivi personnalisé', 'Experts certifiés']
+    ],
+    'loisirs' => [
+        'titre'              => 'Loisirs & Culture',
+        'tagline'            => 'Évènements, sorties et rencontres pour rester actif.',
+        'image'              => 'service.png',
+        'description_defaut' => 'Silver Happy organise des événements culturels, des soirées de rencontres, des visites et des conférences dédiés aux seniors. Restez connecté et épanoui.',
+        'points_forts'       => ['Événements hebdomadaires', 'Sorties culturelles', 'Rencontres entre seniors']
+    ],
+    'maison' => [
+        'titre'              => 'Maison & Habitat',
+        'tagline'            => 'Petit bricolage, jardinage et amélioration de l\'habitat.',
+        'image'              => 'service.png',
+        'description_defaut' => 'Nos artisans qualifiés interviennent chez vous pour tous vos travaux du quotidien : petite plomberie, jardinage, décoration ou amélioration de votre habitat.',
+        'points_forts'       => ['Artisans certifiés', 'Devis gratuit', 'Intervention rapide']
+    ],
+    'formations' => [
+        'titre'              => 'Formations',
+        'tagline'            => 'Cours d\'informatique, de langues et ateliers thématiques.',
+        'image'              => 'service.png',
+        'description_defaut' => 'Apprenez à votre rythme avec nos formateurs spécialisés pour les seniors. Informatique, langues étrangères, arts ou cuisine — il n\'est jamais trop tard pour apprendre.',
+        'points_forts'       => ['Cours adaptés aux seniors', 'Petits groupes', 'Formateurs patients']
+    ],
+    'boutique' => [
+        'titre'              => 'Boutique adaptée',
+        'tagline'            => 'Articles de confort et équipements spécialisés.',
+        'image'              => 'service.png',
+        'description_defaut' => 'Retrouvez dans notre boutique une sélection d\'articles de confort, d\'équipements de maintien à domicile et de produits adaptés à votre quotidien.',
+        'points_forts'       => ['Produits sélectionnés', 'Livraison à domicile', 'Garantie satisfaction']
     ],
 ];
 

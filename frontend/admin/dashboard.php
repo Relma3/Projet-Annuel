@@ -360,7 +360,7 @@ function showSection(name) {
   document.getElementById('page-sub').textContent = titles[name][1];
   if (name === 'overview') chargerStats();
   if (name === 'articles') chargerArticles();
-  if (name === 'prestataires') chargerPrestataires();
+  if (name === 'prestataire') chargerPrestataires();
   
 }
 

@@ -8,6 +8,8 @@ services:
       - .:/app
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       DB_HOST: db
       DB_NAME: silver_happy
@@ -57,8 +59,3 @@ services:
 
 volumes:
   db_data:
-
-  environment:
-  STRIPE_PUBLIC_KEY: "${STRIPE_PUBLIC_KEY}"
-  STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
-  STRIPE_SECRET: "${STRIPE_SECRET}"
