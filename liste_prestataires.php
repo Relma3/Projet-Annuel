@@ -6,7 +6,7 @@ try {
     $stmtCat = $pdo->query("SELECT * FROM categories_prestations ORDER BY nom ASC");
     $categories = $stmtCat->fetchAll();
  
-    $id_cat_filter = isset($_GET['cat']) ? intval($_GET['cat']) : 0;
+    $cat_filter = $_GET['cat'] ?? '';
  
     $sql = "
         SELECT 
@@ -24,11 +24,10 @@ try {
     ";
  
     $params = [];
-    $cat_filter = $_GET['cat'] ?? '';
-if ($cat_filter !== '') {
-    $sql .= " AND p.categorie = ?";
-    $params[] = $cat_filter;
-}
+    if ($cat_filter !== '') {
+        $sql .= " AND p.categorie = ?";
+        $params[] = $cat_filter;
+    }
  
     $sql .= " GROUP BY s.id_service, p.id_prestataire ORDER BY nb_dispos_semaine DESC, p.note_moyenne DESC";
  
@@ -80,36 +79,35 @@ if ($cat_filter !== '') {
         <h1 class="text-4xl font-title font-bold text-slate-900 mb-4">Découvrez nos services</h1>
         <p class="text-slate-500">Des professionnels qualifiés pour vous simplifier la vie.</p>
     </div>
-
+ 
     <?php if (!empty($categories)): ?>
     <div class="flex flex-wrap gap-3 justify-center mb-10">
         <a href="liste_prestataires.php"
-           class="px-5 py-2 rounded-full font-bold text-sm transition-all <?php echo $id_cat_filter === 0 ? 'bg-corail text-white shadow-md' : 'bg-white text-slate-500 hover:bg-peche'; ?>">
+           class="px-5 py-2 rounded-full font-bold text-sm transition-all <?php echo $cat_filter === '' ? 'bg-corail text-white shadow-md' : 'bg-white text-slate-500 hover:bg-peche'; ?>">
             Tous
         </a>
         <?php foreach ($categories as $cat): ?>
-        <a href="?cat=<?php echo urlencode($cat['nom']); ?>">
-           class="px-5 py-2 rounded-full font-bold text-sm transition-all <?php echo $id_cat_filter === (int)$cat['id_categorie'] ? 'bg-corail text-white shadow-md' : 'bg-white text-slate-500 hover:bg-peche'; ?>">
-            <?php echo htmlspecialchars($cat['nom']); ?>
+        <a href="?cat=<?php echo urlencode($cat['nom']); ?>"
+           class="px-5 py-2 rounded-full font-bold text-sm transition-all <?php echo $cat_filter === $cat['nom'] ? 'bg-corail text-white shadow-md' : 'bg-white text-slate-500 hover:bg-peche'; ?>">
+            <?php echo htmlspecialchars(ucfirst($cat['nom'])); ?>
         </a>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
-
+ 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <?php if (empty($offres)): ?>
             <div class="col-span-full text-center py-20 bg-white rounded-senior border-2 border-dashed border-slate-200">
                 <p class="text-slate-400 italic font-medium">Aucune offre disponible pour le moment.</p>
             </div>
         <?php else: foreach ($offres as $o):
-            $nbDispos       = (int)$o['nb_dispos_semaine'];
-            $prochaineDate  = $o['prochaine_dispo'] ? date('d/m à H\hi', strtotime($o['prochaine_dispo'])) : null;
-            $note           = (float)$o['note_moyenne'];
-            $nbEvals        = (int)$o['nombre_evaluations'];
+            $nbDispos      = (int)$o['nb_dispos_semaine'];
+            $prochaineDate = $o['prochaine_dispo'] ? date('d/m à H\hi', strtotime($o['prochaine_dispo'])) : null;
+            $note          = (float)$o['note_moyenne'];
+            $nbEvals       = (int)$o['nombre_evaluations'];
         ?>
             <div class="bg-white rounded-senior shadow-sm hover:shadow-xl transition-all border border-slate-50 overflow-hidden flex flex-col p-8 relative">
  
-             
                 <?php if ($nbDispos === 0): ?>
                     <span class="absolute top-4 right-4 bg-slate-100 text-slate-400 text-[10px] font-bold px-3 py-1 rounded-full">
                         Indisponible cette semaine
@@ -133,12 +131,10 @@ if ($cat_filter !== '') {
                     </span>
                 </div>
  
-            
                 <h2 class="text-xl font-bold text-slate-900 mb-1">
                     <?php echo htmlspecialchars($o['prenom'] . ' ' . $o['nom']); ?>
                 </h2>
  
-               
                 <?php if ($nbEvals > 0): ?>
                 <div class="flex items-center gap-1 mb-2">
                     <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -148,7 +144,6 @@ if ($cat_filter !== '') {
                 </div>
                 <?php endif; ?>
  
-   
                 <div class="flex items-center gap-2 text-slate-400 text-[10px] mb-4 font-bold uppercase">
                     <i class="fa-solid fa-location-dot text-corail"></i>
                     <?php echo htmlspecialchars($o['ville']); ?>
@@ -157,14 +152,14 @@ if ($cat_filter !== '') {
                 <p class="text-slate-500 text-sm mb-6 italic flex-1">
                     "<?php echo htmlspecialchars(mb_strimwidth($o['description'], 0, 100, '...')); ?>"
                 </p>
-
+ 
                 <?php if ($prochaineDate): ?>
                 <p class="text-xs text-emerald-600 font-bold mb-4">
                     <i class="fa-regular fa-calendar-check mr-1"></i>
                     Prochaine dispo : <?php echo $prochaineDate; ?>
                 </p>
                 <?php endif; ?>
-
+ 
                 <?php if ($nbDispos > 0): ?>
                     <a href="reserver.php?id_service=<?php echo $o['id_service']; ?>"
                        class="block w-full text-center bg-corail text-white py-4 rounded-2xl font-bold hover:scale-105 transition-all shadow-lg shadow-corail/20">
@@ -176,11 +171,11 @@ if ($cat_filter !== '') {
                         Aucune disponibilité
                     </button>
                 <?php endif; ?>
-
+ 
             </div>
         <?php endforeach; endif; ?>
     </div>
 </main>
-
+ 
 </body>
 </html>
