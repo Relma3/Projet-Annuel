@@ -9,7 +9,7 @@ if ($method === 'GET') {
     $stmt = $pdo->query("
         SELECT id_utilisateur, email, est_actif, created_at
         FROM utilisateur
-        WHERE role = 'prestataire'
+        WHERE type_utilisateur = 'prestataire'
     ");
 
     echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
