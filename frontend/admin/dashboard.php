@@ -651,7 +651,11 @@ async function chargerPrestataires() {
       : '<span class="text-orange-400">En attente</span>'
   }
 </td>
-        <td class="p-3">-</td>
+       <td class="p-3">
+  <button onclick="voirDocs(${p.id_utilisateur})" class="text-blue-400 hover:underline">
+    Voir documents
+  </button>
+</td>
       </tr>
     `).join('');
 
@@ -725,6 +729,48 @@ async function validerDoc(id, statut){
   });
 
   chargerDocuments();
+}
+async function voirDocs(id_prestataire) {
+
+  // switch vers section documents
+  showSection('documents');
+
+  // charger documents filtrés
+  const res = await fetch('/api/admin/documents.php?id_prestataire=' + id_prestataire, {
+    headers: { Authorization: 'Bearer ' + token() }
+  });
+
+  const data = await res.json();
+
+  const table = document.getElementById('table-documents');
+
+  table.innerHTML = data.map(d => `
+    <tr>
+      <td>${d.email}</td>
+      <td>${d.type_document}</td>
+
+      <td>
+        <a href="/${d.chemin_fichier}" target="_blank" class="text-blue-400">
+          Voir
+        </a>
+      </td>
+
+      <td>
+        ${
+          d.statut === 'valide'
+            ? '<span class="text-green-400">Validé</span>'
+            : d.statut === 'refuse'
+            ? '<span class="text-red-400">Refusé</span>'
+            : '<span class="text-orange-400">En attente</span>'
+        }
+      </td>
+
+      <td>
+        <button onclick="validerDoc(${d.id_document}, 'valide')">oui</button>
+        <button onclick="validerDoc(${d.id_document}, 'refuse')">non</button>
+      </td>
+    </tr>
+  `).join('');
 }
 // FIN MALIKAT
 </script>

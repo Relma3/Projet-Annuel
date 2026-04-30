@@ -5,11 +5,25 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
 
-    $stmt = $pdo->query("
-        SELECT d.*, u.email
-        FROM documents_presta d
-        JOIN utilisateur u ON d.id_prestataire = u.id_utilisateur
-    ");
+    if (isset($_GET['id_prestataire'])) {
+
+        $stmt = $pdo->prepare("
+            SELECT d.*, u.email
+            FROM documents_presta d
+            JOIN utilisateur u ON d.id_prestataire = u.id_utilisateur
+            WHERE d.id_prestataire = ?
+        ");
+
+        $stmt->execute([$_GET['id_prestataire']]);
+
+    } else {
+
+        $stmt = $pdo->query("
+            SELECT d.*, u.email
+            FROM documents_presta d
+            JOIN utilisateur u ON d.id_prestataire = u.id_utilisateur
+        ");
+    }
 
     echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
     exit;
