@@ -59,3 +59,5 @@ if ($reste == 0) {
         WHERE id_utilisateur = ?
     ")->execute([$id_prestataire]);
 }
+    echo json_encode(['success' => true]);
+}
