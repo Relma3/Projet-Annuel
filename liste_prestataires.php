@@ -45,22 +45,22 @@ try {
     $offres = $stmt->fetchAll();
 
     $disposByPres = [];
-    if (!empty($offres)) {
-        $ids = array_unique(array_column($offres, 'id_prestataire'));
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $stmtD = $pdo->prepare("
-            SELECT id_disponibilite, id_prestataire, date_debut, date_fin
-            FROM disponibilites
-            WHERE id_prestataire IN ($placeholders)
-              AND type = 'libre'
-              AND date_debut >= NOW()
-            ORDER BY date_debut ASC
-        ");
-        $stmtD->execute($ids);
-        foreach ($stmtD->fetchAll() as $d) {
-            $disposByPres[$d['id_prestataire']][] = $d;
-        }
+if (!empty($offres)) {
+    $ids = array_unique(array_column($offres, 'id_prestataire'));
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmtD = $pdo->prepare("
+        SELECT id_disponibilite, id_prestataire, date_debut, date_fin
+        FROM disponibilites
+        WHERE id_prestataire IN ($placeholders)
+          AND type = 'libre'
+          AND date_debut >= NOW()
+        ORDER BY date_debut ASC
+    ");
+    $stmtD->execute($ids);
+    foreach ($stmtD->fetchAll() as $d) {
+        $disposByPres[$d['id_prestataire']][] = $d;
     }
+}
 
 } catch (PDOException $e) {
     die("Erreur SQL : " . $e->getMessage());
