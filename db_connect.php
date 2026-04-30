@@ -1,6 +1,4 @@
-<?php
-// Mmina 
-error_log("DB host=$host dbname=$dbname user=$db_user pass=" . (empty($db_pass) ? 'VIDE' : 'OK'));
+<?php 
 if (file_exists(__DIR__ . '/.env.php')) {
     require_once __DIR__ . '/.env.php';
 }
