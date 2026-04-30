@@ -134,8 +134,18 @@ tailwind.config = {
               <i class="fa-solid fa-briefcase text-blue-400"></i>
             </div>
           </div>
-          <p class="text-3xl font-bold text-white mb-1" id="stat-pres">—</p>
-          <p class="text-slate-400 text-sm">Prestataires</p>
+         <p class="text-3xl font-bold text-white mb-1" id="stat-pres">—</p>
+<p class="text-slate-400 text-sm">Prestataires</p>
+
+<p class="text-xs mt-2">
+  <span class="text-green-400">
+    ✔ <span id="presta-valides">0</span> validés
+  </span><br>
+
+  <span class="text-orange-400">
+    ⏳ <span id="presta-attente">0</span> en attente
+  </span>
+</p>
         </div>
 
         <div class="stat-card bg-slate-800 border border-slate-700 rounded-2xl p-6">
@@ -425,6 +435,11 @@ async function chargerStats() {
     ]);
     const ns = Array.isArray(s) ? s.length : 0;
     const np = Array.isArray(p) ? p.length : 0;
+    const valides = p.filter(x => x.est_actif == 1).length;
+    const attente = p.filter(x => x.est_actif == 0).length;
+  
+    document.getElementById('presta-valides').textContent = valides;
+    document.getElementById('presta-attente').textContent = attente;
     const nc = Array.isArray(c) ? c.length : 0;
     const ne = Array.isArray(e) ? e.length : 0;
 
@@ -494,6 +509,8 @@ chargerPrestataires = async function() {
   try {
     const res = await fetch('/api/admin.php?action=prestataires', { headers: { Authorization: 'Bearer ' + token() } });
     const data = await res.json();
+    const valides = data.filter(p => p.est_actif == 1).length;
+   const attente = data.filter(p => p.est_actif == 0).length;
     const tbody = document.getElementById('table-prestataires');
     if (!Array.isArray(data)) { tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-400">Erreur de chargement</td></tr>'; return; }
     tbody.innerHTML = data.map(p => `
