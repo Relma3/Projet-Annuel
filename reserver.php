@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 </head>
 <body class="bg-sable font-sans text-slate-800 min-h-screen">
-
+<?php include 'accessibilite.php'; ?>
 <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
     <a href="index.php" class="text-xl font-bold text-corail font-title">Silver Happy</a>
     <a href="javascript:history.back()" class="text-slate-500 font-bold hover:text-corail">

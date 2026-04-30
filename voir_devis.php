@@ -60,7 +60,7 @@ try {
     </style>
 </head>
 <body class="bg-slate-100 p-4 md:p-10 font-sans text-slate-800">
-
+    <?php include 'accessibilite.php'; ?>
     <div class="max-w-4xl mx-auto bg-white p-10 md:p-16 rounded-2xl shadow-lg border border-slate-200">
 
       
