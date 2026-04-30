@@ -111,6 +111,7 @@ try {
 
     <section class="lg:col-span-3 space-y-6 w-full">
 
+ 
         <div id="dashboard" class="tab-content active space-y-6">
             <div class="bg-emerald-600 p-10 rounded-senior shadow-lg text-white w-full">
                 <h1 class="text-3xl font-title font-bold">Bonjour, <?php echo htmlspecialchars($nom_pres); ?></h1>
@@ -135,7 +136,6 @@ try {
             </div>
         </div>
 
- 
         <div id="services" class="tab-content space-y-6">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-title font-bold text-emerald-800">Mes Offres Planifiées</h2>
@@ -154,9 +154,10 @@ try {
                 <div class="bg-blue-50 border border-blue-200 text-blue-700 p-8 rounded-2xl text-center shadow-sm">
                     <i class="fa-solid fa-building-columns text-4xl mb-4 text-blue-400 block"></i>
                     <h3 class="font-bold text-xl mb-2">Configuration requise</h3>
-                    <p class="text-sm">Renseignez votre <strong>IBAN</strong> dans "Mon Entreprise" pour créer des offres.</p>
+                    <p class="text-sm">Renseignez votre <strong>IBAN</strong> dans l'onglet "Mon Entreprise" pour pouvoir créer des offres et recevoir des paiements.</p>
                 </div>
             <?php else: ?>
+                
                 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'service_ajoute'): ?>
                 <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-2xl mb-4 font-bold text-sm">
                     <i class="fa-solid fa-check mr-2"></i>Offre et disponibilité publiées avec succès !
@@ -182,14 +183,18 @@ try {
                         </div>
                     <?php else: ?>
                         <?php foreach ($mes_services as $srv): ?>
-                        <div class="bg-white p-6 rounded-senior shadow-sm border border-emerald-50">
+                        <div class="bg-white p-6 rounded-senior shadow-sm border border-emerald-50 relative group">
                             <h3 class="font-bold text-lg text-emerald-700"><?php echo htmlspecialchars($srv['nom_service']); ?></h3>
                             <p class="text-xs text-emerald-500 font-bold mb-2"><i class="fa-solid fa-location-dot"></i> <?php echo htmlspecialchars($srv['ville'] ?? 'Non précisée'); ?></p>
+                            
                             <?php if ($srv['date_debut']): ?>
                             <div class="bg-emerald-50 text-emerald-800 text-xs font-bold p-3 rounded-xl mb-3 border border-emerald-100">
                                 <i class="fa-regular fa-clock mr-1"></i> Du <?= date('d/m/Y H:i', strtotime($srv['date_debut'])) ?> au <?= date('d/m/Y H:i', strtotime($srv['date_fin'])) ?>
                             </div>
                             <?php endif; ?>
+                            
+                            <p class="text-slate-500 text-sm mt-1 line-clamp-2"><?php echo htmlspecialchars($srv['description']); ?></p>
+
                             <div class="mt-4 flex justify-between items-center font-bold">
                                 <span class="text-xl"><?php echo htmlspecialchars($srv['prix']); ?>€ <small class="text-xs text-slate-400">/heure</small></span>
                                 <a href="delete_service.php?id=<?php echo (int)$srv['id_service']; ?>" class="text-red-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-trash-can"></i></a>
@@ -265,13 +270,14 @@ try {
                                         <?php endif; ?>
                                     </div>
                                     <?php endif; ?>
-    
+
                                     <?php if (!empty($r['description'])): ?>
                                     <p class="text-xs text-slate-400 mt-2 italic">
                                         "<?php echo htmlspecialchars($r['description']); ?>"
                                     </p>
                                     <?php endif; ?>
                                 </div>
+
 
                                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
 
@@ -291,7 +297,6 @@ try {
                                         }; ?>
                                     </span>
 
-                                  
                                     <?php if ($r['statut'] === 'confirme' && !empty($r['devis_statut'])): ?>
                                     <span class="text-xs font-bold px-3 py-1 rounded-full <?php echo match($r['devis_statut']) {
                                         'envoye'  => 'bg-blue-100 text-blue-600',
@@ -320,7 +325,6 @@ try {
                                     <?php endif; ?>
                                     <?php endif; ?>
 
-                                 
                                     <?php if ($r['statut'] === 'en_attente'): ?>
                                     <div class="flex gap-2">
                                         <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=accepter"
@@ -352,6 +356,7 @@ try {
                 <i class="fa-solid fa-comment-dots text-4xl mb-4 block text-emerald-100"></i> Messagerie bientôt disponible.
             </div>
         </div>
+
         <div id="profil" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Mon Entreprise</h2>
@@ -360,7 +365,7 @@ try {
                 <div class="bg-amber-50 border border-amber-200 text-amber-700 p-6 rounded-2xl text-center mb-8">
                     <i class="fa-solid fa-hourglass-half text-3xl mb-2 text-amber-400 block"></i>
                     <h3 class="font-bold text-lg mb-1">Vérification en cours</h3>
-                    <p class="text-sm">Votre profil est en cours d'examen.</p>
+                    <p class="text-sm">Votre profil est en cours d'examen. Certaines fonctionnalités seront disponibles après validation.</p>
                 </div>
                 <?php endif; ?>
 
@@ -452,6 +457,8 @@ try {
 
     </section>
 </main>
+
+
 <div id="modalService" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-6">
     <div class="bg-white w-full max-w-lg rounded-senior shadow-2xl overflow-hidden">
         <div class="bg-emerald-600 p-6 text-white flex justify-between items-center font-bold">
@@ -464,6 +471,8 @@ try {
                 <input type="text" name="ville" placeholder="Lieu (Ville)" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
                 <input type="number" name="prix" placeholder="Prix total (€)" min="1" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
             </div>
+            
+          
             <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 space-y-4">
                 <h4 class="text-xs font-bold text-emerald-800 uppercase">Disponibilité pour cette offre</h4>
                 <div class="grid grid-cols-2 gap-4">
@@ -477,6 +486,7 @@ try {
                     </div>
                 </div>
             </div>
+
             <textarea name="description" placeholder="Description courte (10 caractères min.)" rows="3" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
             <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-700 transition-all">Publier l'offre et le créneau</button>
         </form>
@@ -530,6 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) showTab(hash, btn);
     }
 
+    
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     const minDate = now.toISOString().slice(0, 16);
