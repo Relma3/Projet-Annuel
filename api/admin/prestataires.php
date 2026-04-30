@@ -4,7 +4,7 @@ require_once '../config/database.php';
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    $stmt = $pdo->query("SELECT id_utilisateur, email, created_at FROM utilisateur WHERE type_utilisateur = 'prestataire'");
+    $stmt = $pdo->query("SELECT id_utilisateur, email, est_actif, created_at FROM utilisateur WHERE type_utilisateur = 'prestataire'");
     echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
 
