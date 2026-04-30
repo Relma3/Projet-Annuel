@@ -684,7 +684,7 @@ async function chargerDocuments() {
       <td>${d.type_document}</td>
 
       <td>
-        <a href="${d.chemin_fichier}" target="_blank" class="text-blue-400">
+        <a href="/${d.chemin_fichier}" target="_blank" class="text-blue-400">
   Voir
 </a>
       </td>
