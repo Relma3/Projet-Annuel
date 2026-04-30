@@ -18,7 +18,7 @@ $jours = [
     'Monday' => 'Lun', 'Tuesday' => 'Mar', 'Wednesday' => 'Mer',
     'Thursday' => 'Jeu', 'Friday' => 'Ven', 'Saturday' => 'Sam', 'Sunday' => 'Dim'
 ];
-$mois = [
+$mois_court = [
     'January' => 'jan', 'February' => 'fév', 'March' => 'mar',
     'April' => 'avr', 'May' => 'mai', 'June' => 'juin', 'July' => 'juil',
     'August' => 'août', 'September' => 'sep', 'October' => 'oct',
@@ -26,7 +26,6 @@ $mois = [
 ];
 
 try {
-   
     $sql = "
         SELECT s.*, p.prenom, p.nom, p.id_prestataire, p.note_moyenne, p.nombre_evaluations, p.ville AS ville_pres
         FROM services s
@@ -45,22 +44,22 @@ try {
     $offres = $stmt->fetchAll();
 
     $disposByPres = [];
-if (!empty($offres)) {
-    $ids = array_unique(array_column($offres, 'id_prestataire'));
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
-    $stmtD = $pdo->prepare("
-        SELECT id_disponibilite, id_prestataire, date_debut, date_fin
-        FROM disponibilites
-        WHERE id_prestataire IN ($placeholders)
-          AND type = 'libre'
-          AND date_debut >= NOW()
-        ORDER BY date_debut ASC
-    ");
-    $stmtD->execute($ids);
-    foreach ($stmtD->fetchAll() as $d) {
-        $disposByPres[$d['id_prestataire']][] = $d;
+    if (!empty($offres)) {
+        $ids = array_values(array_unique(array_column($offres, 'id_prestataire')));
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmtD = $pdo->prepare("
+            SELECT id_disponibilite, id_prestataire, date_debut, date_fin
+            FROM disponibilites
+            WHERE id_prestataire IN ($placeholders)
+              AND type = 'libre'
+              AND date_debut >= NOW()
+            ORDER BY date_debut ASC
+        ");
+        $stmtD->execute($ids);
+        foreach ($stmtD->fetchAll() as $d) {
+            $disposByPres[$d['id_prestataire']][] = $d;
+        }
     }
-}
 
 } catch (PDOException $e) {
     die("Erreur SQL : " . $e->getMessage());
@@ -132,33 +131,34 @@ if (!empty($offres)) {
                     <a href="services.php" class="mt-6 inline-block bg-orange-corail text-white px-8 py-3 rounded-senior font-bold">Voir tous les services</a>
                 </div>
             <?php else: foreach ($offres as $o):
-                $id_pres   = $o['id_prestataire'];
-                $dispos    = $disposByPres[$id_pres] ?? [];
-                $nbDispos  = count($dispos);
-                $note      = (float)$o['note_moyenne'];
-                $nbEvals   = (int)$o['nombre_evaluations'];
-                $ville     = $o['ville'] ?? $o['ville_pres'] ?? 'Non précisée';
+                $id_pres  = $o['id_prestataire'];
+                $dispos   = $disposByPres[$id_pres] ?? [];
+                $nbDispos = count($dispos);
+                $note     = (float)$o['note_moyenne'];
+                $nbEvals  = (int)$o['nombre_evaluations'];
+                $ville    = $o['ville'] ?? $o['ville_pres'] ?? 'Non précisée';
             ?>
             <div class="bg-white rounded-senior shadow-sm hover:shadow-xl transition-all border border-slate-50 flex flex-col p-8 relative">
 
-
+                
                 <?php if ($nbDispos === 0): ?>
                     <span class="absolute top-4 right-4 bg-slate-100 text-slate-400 text-[10px] font-bold px-3 py-1 rounded-full">Indisponible</span>
                 <?php elseif ($nbDispos <= 2): ?>
-                    <span class="absolute top-4 right-4 bg-orange-50 text-orange-500 text-[10px] font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-fire mr-1"></i><?php echo $nbDispos; ?> créneau<?php echo $nbDispos > 1 ? 'x' : ''; ?></span>
+                    <span class="absolute top-4 right-4 bg-orange-50 text-orange-500 text-[10px] font-bold px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-fire mr-1"></i><?php echo $nbDispos; ?> créneau<?php echo $nbDispos > 1 ? 'x' : ''; ?>
+                    </span>
                 <?php else: ?>
-                    <span class="absolute top-4 right-4 bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-circle-check mr-1"></i><?php echo $nbDispos; ?> créneaux</span>
+                    <span class="absolute top-4 right-4 bg-green-50 text-green-600 text-[10px] font-bold px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-circle-check mr-1"></i><?php echo $nbDispos; ?> créneaux
+                    </span>
                 <?php endif; ?>
-
 
                 <div class="flex justify-between items-start mb-4 mt-4">
                     <span class="bg-peche-pastel text-orange-corail text-[10px] font-bold px-3 py-1 rounded-full uppercase"><?php echo htmlspecialchars($o['nom_service']); ?></span>
                     <span class="text-2xl font-bold text-slate-900"><?php echo $o['prix']; ?>€<small class="text-xs text-slate-400">/h</small></span>
                 </div>
 
-     
                 <h2 class="text-xl font-bold text-slate-900 mb-1"><?php echo htmlspecialchars($o['prenom'] . ' ' . $o['nom']); ?></h2>
-
 
                 <?php if ($nbEvals > 0): ?>
                 <div class="flex items-center gap-1 mb-2">
@@ -169,24 +169,27 @@ if (!empty($offres)) {
                 </div>
                 <?php endif; ?>
 
-
+   
                 <div class="flex items-center gap-2 text-slate-400 text-[10px] mb-3 font-bold uppercase">
                     <i class="fa-solid fa-location-dot text-orange-corail"></i><?php echo htmlspecialchars($ville); ?>
                 </div>
 
-
+             
                 <p class="text-slate-500 text-sm mb-4 italic flex-1">"<?php echo htmlspecialchars(mb_strimwidth($o['description'] ?? '', 0, 100, '...')); ?>"</p>
 
                 <?php if ($nbDispos > 0 && isset($_SESSION['id']) && $_SESSION['type'] === 'senior'): ?>
-                    <div class="mb-4">
-                        <label class="text-xs font-bold text-slate-400 uppercase mb-2 block">Choisir un créneau</label>
+                    <div class="mb-3">
+                        <label class="text-xs font-bold text-slate-400 uppercase mb-2 block">
+                            <i class="fa-regular fa-calendar mr-1"></i>Choisir un créneau
+                        </label>
                         <select id="dispo-<?php echo $o['id_service']; ?>"
+                                onchange="mettreAJourLien(<?php echo $o['id_service']; ?>)"
                                 class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm focus:ring-2 focus:ring-orange-corail outline-none">
                             <?php foreach ($dispos as $d):
-                                $tsD = strtotime($d['date_debut']);
-                                $tsF = strtotime($d['date_fin']);
+                                $tsD    = strtotime($d['date_debut']);
+                                $tsF    = strtotime($d['date_fin']);
                                 $dureeH = round(($tsF - $tsD) / 3600, 1);
-                                $label = $jours[date('l', $tsD)] . ' ' . date('d', $tsD) . ' ' . $mois[date('F', $tsD)] . ' — ' . date('H:i', $tsD) . ' → ' . date('H:i', $tsF) . ' (' . $dureeH . 'h)';
+                                $label  = $jours[date('l', $tsD)] . ' ' . date('d', $tsD) . ' ' . $mois_court[date('F', $tsD)] . ' — ' . date('H:i', $tsD) . '→' . date('H:i', $tsF) . ' (' . $dureeH . 'h)';
                             ?>
                             <option value="<?php echo $d['id_disponibilite']; ?>"><?php echo $label; ?></option>
                             <?php endforeach; ?>
@@ -194,10 +197,10 @@ if (!empty($offres)) {
                     </div>
                     <a href="reserver.php?id_service=<?php echo $o['id_service']; ?>&id_dispo=<?php echo $dispos[0]['id_disponibilite']; ?>"
                        id="btn-<?php echo $o['id_service']; ?>"
-                       onclick="mettreAJourLien(<?php echo $o['id_service']; ?>)"
                        class="block w-full text-center bg-orange-corail text-white py-4 rounded-2xl font-bold hover:scale-105 transition-all shadow-lg shadow-orange-200">
                         Réserver ce créneau
                     </a>
+
                 <?php elseif ($nbDispos > 0): ?>
                     <a href="connexion.php" class="block w-full text-center bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all">
                         Se connecter pour réserver
@@ -228,17 +231,9 @@ if (!empty($offres)) {
         const select = document.getElementById('dispo-' + idService);
         const btn    = document.getElementById('btn-' + idService);
         if (select && btn) {
-            const idDispo = select.value;
-            btn.href = 'reserver.php?id_service=' + idService + '&id_dispo=' + idDispo;
+            btn.href = 'reserver.php?id_service=' + idService + '&id_dispo=' + select.value;
         }
     }
-
-    document.addEventListener('change', function(e) {
-        if (e.target.tagName === 'SELECT' && e.target.id.startsWith('dispo-')) {
-            const idService = e.target.id.replace('dispo-', '');
-            mettreAJourLien(idService);
-        }
-    });
     </script>
 
 </body>
