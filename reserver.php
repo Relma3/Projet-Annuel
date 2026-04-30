@@ -23,7 +23,6 @@ $mois = [
     'November' => 'novembre', 'December' => 'décembre'
 ];
 
-// Récupérer le service
 $stmt = $pdo->prepare("
     SELECT s.*, p.prenom, p.nom, p.id_prestataire, p.categorie
     FROM services s
@@ -36,7 +35,7 @@ if (!$offre) { die("Service introuvable."); }
 
 $id_pres = $offre['id_prestataire'];
 
-// Récupérer uniquement la dispo liée à ce service
+
 $stmtDispo = $pdo->prepare("
     SELECT * FROM disponibilites
     WHERE id_disponibilite = ?
@@ -58,7 +57,6 @@ $tsFin    = strtotime($dispo['date_fin']);
 $dureeMax = round(($tsFin - $tsDebut) / 3600, 1);
 $jour_fr  = $jours[date('l', $tsDebut)] . ' ' . date('d', $tsDebut) . ' ' . $mois[date('F', $tsDebut)] . ' ' . date('Y', $tsDebut);
 
-// Traitement POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $debut       = $_POST['debut']       ?? '';
     $fin         = $_POST['fin']         ?? '';
@@ -130,7 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <main class="pt-28 pb-20 px-4 max-w-2xl mx-auto">
 
-    <!-- Prestataire -->
     <div class="bg-peche rounded-senior p-6 mb-6 flex items-center gap-5 shadow-sm">
         <div class="w-16 h-16 rounded-full bg-white overflow-hidden border-4 border-white shadow">
             <img src="perso.png" class="w-full h-full object-cover" alt="Prestataire">
@@ -153,7 +150,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="debut" id="input-debut">
         <input type="hidden" name="fin"   id="input-fin">
 
-        <!-- Créneau du service -->
         <div>
             <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
                 <span class="bg-corail text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
@@ -173,7 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </p>
             </div>
 
-            <!-- Heure précise + durée -->
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Heure de début</label>
@@ -200,7 +195,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Message -->
         <div>
             <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
                 <span class="bg-corail text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">2</span>
@@ -210,7 +204,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-corail outline-none min-h-[100px] resize-none"></textarea>
         </div>
 
-        <!-- Récap -->
         <div id="recap-cout" class="bg-emerald-50 border border-emerald-100 rounded-2xl p-5">
             <p class="text-xs font-bold text-emerald-600 uppercase mb-3">
                 <i class="fa-solid fa-circle-check mr-1"></i>Récapitulatif
