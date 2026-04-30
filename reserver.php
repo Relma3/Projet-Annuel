@@ -8,6 +8,7 @@ if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'senior') {
 }
 
 $id_service = isset($_GET['id_service']) ? intval($_GET['id_service']) : 0;
+$id_dispo   = isset($_GET['id_dispo'])   ? intval($_GET['id_dispo'])   : 0;
 $id_senior  = $_SESSION['id'];
 $erreur     = null;
 
@@ -21,7 +22,6 @@ $mois = [
     'August' => 'août', 'September' => 'septembre', 'October' => 'octobre',
     'November' => 'novembre', 'December' => 'décembre'
 ];
-
 $stmt = $pdo->prepare("
     SELECT s.*, p.prenom, p.nom, p.id_prestataire, p.tarif_horaire, p.note_moyenne, p.categorie
     FROM services s
@@ -30,30 +30,39 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$id_service]);
 $offre = $stmt->fetch();
-
 if (!$offre) { die("Service introuvable."); }
 
 $id_pres = $offre['id_prestataire'];
 
-$stmtDispos = $pdo->prepare("
+$stmtDispo = $pdo->prepare("
     SELECT id_disponibilite, date_debut, date_fin
     FROM disponibilites
-    WHERE id_prestataire = ?
-      AND type = 'libre'
-      AND date_debut >= NOW()
-    ORDER BY date_debut ASC
+    WHERE id_disponibilite = ?
+      AND id_prestataire   = ?
+      AND type             = 'libre'
+      AND date_debut       >= NOW()
 ");
-$stmtDispos->execute([$id_pres]);
-$dispos = $stmtDispos->fetchAll();
+$stmtDispo->execute([$id_dispo, $id_pres]);
+$dispo_choisie = $stmtDispo->fetch();
+
+if (!$dispo_choisie) {
+    header('Location: liste_prestataires.php?cat=' . urlencode($offre['categorie']) . '&erreur=creneau_pris');
+    exit();
+}
+
+$tsDebut  = strtotime($dispo_choisie['date_debut']);
+$tsFin    = strtotime($dispo_choisie['date_fin']);
+$dureeMax = round(($tsFin - $tsDebut) / 3600, 1);
+$jour_fr  = $jours[date('l', $tsDebut)] . ' ' . date('d', $tsDebut) . ' ' . $mois[date('F', $tsDebut)] . ' ' . date('Y', $tsDebut);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_dispo    = intval($_POST['id_disponibilite'] ?? 0);
-    $debut       = $_POST['debut'] ?? '';
-    $fin         = $_POST['fin']   ?? '';
-    $description = trim($_POST['description'] ?? '');
+    $id_dispo_post = intval($_POST['id_disponibilite'] ?? 0);
+    $debut         = $_POST['debut'] ?? '';
+    $fin           = $_POST['fin']   ?? '';
+    $description   = trim($_POST['description'] ?? '');
 
-    if (!$id_dispo || !$debut || !$fin) {
-        $erreur = "Veuillez sélectionner un créneau et une heure.";
+    if (!$id_dispo_post || !$debut || !$fin) {
+        $erreur = "Veuillez choisir une heure de début.";
     } else {
         try {
             $pdo->beginTransaction();
@@ -67,18 +76,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   AND date_fin         >= ?
                 FOR UPDATE
             ");
-            $stmtCheck->execute([$id_dispo, $id_pres, $debut, $fin]);
+            $stmtCheck->execute([$id_dispo_post, $id_pres, $debut, $fin]);
             $dispo = $stmtCheck->fetch();
 
             if (!$dispo) {
                 $pdo->rollBack();
-                $erreur = "Ce créneau n'est plus disponible. Veuillez en choisir un autre.";
+                $erreur = "Ce créneau vient d'être pris. Veuillez en choisir un autre.";
             } else {
                 $stmtRes = $pdo->prepare("
                     INSERT INTO reservation (id_senior, id_prestataire, date_reservation, date_fin, id_disponibilite, description, statut)
                     VALUES (?, ?, ?, ?, ?, ?, 'en_attente')
                 ");
-                $stmtRes->execute([$id_senior, $id_pres, $debut, $fin, $id_dispo, $description]);
+                $stmtRes->execute([$id_senior, $id_pres, $debut, $fin, $id_dispo_post, $description]);
                 $pdo->commit();
                 header('Location: dashboardS.php?msg=ok#planning');
                 exit();
@@ -138,77 +147,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" class="bg-white rounded-senior shadow-lg p-8 space-y-8">
 
-        <input type="hidden" name="id_disponibilite" id="input-dispo">
+        <input type="hidden" name="id_disponibilite" value="<?php echo $dispo_choisie['id_disponibilite']; ?>">
         <input type="hidden" name="debut" id="input-debut">
         <input type="hidden" name="fin"   id="input-fin">
 
         <div>
-            <h2 class="text-lg font-bold mb-2 flex items-center gap-3">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
                 <span class="bg-corail text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                Choisissez un créneau et une heure
+                Votre créneau sélectionné
             </h2>
-            <p class="text-xs text-slate-400 mb-4 ml-11">Le prestataire confirmera votre demande. Le créneau sera bloqué seulement après sa confirmation.</p>
 
-            <?php if (empty($dispos)): ?>
-                <div class="bg-slate-50 rounded-2xl p-8 text-center text-slate-400">
-                    <i class="fa-solid fa-calendar-xmark text-3xl mb-3 block"></i>
-                    Aucun créneau disponible pour ce prestataire pour le moment.
+            <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-5 mb-5">
+                <p class="font-bold text-slate-800 mb-1">
+                    <?php echo $jour_fr; ?>
+                    <span class="text-xs text-emerald-600 font-bold ml-2 bg-white px-2 py-1 rounded-full">
+                        Disponible <?php echo $dureeMax; ?>h
+                    </span>
+                </p>
+                <p class="text-sm text-slate-500">
+                    <i class="fa-regular fa-clock mr-1"></i>
+                    De <?php echo date('H:i', $tsDebut); ?> à <?php echo date('H:i', $tsFin); ?>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Heure de début</label>
+                    <input type="time"
+                           id="heure-debut"
+                           class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-corail outline-none"
+                           min="<?php echo date('H:i', $tsDebut); ?>"
+                           max="<?php echo date('H:i', $tsFin); ?>"
+                           value="<?php echo date('H:i', $tsDebut); ?>"
+                           data-date="<?php echo date('Y-m-d', $tsDebut); ?>"
+                           data-debut-min="<?php echo date('H:i', $tsDebut); ?>"
+                           data-fin-ts="<?php echo $tsFin; ?>"
+                           onchange="calculer()">
                 </div>
-            <?php else: ?>
-                <div class="space-y-4">
-                    <?php foreach ($dispos as $d):
-                        $tsDebut  = strtotime($d['date_debut']);
-                        $tsFin    = strtotime($d['date_fin']);
-                        $dureeMax = round(($tsFin - $tsDebut) / 3600, 1);
-                        $jour_fr  = $jours[date('l', $tsDebut)] . ' ' . date('d', $tsDebut) . ' ' . $mois[date('F', $tsDebut)] . ' ' . date('Y', $tsDebut);
-                    ?>
-                    <div class="creneau-card p-5 border-2 border-slate-100 rounded-2xl bg-slate-50 transition-all">
-                        <p class="font-bold text-slate-800 mb-3">
-                            <?php echo $jour_fr; ?>
-                            <span class="text-xs text-emerald-600 font-bold ml-2 bg-emerald-50 px-2 py-1 rounded-full">
-                                Disponible <?php echo $dureeMax; ?>h (<?php echo date('H:i', $tsDebut); ?> → <?php echo date('H:i', $tsFin); ?>)
-                            </span>
-                        </p>
-
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Heure de début</label>
-                                <input type="time"
-                                       class="heure-debut w-full p-3 bg-white rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-corail outline-none"
-                                       min="<?php echo date('H:i', $tsDebut); ?>"
-                                       max="<?php echo date('H:i', $tsFin); ?>"
-                                       value="<?php echo date('H:i', $tsDebut); ?>"
-                                       data-dispo="<?php echo $d['id_disponibilite']; ?>"
-                                       data-date="<?php echo date('Y-m-d', $tsDebut); ?>"
-                                       data-debut-min="<?php echo date('H:i', $tsDebut); ?>"
-                                       data-fin-ts="<?php echo $tsFin; ?>">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Durée souhaitée</label>
-                                <select class="duree-select w-full p-3 bg-white rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-corail outline-none">
-                                    <?php foreach ([1, 2, 3, 4] as $h): ?>
-                                    <option value="<?php echo $h; ?>"
-                                        <?php echo $h > $dureeMax ? 'disabled' : ''; ?>
-                                        <?php echo ($h == 2 && $dureeMax >= 2) || ($h == 1 && $dureeMax < 2) ? 'selected' : ''; ?>>
-                                        <?php echo $h; ?> heure<?php echo $h > 1 ? 's' : ''; ?>
-                                    </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button type="button"
-                                onclick="selectionnerCreneau(this)"
-                                data-dispo="<?php echo $d['id_disponibilite']; ?>"
-                                data-fin-ts="<?php echo $tsFin; ?>"
-                                class="w-full bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-corail hover:text-white transition-all text-sm">
-                            <i class="fa-solid fa-check mr-2"></i>Choisir ce créneau
-                        </button>
-                    </div>
-                    <?php endforeach; ?>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase mb-1 block">Durée souhaitée</label>
+                    <select id="duree-select" onchange="calculer()"
+                            class="w-full p-3 bg-slate-50 rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-corail outline-none">
+                        <?php foreach ([1, 2, 3, 4] as $h): ?>
+                        <option value="<?php echo $h; ?>"
+                            <?php echo $h > $dureeMax ? 'disabled' : ''; ?>
+                            <?php echo ($h == 2 && $dureeMax >= 2) || ($h == 1 && $dureeMax < 2) ? 'selected' : ''; ?>>
+                            <?php echo $h; ?> heure<?php echo $h > 1 ? 's' : ''; ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-            <?php endif; ?>
+            </div>
         </div>
+
 
         <div>
             <h2 class="text-lg font-bold mb-4 flex items-center gap-3">
@@ -219,10 +210,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       class="w-full p-5 bg-slate-50 rounded-2xl border-2 border-slate-100 focus:border-corail outline-none min-h-[100px] resize-none"></textarea>
         </div>
 
-        <div id="recap-cout" class="bg-emerald-50 border border-emerald-100 rounded-2xl p-5 hidden">
-            <p class="text-xs font-bold text-emerald-600 uppercase mb-3">
-                <i class="fa-solid fa-circle-check mr-1"></i>Créneau sélectionné
-            </p>
+        <!-- Récap -->
+        <div id="recap-cout" class="bg-emerald-50 border border-emerald-100 rounded-2xl p-5">
+            <p class="text-xs font-bold text-emerald-600 uppercase mb-3"><i class="fa-solid fa-circle-check mr-1"></i>Récapitulatif</p>
             <div class="flex justify-between items-center mb-2">
                 <span class="text-slate-500">Horaire :</span>
                 <span id="recap-horaire" class="font-bold text-slate-800 text-right"></span>
@@ -234,56 +224,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="text-xs text-slate-400 mt-1">Basé sur <?php echo $offre['prix']; ?>€/h · En attente de confirmation du prestataire</p>
         </div>
 
-        <?php if (!empty($dispos)): ?>
-        <button type="submit" id="btn-confirmer" disabled
-                class="w-full bg-slate-200 text-slate-400 py-5 rounded-senior font-bold text-lg cursor-not-allowed transition-all">
+        <button type="submit" id="btn-confirmer"
+                class="w-full bg-corail text-white py-5 rounded-senior font-bold text-lg shadow-lg hover:scale-[1.02] transition-all">
             <i class="fa-solid fa-paper-plane mr-2"></i>Envoyer la demande
         </button>
         <p class="text-center text-slate-400 text-sm">
             <i class="fa-solid fa-info-circle mr-1"></i>Votre demande sera envoyée au prestataire pour confirmation
         </p>
-        <?php endif; ?>
 
     </form>
 </main>
 
 <script>
-const tarif = <?php echo (float)$offre['prix']; ?>;
+const tarif   = <?php echo (float)$offre['prix']; ?>;
+const finTs   = <?php echo $tsFin; ?> * 1000;
+const dateStr = '<?php echo date('Y-m-d', $tsDebut); ?>';
+const debutMinStr = '<?php echo date('H:i', $tsDebut); ?>';
 
-function selectionnerCreneau(btn) {
-    const container  = btn.closest('.creneau-card');
-    const heureInput = container.querySelector('.heure-debut');
-    const dureeSelect= container.querySelector('.duree-select');
-    const idDispo    = btn.dataset.dispo;
-    const finTs      = parseInt(btn.dataset.finTs) * 1000;
+function calculer() {
+    const heureInput  = document.getElementById('heure-debut');
+    const dureeSelect = document.getElementById('duree-select');
 
-    if (!heureInput.value) {
-        alert("Veuillez choisir une heure de début.");
-        return;
-    }
+    if (!heureInput.value) return;
 
-    const date      = heureInput.dataset.date;
-    const debut     = new Date(date + 'T' + heureInput.value + ':00');
+    const debut     = new Date(dateStr + 'T' + heureInput.value + ':00');
+    const debutMin  = new Date(dateStr + 'T' + debutMinStr + ':00');
     const duree     = parseInt(dureeSelect.value);
     const finVoulue = new Date(debut.getTime() + duree * 3600 * 1000);
     const finMax    = new Date(finTs);
     const fin       = finVoulue <= finMax ? finVoulue : finMax;
-    const debutMin  = new Date(date + 'T' + heureInput.dataset.debutMin + ':00');
 
     if (debut < debutMin) {
-        alert("L'heure choisie est avant le début de la disponibilité.");
+        heureInput.value = debutMinStr;
         return;
     }
 
     const dureeReelle = (fin - debut) / 3600000;
-    if (dureeReelle < 0.5) {
-        alert("Le créneau sélectionné est trop court.");
-        return;
-    }
+    if (dureeReelle < 0.5) return;
 
     document.getElementById('input-debut').value = toMysql(debut);
     document.getElementById('input-fin').value   = toMysql(fin);
-    document.getElementById('input-dispo').value = idDispo;
 
     const opts = { weekday: 'long', day: 'numeric', month: 'long' };
     document.getElementById('recap-horaire').textContent =
@@ -291,27 +271,14 @@ function selectionnerCreneau(btn) {
         debut.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}) + ' → ' +
         fin.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
     document.getElementById('cout-estime').textContent = (tarif * dureeReelle).toFixed(2) + ' €';
-    document.getElementById('recap-cout').classList.remove('hidden');
-
-    document.querySelectorAll('.creneau-card').forEach(el => {
-        el.classList.remove('border-corail', 'bg-peche');
-        el.classList.add('border-slate-100', 'bg-slate-50');
-    });
-    container.classList.remove('border-slate-100', 'bg-slate-50');
-    container.classList.add('border-corail', 'bg-peche');
-
-    const btnC = document.getElementById('btn-confirmer');
-    btnC.disabled = false;
-    btnC.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
-    btnC.classList.add('bg-corail', 'text-white', 'hover:scale-[1.02]', 'shadow-lg');
-
-    document.getElementById('recap-cout').scrollIntoView({behavior: 'smooth'});
 }
 
 function toMysql(date) {
-    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-    return localDate.toISOString().slice(0, 19).replace('T', ' ');
+    const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return local.toISOString().slice(0, 19).replace('T', ' ');
 }
+
+document.addEventListener('DOMContentLoaded', calculer);
 </script>
 </body>
 </html>
