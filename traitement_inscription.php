@@ -3,36 +3,57 @@ require_once 'db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (!empty($_POST['prenom']) && !empty($_POST['nom']) && !empty($_POST['email']) && !empty($_POST['password'])) {
+    $prenom         = htmlspecialchars(trim($_POST['prenom'] ?? ''));
+    $nom            = htmlspecialchars(trim($_POST['nom'] ?? ''));
+    $email          = htmlspecialchars(trim($_POST['email'] ?? ''));
+    $password       = $_POST['password'] ?? '';
+    $telephone      = htmlspecialchars(trim($_POST['telephone'] ?? ''));
+    $date_naissance = $_POST['date_naissance'] ?? '';
+    $adresse        = htmlspecialchars(trim($_POST['adresse'] ?? ''));
+    $ville          = htmlspecialchars(trim($_POST['ville'] ?? ''));
 
-        $prenom   = htmlspecialchars($_POST['prenom']);
-        $nom      = htmlspecialchars($_POST['nom']);
-        $email    = htmlspecialchars($_POST['email']);
-        $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-
-        try {
-            $pdo->beginTransaction();
-
-            $stmtUser = $pdo->prepare("INSERT INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) VALUES (?, ?, 'senior', 1)");
-            $stmtUser->execute([$email, $password]);
-
-            $id_utilisateur = $pdo->lastInsertId();
-
-            $stmtSenior = $pdo->prepare("INSERT INTO senior (id_senior, nom, prenom) VALUES (?, ?, ?)");
-            $stmtSenior->execute([$id_utilisateur, $nom, $prenom]);
-
-            $pdo->commit();
-
-            header('Location: connexion.php?inscrit=1');
-            exit();
-
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            die("Erreur lors de l'inscription : " . $e->getMessage());
-        }
-
-    } else {
+    if (empty($prenom) || empty($nom) || empty($email) || empty($password)) {
         header('Location: inscription.php?error=champs_manquants');
         exit();
+    }
+
+    $password_hash = password_hash($password, PASSWORD_BCRYPT);
+
+    try {
+        $pdo->beginTransaction();
+
+        $stmtUser = $pdo->prepare("
+            INSERT INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif) 
+            VALUES (?, ?, 'senior', 1)
+        ");
+        $stmtUser->execute([$email, $password_hash]);
+        $id_utilisateur = $pdo->lastInsertId();
+
+        $stmtSenior = $pdo->prepare("
+            INSERT INTO senior (id_senior, nom, prenom, telephone, date_naissance, adresse, ville) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ");
+        $stmtSenior->execute([
+            $id_utilisateur,
+            $nom,
+            $prenom,
+            $telephone,
+            $date_naissance ?: null,
+            $adresse,
+            $ville
+        ]);
+
+        $pdo->commit();
+        header('Location: connexion.php?inscrit=1');
+        exit();
+
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        // Email déjà utilisé
+        if ($e->getCode() == 23000) {
+            header('Location: inscription.php?error=email_existe');
+            exit();
+        }
+        die("Erreur lors de l'inscription : " . $e->getMessage());
     }
 }

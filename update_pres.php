@@ -3,16 +3,24 @@ session_start();
 require_once 'db_connect.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION['type'] === 'prestataire') {
-    $nom = htmlspecialchars($_POST['nom']);
-    $ville = htmlspecialchars($_POST['ville']);
-    $desc = htmlspecialchars($_POST['description']);
     $id_pres = $_SESSION['id'];
+    
+    
+    $iban = isset($_POST['iban']) ? htmlspecialchars(trim($_POST['iban'])) : null;
+)
+    $iban_propre = $iban ? str_replace(' ', '', $iban) : null;
 
-    try {
-        $stmt = $pdo->prepare("UPDATE prestataire SET nom = ?, ville = ?, description = ? WHERE id_prestataire = ?");
-        $stmt->execute([$nom, $ville, $desc, $id_pres]);
-    } catch (PDOException $e) {
-        
+    if ($iban_propre !== null) {
+        try {
+            $update = $pdo->prepare("UPDATE prestataire SET iban = ? WHERE id_prestataire = ?");
+            $update->execute([$iban_propre, $id_pres]);
+            
+            header('Location: dashboardP.php?profil=ok#profil');
+            exit();
+        } catch (PDOException $e) {
+            header('Location: dashboardP.php?error=sql#profil');
+            exit();
+        }
     }
 }
 
