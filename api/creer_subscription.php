@@ -21,7 +21,7 @@ if (!in_array($type, ['mensuel', 'annuel'])) {
     exit();
 }
 
-\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET'));
+\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
 
 $price_id = $type === 'mensuel'
     ? getenv('STRIPE_PRICE_MENSUEL')
