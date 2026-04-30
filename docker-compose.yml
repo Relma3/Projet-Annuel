@@ -24,7 +24,8 @@ services:
       MYSQL_ROOT_PASSWORD: rootsecret
       MYSQL_DATABASE: silver_happy
       MYSQL_USER: sh_user
-      MYSQL_PASSWORD: ChoisisUnMotDePasseFort
+      MYSQL_PASSWORD: Silverhappy123
+      DB_PASS: Silverhappy123
     volumes:
       - db_data:/var/lib/mysql
     restart: always
