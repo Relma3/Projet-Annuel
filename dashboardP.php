@@ -35,10 +35,12 @@ try {
     $stmtRes = $pdo->prepare("
         SELECT r.*,
                s.prenom, s.nom, s.adresse, s.date_naissance, s.telephone,
-               u.email AS senior_email
+               u.email AS senior_email,
+               dv.statut AS devis_statut, dv.montant_ttc, dv.numero_devis, dv.date_validite
         FROM reservation r
         JOIN senior s ON r.id_senior = s.id_senior
         JOIN utilisateur u ON s.id_senior = u.id_utilisateur
+        LEFT JOIN devis dv ON dv.id_reservation = r.id_reservation
         WHERE r.id_prestataire = ?
         ORDER BY r.date_reservation ASC
     ");
@@ -88,35 +90,10 @@ try {
         </div>
     </div>
     <div class="flex items-center gap-4">
-
-    <!-- controle loupe dans la navbar -->
-    <div class="flex items-center gap-1 bg-slate-100 rounded-full px-3 py-1">
-        <button onclick="changerZoom(-1)" id="btn-zoom-moins"
-            class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-corail transition-colors font-bold text-lg"
-            title="Réduire">
-            <i class="fa-solid fa-magnifying-glass-minus text-sm"></i>
-        </button>
-
-        <button onclick="reinitZoom()"
-            class="w-8 h-8 flex items-center justify-center text-xs font-bold text-slate-500 hover:text-corail transition-colors"
-            title="Taille normale" id="btn-zoom-label">
-            100%
-        </button>
-
-        <button onclick="changerZoom(1)" id="btn-zoom-plus"
-            class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-corail transition-colors"
-            title="Agrandir">
-            <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
-        </button>
-    </div>
-
-    <span class="text-sm font-medium text-slate-500 hidden sm:block">
-        Bonjour, <strong><?php echo htmlspecialchars($prenom_user); ?></strong>
-    </span>
-
-    <a href="logout.php" class="bg-peche-pale text-corail h-10 w-10 flex items-center justify-center rounded-full hover:bg-corail hover:text-white transition-all shadow-sm">
-        <i class="fa-solid fa-power-off"></i>
-    </a>
+        <span class="text-sm font-medium">Expert : <strong><?php echo htmlspecialchars($nom_pres); ?></strong></span>
+        <a href="logout.php" class="bg-emerald-100 text-emerald-700 h-10 w-10 flex items-center justify-center rounded-full hover:bg-emerald-600 hover:text-white transition-all">
+            <i class="fa-solid fa-power-off"></i>
+        </a>
     </div>
 </nav>
 
@@ -134,7 +111,6 @@ try {
 
     <section class="lg:col-span-3 space-y-6 w-full">
 
-     
         <div id="dashboard" class="tab-content active space-y-6">
             <div class="bg-emerald-600 p-10 rounded-senior shadow-lg text-white w-full">
                 <h1 class="text-3xl font-title font-bold">Bonjour, <?php echo htmlspecialchars($nom_pres); ?></h1>
@@ -159,6 +135,7 @@ try {
             </div>
         </div>
 
+ 
         <div id="services" class="tab-content space-y-6">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-title font-bold text-emerald-800">Mes Offres Planifiées</h2>
@@ -224,7 +201,7 @@ try {
             <?php endif; ?>
         </div>
 
-        
+
         <div id="planning" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Réservations reçues</h2>
@@ -245,9 +222,7 @@ try {
                         <div class="border border-slate-100 rounded-2xl p-5 bg-slate-50 hover:bg-white transition-all">
                             <div class="flex justify-between items-start gap-4">
 
-                                
                                 <div class="flex-1">
-                                  
                                     <p class="font-bold text-slate-800 text-base">
                                         <i class="fa-solid fa-user text-emerald-400 mr-2"></i>
                                         <?php echo htmlspecialchars($r['prenom'] . ' ' . $r['nom']); ?>
@@ -260,36 +235,37 @@ try {
                                             <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full ml-1"><?php echo $duree; ?></span>
                                         <?php endif; ?>
                                     </p>
+
                                     <?php if ($r['statut'] === 'en_attente'): ?>
                                     <div class="mt-3 bg-white border border-slate-200 rounded-xl p-3 space-y-1.5">
                                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-wide">Informations du senior</p>
                                         <?php if ($age !== null): ?>
                                         <p class="text-xs text-slate-600">
-                                            <i class="fa-solid fa-cake-candles text-slate-400 mr-2 w-3"></i>
+                                            <i class="fa-solid fa-cake-candles text-slate-400 mr-2"></i>
                                             Né(e) le <?php echo date('d/m/Y', strtotime($r['date_naissance'])); ?> — <strong><?php echo $age; ?> ans</strong>
                                         </p>
                                         <?php endif; ?>
                                         <?php if (!empty($r['adresse'])): ?>
                                         <p class="text-xs text-slate-600">
-                                            <i class="fa-solid fa-location-dot text-slate-400 mr-2 w-3"></i>
+                                            <i class="fa-solid fa-location-dot text-slate-400 mr-2"></i>
                                             <?php echo htmlspecialchars($r['adresse']); ?>
                                         </p>
                                         <?php endif; ?>
                                         <?php if (!empty($r['telephone'])): ?>
                                         <p class="text-xs text-slate-600">
-                                            <i class="fa-solid fa-phone text-slate-400 mr-2 w-3"></i>
+                                            <i class="fa-solid fa-phone text-slate-400 mr-2"></i>
                                             <?php echo htmlspecialchars($r['telephone']); ?>
                                         </p>
                                         <?php endif; ?>
                                         <?php if (!empty($r['senior_email'])): ?>
                                         <p class="text-xs text-slate-600">
-                                            <i class="fa-solid fa-envelope text-slate-400 mr-2 w-3"></i>
+                                            <i class="fa-solid fa-envelope text-slate-400 mr-2"></i>
                                             <?php echo htmlspecialchars($r['senior_email']); ?>
                                         </p>
                                         <?php endif; ?>
                                     </div>
                                     <?php endif; ?>
-
+    
                                     <?php if (!empty($r['description'])): ?>
                                     <p class="text-xs text-slate-400 mt-2 italic">
                                         "<?php echo htmlspecialchars($r['description']); ?>"
@@ -297,8 +273,8 @@ try {
                                     <?php endif; ?>
                                 </div>
 
-                                
                                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
+
                                     <span class="text-xs font-bold px-3 py-1 rounded-full <?php echo match($r['statut']) {
                                         'en_attente' => 'bg-yellow-100 text-yellow-700',
                                         'confirme'   => 'bg-emerald-100 text-emerald-700',
@@ -314,6 +290,37 @@ try {
                                             default      => $r['statut']
                                         }; ?>
                                     </span>
+
+                                  
+                                    <?php if ($r['statut'] === 'confirme' && !empty($r['devis_statut'])): ?>
+                                    <span class="text-xs font-bold px-3 py-1 rounded-full <?php echo match($r['devis_statut']) {
+                                        'envoye'  => 'bg-blue-100 text-blue-600',
+                                        'accepte' => 'bg-emerald-100 text-emerald-600',
+                                        'refuse'  => 'bg-red-100 text-red-500',
+                                        'expire'  => 'bg-slate-100 text-slate-400',
+                                        default   => 'bg-slate-100 text-slate-400'
+                                    }; ?>">
+                                        <?php echo match($r['devis_statut']) {
+                                            'envoye'  => '📄 Devis transmis',
+                                            'accepte' => '✅ Devis accepté',
+                                            'refuse'  => '❌ Devis refusé',
+                                            'expire'  => '⏰ Devis expiré',
+                                            default   => $r['devis_statut']
+                                        }; ?>
+                                    </span>
+                                    <?php if (!empty($r['montant_ttc'])): ?>
+                                    <span class="text-xs text-slate-500 font-bold">
+                                        <?php echo number_format((float)$r['montant_ttc'], 2, ',', ' '); ?> € TTC
+                                    </span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($r['date_validite'])): ?>
+                                    <span class="text-[10px] text-slate-400">
+                                        Valide jusqu'au <?php echo date('d/m à H:i', strtotime($r['date_validite'])); ?>
+                                    </span>
+                                    <?php endif; ?>
+                                    <?php endif; ?>
+
+                                 
                                     <?php if ($r['statut'] === 'en_attente'): ?>
                                     <div class="flex gap-2">
                                         <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=accepter"
@@ -340,13 +347,11 @@ try {
             </div>
         </div>
 
-
         <div id="messages" class="tab-content space-y-6">
             <div class="bg-white p-10 rounded-senior shadow-sm border border-emerald-50 text-center text-slate-400 italic">
                 <i class="fa-solid fa-comment-dots text-4xl mb-4 block text-emerald-100"></i> Messagerie bientôt disponible.
             </div>
         </div>
-
         <div id="profil" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Mon Entreprise</h2>
@@ -355,7 +360,7 @@ try {
                 <div class="bg-amber-50 border border-amber-200 text-amber-700 p-6 rounded-2xl text-center mb-8">
                     <i class="fa-solid fa-hourglass-half text-3xl mb-2 text-amber-400 block"></i>
                     <h3 class="font-bold text-lg mb-1">Vérification en cours</h3>
-                    <p class="text-sm">Votre profil est en cours d'examen. Certaines fonctionnalités seront disponibles après validation.</p>
+                    <p class="text-sm">Votre profil est en cours d'examen.</p>
                 </div>
                 <?php endif; ?>
 
@@ -369,7 +374,7 @@ try {
                 <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-6 font-bold text-sm">
                     <i class="fa-solid fa-triangle-exclamation mr-2"></i>
                     <?php echo match($_GET['error']) {
-                        'iban_invalide' => 'IBAN invalide. Il doit commencer par FR suivi de chiffres.',
+                        'iban_invalide' => 'IBAN invalide.',
                         'sql'           => 'Erreur base de données.',
                         default         => 'Une erreur est survenue.'
                     }; ?>
@@ -410,17 +415,17 @@ try {
                         </div>
                         <div class="space-y-1">
                             <label class="text-xs font-bold text-slate-400 uppercase ml-1">Tarif horaire (€)</label>
-                            <input type="number" name="tarif_horaire" min="1" step="0.5" value="<?php echo htmlspecialchars($profil['tarif_horaire'] ?? ''); ?>" placeholder="Ex: 25"
+                            <input type="number" name="tarif_horaire" min="1" step="0.5" value="<?php echo htmlspecialchars($profil['tarif_horaire'] ?? ''); ?>"
                                    class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
                         </div>
                         <div class="space-y-1 md:col-span-2">
                             <label class="text-xs font-bold text-slate-400 uppercase ml-1">Adresse</label>
-                            <input type="text" name="adresse" value="<?php echo htmlspecialchars($profil['adresse'] ?? ''); ?>" placeholder="Numéro et nom de rue"
+                            <input type="text" name="adresse" value="<?php echo htmlspecialchars($profil['adresse'] ?? ''); ?>"
                                    class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
                         </div>
                         <div class="space-y-1 md:col-span-2">
                             <label class="text-xs font-bold text-slate-400 uppercase ml-1">Bio / Présentation</label>
-                            <textarea name="bio" rows="3" placeholder="Décrivez votre parcours et vos compétences..."
+                            <textarea name="bio" rows="3"
                                       class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none resize-none"><?php echo htmlspecialchars($profil['bio'] ?? ''); ?></textarea>
                         </div>
                         <div class="space-y-1 md:col-span-2">
@@ -433,8 +438,7 @@ try {
                                    maxlength="34" oninput="formaterIBAN(this)"
                                    <?php echo (isset($profil['statut']) && $profil['statut'] !== 'valide') ? 'disabled' : ''; ?>
                                    class="w-full p-4 rounded-xl outline-none uppercase font-mono tracking-widest transition-all <?php echo (isset($profil['statut']) && $profil['statut'] !== 'valide') ? 'bg-slate-100 border-none text-slate-400 cursor-not-allowed' : 'bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500'; ?>">
-                            <p id="iban-error" class="hidden text-xs text-red-500 font-bold mt-1 ml-1">L'IBAN doit commencer par FR suivi de chiffres uniquement.</p>
-                            <p class="text-xs text-slate-400 mt-1 ml-1">Format : FR76 + chiffres (27 caractères au total)</p>
+                            <p id="iban-error" class="hidden text-xs text-red-500 font-bold mt-1 ml-1">L'IBAN doit commencer par FR suivi de chiffres.</p>
                         </div>
                     </div>
                     <div class="flex justify-end pt-4">
@@ -448,7 +452,6 @@ try {
 
     </section>
 </main>
-
 <div id="modalService" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-6">
     <div class="bg-white w-full max-w-lg rounded-senior shadow-2xl overflow-hidden">
         <div class="bg-emerald-600 p-6 text-white flex justify-between items-center font-bold">
@@ -513,7 +516,7 @@ function validerProfil() {
     if (!ibanInput || ibanInput.disabled) return true;
     const clean = ibanInput.value.replace(/\s/g, '').toUpperCase();
     if (clean && !/^FR[0-9]{2}[0-9A-Z]{23}$/.test(clean)) {
-        alert('IBAN invalide. Il doit commencer par FR suivi uniquement de chiffres.');
+        alert('IBAN invalide.');
         return false;
     }
     ibanInput.value = clean;
@@ -533,7 +536,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const debutInput = document.getElementById('dispo-debut');
     const finInput   = document.getElementById('dispo-fin');
-
     if (debutInput && finInput) {
         debutInput.min = minDate;
         finInput.min   = minDate;
