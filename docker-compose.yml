@@ -3,9 +3,11 @@ services:
     build: .
     ports:
       - "80:80"
+      - "443:443"
       - "3307:3306"
     volumes:
       - .:/app
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - db
     env_file:
@@ -17,7 +19,6 @@ services:
       DB_PASS: ChoisisUnMotDePasseFort
       JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     restart: always
-
   db:
     image: mariadb:10.11
     environment:
@@ -28,7 +29,6 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     restart: always
-
   go-api:
     build: ./go-api
     ports:
@@ -42,8 +42,6 @@ services:
     depends_on:
       - db
     restart: always
-
-  # phpMyAdmin : interface bdd sur http://51.210.12.40:8081
   phpmyadmin:
     image: phpmyadmin:latest
     ports:
@@ -56,6 +54,5 @@ services:
     depends_on:
       - db
     restart: always
-
 volumes:
   db_data:
