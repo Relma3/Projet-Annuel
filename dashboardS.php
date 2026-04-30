@@ -207,9 +207,9 @@ $factures = $stmt->fetchAll();
                     <i class="fa-solid fa-comment-dots"></i> Messagerie
                 </button>
 
-                <button onclick="showTab('abonnement', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all">
+                <a href="/abonnement.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all">
                     <i class="fa-solid fa-id-card"></i> Mon Abonnement
-                </button>
+                </a>
 
                 <button onclick="showTab('conseils', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all">
                     <i class="fa-solid fa-lightbulb"></i> Conseils

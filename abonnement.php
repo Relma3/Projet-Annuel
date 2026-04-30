@@ -11,12 +11,9 @@ require_once 'db_connect.php';
 $db = getDB();
 
 $stmt = $db->prepare("
-    SELECT *
-    FROM senior
-    WHERE id_utilisateur = ?
+    SELECT * FROM senior WHERE id_senior = ?
 ");
 $stmt->execute([$_SESSION['id']]);
-
 $senior = $stmt->fetch(PDO::FETCH_ASSOC);
 
 $stripe_public_key = getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique";

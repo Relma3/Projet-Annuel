@@ -1,10 +1,10 @@
 <?php
+session_start();
 require_once __DIR__ . '/../db_connect.php';
 require_once __DIR__ . '/middleware.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 header('Content-Type: application/json');
-session_start();
 
 if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'senior') {
     http_response_code(401);
@@ -21,7 +21,7 @@ if (!in_array($type, ['mensuel', 'annuel'])) {
     exit();
 }
 
-\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET'));
+\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
 
 $price_id = $type === 'mensuel'
     ? getenv('STRIPE_PRICE_MENSUEL')
@@ -32,15 +32,15 @@ $id_senior = $_SESSION['id'];
 try {
     // Récupère le stripe_customer_id existant ou en crée un nouveau
     $stmt = $pdo->prepare("
-        SELECT s.id_senior, u.email, u.prenom, u.nom, a.stripe_customer_id
-        FROM senior s
-        JOIN utilisateur u ON s.id_utilisateur = u.id_utilisateur
-        LEFT JOIN abonnement a ON a.id_senior = s.id_senior
-        WHERE s.id_utilisateur = ?
-        ORDER BY a.created_at DESC LIMIT 1
-    ");
-    $stmt->execute([$id_senior]);
-    $senior = $stmt->fetch();
+    SELECT s.id_senior, u.email, s.prenom, s.nom, a.stripe_customer_id
+    FROM senior s
+    JOIN utilisateur u ON u.id_utilisateur = s.id_senior
+    LEFT JOIN abonnement a ON a.id_senior = s.id_senior
+    WHERE s.id_senior = ?
+    ORDER BY a.created_at DESC LIMIT 1
+");
+$stmt->execute([$id_senior]);
+$senior = $stmt->fetch();
 
     // Crée un customer Stripe si pas encore existant
     if (empty($senior['stripe_customer_id'])) {
