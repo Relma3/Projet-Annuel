@@ -645,8 +645,12 @@ async function chargerPrestataires() {
         <td class="p-3">#${p.id_utilisateur}</td>
         <td class="p-3">${p.email}</td>
         <td class="p-3">
-          <span class="text-orange-400">En attente</span>
-        </td>
+  ${
+    p.est_actif == 1
+      ? '<span class="text-green-400">Validé</span>'
+      : '<span class="text-orange-400">En attente</span>'
+  }
+</td>
         <td class="p-3">-</td>
       </tr>
     `).join('');

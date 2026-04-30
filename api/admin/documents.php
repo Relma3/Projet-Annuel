@@ -34,23 +34,28 @@ if ($method === 'PATCH') {
     $stmt->execute([$data['id_document']]);
     $id_prestataire = $stmt->fetchColumn();
 
-    // 3. vérifier si TOUS les docs sont validés
-    $stmt = $pdo->prepare("
-        SELECT COUNT(*) FROM documents_presta
-        WHERE id_prestataire = ? AND statut != 'valide'
-    ");
-    $stmt->execute([$id_prestataire]);
+   // vérifier si tous validés
+$stmt = $pdo->prepare("
+    SELECT COUNT(*) FROM documents_presta
+    WHERE id_prestataire = ? AND statut != 'valide'
+");
+$stmt->execute([$id_prestataire]);
 
-    if ($stmt->fetchColumn() == 0) {
+$reste = $stmt->fetchColumn();
 
-        // 4. activer prestataire
-        $pdo->prepare("
-            UPDATE utilisateur 
-            SET est_actif = 1 
-            WHERE id_utilisateur = ?
-        ")->execute([$id_prestataire]);
-    }
+if ($reste == 0) {
 
-    echo json_encode(['success' => true]);
-    exit;
+    //  tous validés donc activer 
+    $pdo->prepare("
+        UPDATE utilisateur SET est_actif = 1
+        WHERE id_utilisateur = ?
+    ")->execute([$id_prestataire]);
+
+} else {
+
+    // au moins un refus ou attente → désactiver
+    $pdo->prepare("
+        UPDATE utilisateur SET est_actif = 0
+        WHERE id_utilisateur = ?
+    ")->execute([$id_prestataire]);
 }
