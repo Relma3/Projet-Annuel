@@ -16,9 +16,10 @@ services:
       DB_HOST: db
       DB_NAME: silver_happy
       DB_USER: sh_user
-      DB_PASS: ChoisisUnMotDePasseFort
+      DB_PASS: Silverhappy123
       JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     restart: always
+
   db:
     image: mariadb:10.11
     environment:
@@ -26,10 +27,10 @@ services:
       MYSQL_DATABASE: silver_happy
       MYSQL_USER: sh_user
       MYSQL_PASSWORD: Silverhappy123
-      DB_PASS: Silverhappy123
     volumes:
       - db_data:/var/lib/mysql
     restart: always
+
   go-api:
     build: ./go-api
     ports:
@@ -38,11 +39,12 @@ services:
       DB_HOST: db
       DB_NAME: silver_happy
       DB_USER: sh_user
-      DB_PASS: ChoisisUnMotDePasseFort
+      DB_PASS: Silverhappy123
       JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     depends_on:
       - db
     restart: always
+
   phpmyadmin:
     image: phpmyadmin:latest
     ports:
@@ -50,10 +52,11 @@ services:
     environment:
       PMA_HOST: db
       PMA_USER: sh_user
-      PMA_PASSWORD: ChoisisUnMotDePasseFort
+      PMA_PASSWORD: Silverhappy123
       UPLOAD_LIMIT: 50M
     depends_on:
       - db
     restart: always
+
 volumes:
   db_data:
