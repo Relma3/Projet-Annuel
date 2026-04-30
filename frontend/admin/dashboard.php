@@ -364,35 +364,7 @@ tailwind.config = {
   </div>
 </div>
 
-<div id="section-documents" class="section">
 
-  <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-
-    <div class="p-6 border-b border-slate-700 flex justify-between items-center">
-      <h2 class="font-bold text-white">Validation des documents</h2>
-
-      <button onclick="chargerDocuments()" class="bg-blue-500 px-4 py-2 rounded-xl">
-        Actualiser
-      </button>
-    </div>
-
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>Type</th>
-          <th>Fichier</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-
-      <tbody id="table-documents"></tbody>
-    </table>
-
-  </div>
-
-</div>
 <!-- fin malikat section artiicles -->
 
   </div>
@@ -411,6 +383,7 @@ const titles = {
   categories: ['Catégories', 'Gestion des catégories de prestations'],
   evenements: ['Événements', 'Gestion des événements Silver Happy'],
   articles: ['Articles', 'Gestion des articles']
+  documents: ['Documents', 'Validation des documents des prestataires']
 };
 
 function showSection(name) {
@@ -698,7 +671,9 @@ async function validerPrestataire(id, etat){
 }
 async function chargerDocuments() {
 
-  const res = await fetch('/api/admin/documents.php');
+  const res = await fetch('/api/admin/documents.php', {
+  headers: { Authorization: 'Bearer ' + token() }
+});
   const data = await res.json();
 
   const table = document.getElementById('table-documents');
@@ -709,14 +684,20 @@ async function chargerDocuments() {
       <td>${d.type_document}</td>
 
       <td>
-        <a href="/${d.chemin_fichier}" target="_blank">
-          Voir
-        </a>
+        <a href="${d.chemin_fichier}" target="_blank" class="text-blue-400">
+  Voir
+</a>
       </td>
 
       <td>
-        ${d.statut}
-      </td>
+  ${
+    d.statut === 'valide'
+      ? '<span class="text-green-400">Validé</span>'
+      : d.statut === 'refuse'
+      ? '<span class="text-red-400">Refusé</span>'
+      : '<span class="text-orange-400">En attente</span>'
+  }
+</td>
 
       <td>
         <button onclick="validerDoc(${d.id_document}, 'valide')">oui</button>
@@ -729,7 +710,10 @@ async function validerDoc(id, statut){
 
   await fetch('/api/admin/documents.php', {
     method: 'PATCH',
-    headers: {'Content-Type': 'application/json'},
+    headers:{
+      'Content-Type':'application/json',
+      Authorization: 'Bearer ' + token()
+    },
     body: JSON.stringify({
       id_document: id,
       statut: statut
