@@ -36,7 +36,7 @@ try {
         $params[] = $cat_filter;
     }
 
-    $sql .= " GROUP BY p.id_prestataire ORDER BY nb_dispos DESC, p.note_moyenne DESC";
+    $sql .= " GROUP BY s.id_service, p.id_prestataire ORDER BY nb_dispos_semaine DESC, p.note_moyenne DESC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
