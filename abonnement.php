@@ -11,9 +11,7 @@ require_once 'db_connect.php';
 $db = getDB();
 
 $stmt = $db->prepare("
-    SELECT s.* FROM senior s
-    INNER JOIN utilisateur u ON s.id_utilisateur = u.id_utilisateur
-    WHERE u.id_utilisateur = ?
+    SELECT * FROM senior WHERE id_senior = ?
 ");
 $stmt->execute([$_SESSION['id']]);
 $senior = $stmt->fetch(PDO::FETCH_ASSOC);
