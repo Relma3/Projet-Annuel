@@ -26,7 +26,6 @@ $mois = [
 ];
 
 try {
-    // Récupérer les services avec leur dispo liée
     $sql = "
         SELECT 
             s.*,
@@ -129,7 +128,6 @@ try {
                 $ville   = $o['ville'] ?? $o['ville_pres'] ?? 'Non précisée';
                 $hasDispo = !empty($o['id_disponibilite']);
 
-                // Formater la dispo
                 $dispoLabel = null;
                 if ($hasDispo) {
                     $tsD = strtotime($o['date_debut']);
@@ -142,7 +140,6 @@ try {
             ?>
             <div class="bg-white rounded-senior shadow-sm hover:shadow-xl transition-all border border-slate-50 flex flex-col p-8 relative">
 
-                <!-- Badge -->
                 <?php if (!$hasDispo): ?>
                     <span class="absolute top-4 right-4 bg-slate-100 text-slate-400 text-[10px] font-bold px-3 py-1 rounded-full">Indisponible</span>
                 <?php else: ?>
@@ -151,7 +148,6 @@ try {
                     </span>
                 <?php endif; ?>
 
-                <!-- Catégorie + prix -->
                 <div class="flex justify-between items-start mb-4 mt-4">
                     <span class="bg-peche-pastel text-orange-corail text-[10px] font-bold px-3 py-1 rounded-full uppercase">
                         <?php echo htmlspecialchars($o['nom_service']); ?>
@@ -161,12 +157,11 @@ try {
                     </span>
                 </div>
 
-                <!-- Nom -->
                 <h2 class="text-xl font-bold text-slate-900 mb-1">
                     <?php echo htmlspecialchars($o['prenom'] . ' ' . $o['nom']); ?>
                 </h2>
 
-                <!-- Note -->
+             
                 <?php if ($nbEvals > 0): ?>
                 <div class="flex items-center gap-1 mb-2">
                     <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -176,18 +171,15 @@ try {
                 </div>
                 <?php endif; ?>
 
-                <!-- Ville -->
+                
                 <div class="flex items-center gap-2 text-slate-400 text-[10px] mb-3 font-bold uppercase">
                     <i class="fa-solid fa-location-dot text-orange-corail"></i>
                     <?php echo htmlspecialchars($ville); ?>
                 </div>
-
-                <!-- Description -->
                 <p class="text-slate-500 text-sm mb-4 italic flex-1">
                     "<?php echo htmlspecialchars(mb_strimwidth($o['description'] ?? '', 0, 100, '...')); ?>"
                 </p>
 
-                <!-- Créneau lié au service -->
                 <?php if ($hasDispo): ?>
                 <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3 mb-4">
                     <p class="text-xs font-bold text-emerald-700">
@@ -197,7 +189,6 @@ try {
                 </div>
                 <?php endif; ?>
 
-                <!-- Bouton -->
                 <?php if ($hasDispo && isset($_SESSION['id']) && $_SESSION['type'] === 'senior'): ?>
                     <a href="reserver.php?id_service=<?php echo $o['id_service']; ?>&id_dispo=<?php echo $o['id_disponibilite']; ?>"
                        class="block w-full text-center bg-orange-corail text-white py-4 rounded-2xl font-bold hover:scale-105 transition-all shadow-lg shadow-orange-200">
