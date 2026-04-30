@@ -21,7 +21,6 @@ try {
 
     $categorie_pres = $profil['categorie'] ?? 'Service';
 
-    // On récupère le service ET sa disponibilité associée
     $stmtSrv = $pdo->prepare("
         SELECT s.*, d.date_debut, d.date_fin 
         FROM services s
@@ -249,19 +248,60 @@ try {
                 </div>
             </div>
 
+        
             <div id="profil" class="tab-content space-y-6">
                 <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                     <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Mon Entreprise</h2>
-                    <div class="space-y-3 text-slate-600">
-                        <p><strong>Nom :</strong> <?php echo htmlspecialchars($nom_pres); ?></p>
-                        <p><strong>Catégorie :</strong> <?php echo htmlspecialchars($categorie_pres); ?></p>
-                        <?php if (!empty($profil['ville'])): ?>
-                            <p><strong>Ville :</strong> <?php echo htmlspecialchars($profil['ville']); ?></p>
+                    
+                    <?php if (isset($profil['statut']) && $profil['statut'] !== 'valide'): ?>
+                    
+                        <div class="bg-amber-50 border border-amber-200 text-amber-700 p-8 rounded-2xl text-center">
+                            <i class="fa-solid fa-hourglass-half text-4xl mb-4 text-amber-400 block"></i>
+                            <h3 class="font-bold text-xl mb-2">Compte en cours de vérification</h3>
+                            <p class="text-sm">Votre profil et vos documents légaux sont actuellement examinés par notre équipe d'administration.</p>
+                            <p class="text-sm mt-2 font-medium">Vous pourrez finaliser la configuration de votre entreprise (et renseigner votre IBAN pour les paiements) une fois votre compte validé.</p>
+                        </div>
+                    <?php else: ?>
+                      
+                        <?php if (isset($_GET['profil']) && $_GET['profil'] === 'ok'): ?>
+                            <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-2xl mb-6 font-bold text-sm">
+                                <i class="fa-solid fa-check mr-2"></i>Vos informations ont été mises à jour.
+                            </div>
                         <?php endif; ?>
-                        <?php if (!empty($profil['specialite'])): ?>
-                            <p><strong>Spécialité :</strong> <?php echo htmlspecialchars($profil['specialite']); ?></p>
+
+                        <?php if (empty($profil['iban'])): ?>
+                            <div class="bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-2xl mb-6 text-sm flex gap-3 items-start">
+                                <i class="fa-solid fa-circle-info mt-1 text-blue-500"></i>
+                                <div>
+                                    <strong class="block mb-1">Votre compte est validé !</strong>
+                                    Il ne vous reste plus qu'à renseigner votre IBAN ci-dessous pour pouvoir recevoir les paiements de vos futures prestations.
+                                </div>
+                            </div>
                         <?php endif; ?>
-                    </div>
+
+                        <form action="update_pres.php" method="POST" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-400 uppercase ml-1">Nom du responsable</label>
+                                    <input type="text" value="<?php echo htmlspecialchars($nom_pres); ?>" disabled class="w-full p-4 bg-slate-100 rounded-xl border-none text-slate-500 font-bold cursor-not-allowed">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-xs font-bold text-slate-400 uppercase ml-1">Catégorie</label>
+                                    <input type="text" value="<?php echo htmlspecialchars($categorie_pres); ?>" disabled class="w-full p-4 bg-slate-100 rounded-xl border-none text-slate-500 font-bold cursor-not-allowed">
+                                </div>
+                                <div class="space-y-1 md:col-span-2">
+                                    <label class="text-xs font-bold text-slate-400 uppercase ml-1">IBAN (Requis pour les paiements) *</label>
+                                    <input type="text" name="iban" value="<?php echo htmlspecialchars($profil['iban'] ?? ''); ?>" placeholder="Ex: FR76 1234 5678..." required class="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none uppercase font-mono tracking-widest">
+                                </div>
+                            </div>
+                            <div class="flex justify-end pt-4">
+                                <button type="submit" class="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-emerald-700 transition-all">
+                                    <i class="fa-solid fa-save mr-2"></i>Enregistrer mes informations
+                                </button>
+                            </div>
+                        </form>
+                    <?php endif; ?>
+
                 </div>
             </div>
 
@@ -323,8 +363,7 @@ try {
                 const btn = document.querySelector(`.tab-btn[onclick*="'${hash}'"]`);
                 if (btn) showTab(hash, btn);
             }
-            
-            // Bloquer les dates passées dans le formulaire
+    
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             const minDate = now.toISOString().slice(0, 16);
