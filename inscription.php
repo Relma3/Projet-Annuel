@@ -122,6 +122,37 @@
                         <input type="email" name="email" required class="w-full px-6 py-3 bg-slate-50 border-2 border-slate-100 rounded-senior focus:border-orange-corail focus:bg-white outline-none transition-all text-lg" placeholder="ex: jean.dupont@mail.fr">
                     </div>
 
+                    <!-- Téléphone + Date de naissance -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-1 ml-2 text-slate-700">Téléphone</label>
+                            <input type="tel" name="telephone" required 
+                                class="w-full px-6 py-3 bg-slate-50 border-2 border-slate-100 rounded-senior focus:border-orange-corail focus:bg-white outline-none transition-all text-lg"
+                                placeholder="ex: 06 12 34 56 78">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1 ml-2 text-slate-700">Date de naissance</label>
+                            <input type="date" name="date_naissance" required 
+                                class="w-full px-6 py-3 bg-slate-50 border-2 border-slate-100 rounded-senior focus:border-orange-corail focus:bg-white outline-none transition-all text-lg">
+                        </div>
+                    </div>
+
+                    <!-- Adresse -->
+                    <div>
+                        <label class="block text-sm font-bold mb-1 ml-2 text-slate-700">Adresse</label>
+                        <input type="text" name="adresse" required 
+                            class="w-full px-6 py-3 bg-slate-50 border-2 border-slate-100 rounded-senior focus:border-orange-corail focus:bg-white outline-none transition-all text-lg"
+                            placeholder="ex: 12 rue de la Paix">
+                    </div>
+
+                    <!-- Ville -->
+                    <div>
+                        <label class="block text-sm font-bold mb-1 ml-2 text-slate-700">Ville</label>
+                        <input type="text" name="ville" required 
+                            class="w-full px-6 py-3 bg-slate-50 border-2 border-slate-100 rounded-senior focus:border-orange-corail focus:bg-white outline-none transition-all text-lg"
+                            placeholder="ex: Paris">
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-bold mb-1 ml-2 text-slate-700">Mot de passe</label>
