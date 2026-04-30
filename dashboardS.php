@@ -43,7 +43,10 @@ try {
     $commandes = $stmtCmd->fetchAll();
 
     $stmtProfil = $pdo->prepare("
-        SELECT * FROM senior WHERE id_senior = ?
+        SELECT s.*, u.email
+        FROM senior s
+        JOIN utilisateur u ON u.id_utilisateur = s.id_senior
+        WHERE s.id_senior = ?
     ");
     $stmtProfil->execute([$id_senior]);
     $profil = $stmtProfil->fetch();
@@ -459,6 +462,78 @@ $factures = $stmt->fetchAll();
 
             <div id="profil" class="tab-content space-y-6">
                 <h2 class="text-2xl font-title font-bold text-corail">Mes Informations</h2>
+<<<<<<< HEAD
+
+                <?php if (isset($_GET['msg']) && $_GET['msg'] === 'profil_mis_a_jour'): ?>
+                    <div class="bg-green-50 text-green-700 px-6 py-3 rounded-2xl font-bold">
+                        ✓ Profil mis à jour avec succès.
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" action="update_senior.php"
+                    class="bg-white p-10 rounded-senior shadow-sm space-y-6">
+
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Identité</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Prénom</label>
+                            <input type="text" name="prenom"
+                                value="<?php echo htmlspecialchars($profil['prenom'] ?? ''); ?>"
+                                class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Nom</label>
+                            <input type="text" name="nom"
+                                value="<?php echo htmlspecialchars($profil['nom'] ?? ''); ?>"
+                                class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Date de naissance</label>
+                            <input type="date" name="date_naissance"
+                                value="<?php echo htmlspecialchars($profil['date_naissance'] ?? ''); ?>"
+                                class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Email</label>
+                            <input type="email" name="email"
+                                value="<?php echo htmlspecialchars($profil['email'] ?? ''); ?>"
+                                class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mt-4">Coordonnées</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Téléphone</label>
+                            <input type="text" name="telephone"
+                                value="<?php echo htmlspecialchars($profil['telephone'] ?? ''); ?>"
+                                class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Ville</label>
+                            <input type="text" name="ville"
+                                value="<?php echo htmlspecialchars($profil['ville'] ?? ''); ?>"
+                                class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                        </div>
+                        <div class="col-span-2 space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Adresse</label>
+                            <input type="text" name="adresse"
+                                value="<?php echo htmlspecialchars($profil['adresse'] ?? ''); ?>"
+                                class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 pt-2">
+                        <button type="submit"
+                                class="bg-corail text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">
+                            Enregistrer les modifications
+                        </button>
+                        <button type="button" onclick="supprimerCompte()"
+                                class="bg-red-50 text-red-500 px-10 py-4 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition-all">
+                            Supprimer mon compte
+                        </button>
+                    </div>
+=======
                 <form id="form-profil" class="bg-white p-10 rounded-senior shadow-sm space-y-6">
                     <div class="grid grid-cols-2 gap-6">
                         <div class="space-y-2">
@@ -472,6 +547,7 @@ $factures = $stmt->fetchAll();
                     </div>
                     <button type="submit" class="bg-corail text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">Enregistrer les modifications</button>
                     <button type="button" onclick="supprimerCompte()" class="bg-red-50 text-red-500 px-10 py-4 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition-all">Supprimer mon compte</button>
+>>>>>>> 102eb176e340bec157d14dace684472872d16ba2
                 </form>
             </div>
         </section>
