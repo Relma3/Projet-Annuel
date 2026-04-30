@@ -16,28 +16,12 @@ let zoomActuel = parseFloat(localStorage.getItem('sh_zoom') || '1');
 
 function appliquerZoom() {
     document.documentElement.style.zoom = zoomActuel;
-
-    // Met à jour le label % dans la navbar
-    const label = document.getElementById('btn-zoom-label');
-    if (label) label.textContent = Math.round(zoomActuel * 100) + '%';
-
-    // Désactive les boutons aux limites
-    const btnPlus  = document.getElementById('btn-zoom-plus');
-    const btnMoins = document.getElementById('btn-zoom-moins');
-    if (btnPlus)  btnPlus.disabled  = zoomActuel >= ZOOM_MAX;
-    if (btnMoins) btnMoins.disabled = zoomActuel <= ZOOM_MIN;
-
     localStorage.setItem('sh_zoom', zoomActuel);
 }
 
 function changerZoom(direction) {
     zoomActuel = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoomActuel + direction * ZOOM_STEP));
     zoomActuel = Math.round(zoomActuel * 100) / 100;
-    appliquerZoom();
-}
-
-function reinitZoom() {
-    zoomActuel = 1;
     appliquerZoom();
 }
 

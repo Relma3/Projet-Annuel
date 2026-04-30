@@ -176,14 +176,28 @@ $factures = $stmt->fetchAll();
         </div>
 
         <div class="flex items-center gap-4">
-            <span class="text-sm font-medium text-slate-500 hidden sm:block">
-                Bonjour, <strong><?php echo htmlspecialchars($prenom_user); ?></strong>
-            </span>
-
-            <a href="logout.php" class="bg-peche-pale text-corail h-10 w-10 flex items-center justify-center rounded-full hover:bg-corail hover:text-white transition-all shadow-sm">
-                <i class="fa-solid fa-power-off"></i>
-            </a>
+            
+        <div class="flex items-center gap-1 bg-slate-100 rounded-full px-3 py-1">
+            <button onclick="changerZoom(-1)" id="btn-zoom-moins"
+                class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-corail transition-colors"
+                title="Réduire">
+                <i class="fa-solid fa-magnifying-glass-minus text-sm"></i>
+            </button>
+            <button onclick="changerZoom(1)" id="btn-zoom-plus"
+                class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-corail transition-colors"
+                title="Agrandir">
+                <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
+            </button>
         </div>
+
+        <span class="text-sm font-medium text-slate-500 hidden sm:block">
+            Bonjour, <strong><?php echo htmlspecialchars($prenom_user); ?></strong>
+        </span>
+
+        <a href="logout.php" class="bg-peche-pale text-corail h-10 w-10 flex items-center justify-center rounded-full hover:bg-corail hover:text-white transition-all shadow-sm">
+            <i class="fa-solid fa-power-off"></i>
+        </a>
+    </div>
     </nav>
 
     <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
