@@ -33,9 +33,12 @@ try {
     $mes_services = $stmtSrv->fetchAll();
 
     $stmtRes = $pdo->prepare("
-        SELECT r.*, s.prenom, s.nom, s.adresse
+        SELECT r.*,
+               s.prenom, s.nom, s.adresse, s.date_naissance, s.telephone,
+               u.email AS senior_email
         FROM reservation r
         JOIN senior s ON r.id_senior = s.id_senior
+        JOIN utilisateur u ON s.id_senior = u.id_utilisateur
         WHERE r.id_prestataire = ?
         ORDER BY r.date_reservation ASC
     ");
@@ -106,7 +109,7 @@ try {
 
     <section class="lg:col-span-3 space-y-6 w-full">
 
-
+     
         <div id="dashboard" class="tab-content active space-y-6">
             <div class="bg-emerald-600 p-10 rounded-senior shadow-lg text-white w-full">
                 <h1 class="text-3xl font-title font-bold">Bonjour, <?php echo htmlspecialchars($nom_pres); ?></h1>
@@ -130,7 +133,6 @@ try {
                 <?php endif; ?>
             </div>
         </div>
-
 
         <div id="services" class="tab-content space-y-6">
             <div class="flex justify-between items-center">
@@ -161,15 +163,13 @@ try {
 
                 <?php if (isset($_GET['error'])): ?>
                 <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-4 font-bold text-sm">
-                    <?php
-                    echo match ($_GET['error']) {
+                    <?php echo match($_GET['error']) {
                         'desc_courte'     => 'La description doit faire au moins 10 caractères.',
                         'prix_invalide'   => 'Le prix doit être supérieur à 0.',
                         'dates_invalides' => 'Les dates doivent être dans le futur et cohérentes.',
                         'sql'             => 'Erreur de base de données.',
                         default           => 'Une erreur est survenue.'
-                    };
-                    ?>
+                    }; ?>
                 </div>
                 <?php endif; ?>
 
@@ -199,6 +199,7 @@ try {
             <?php endif; ?>
         </div>
 
+        
         <div id="planning" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Réservations reçues</h2>
@@ -207,47 +208,105 @@ try {
                         <p class="text-slate-400 italic">Aucune réservation pour le moment.</p>
                     </div>
                 <?php else: ?>
-                    <div class="space-y-3">
+                    <div class="space-y-4">
                         <?php foreach ($reservations as $r):
                             $debut = strtotime($r['date_reservation']);
                             $fin   = $r['date_fin'] ? strtotime($r['date_fin']) : null;
                             $duree = $fin ? round(($fin - $debut) / 3600, 1) . 'h' : null;
+                            $age   = !empty($r['date_naissance'])
+                                ? floor((time() - strtotime($r['date_naissance'])) / 31557600)
+                                : null;
                         ?>
-                        <div class="res-card flex justify-between items-start p-5 border border-slate-100 rounded-2xl bg-slate-50 hover:bg-white transition-all" data-statut="<?php echo $r['statut']; ?>">
-                            <div>
-                                <p class="font-bold"><i class="fa-solid fa-user text-emerald-400 mr-2"></i><?php echo htmlspecialchars($r['prenom'] . ' ' . $r['nom']); ?></p>
-                                <p class="text-sm text-slate-500 mt-1">
-                                    <?php echo date('d/m/Y à H:i', $debut); ?>
-                                    <?php if ($fin): ?> → <?php echo date('H:i', $fin); ?> <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full ml-1"><?php echo $duree; ?></span><?php endif; ?>
-                                </p>
-                                <?php if (!empty($r['description'])): ?>
-                                <p class="text-xs text-slate-400 mt-1 italic">"<?php echo htmlspecialchars($r['description']); ?>"</p>
-                                <?php endif; ?>
-                            </div>
-                            <div class="flex flex-col items-end gap-2">
-                                <span class="text-xs font-bold px-3 py-1 rounded-full <?php echo match($r['statut']) {
-                                    'en_attente' => 'bg-yellow-100 text-yellow-700',
-                                    'confirme'   => 'bg-emerald-100 text-emerald-700',
-                                    'termine'    => 'bg-slate-100 text-slate-500',
-                                    'annule'     => 'bg-red-100 text-red-500',
-                                    default      => 'bg-slate-100 text-slate-400'
-                                }; ?>">
-                                    <?php echo match($r['statut']) {
-                                        'en_attente' => 'En attente',
-                                        'confirme'   => 'Confirmé',
-                                        'termine'    => 'Terminé',
-                                        'annule'     => 'Annulé',
-                                        default      => $r['statut']
-                                    }; ?>
-                                </span>
-                                <?php if ($r['statut'] === 'en_attente'): ?>
-                                <div class="flex gap-2">
-                                    <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=accepter" class="bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-600">✓ Accepter</a>
-                                    <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=refuser" class="bg-red-100 text-red-500 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-red-200">✗ Refuser</a>
+                        <div class="border border-slate-100 rounded-2xl p-5 bg-slate-50 hover:bg-white transition-all">
+                            <div class="flex justify-between items-start gap-4">
+
+                                
+                                <div class="flex-1">
+                                  
+                                    <p class="font-bold text-slate-800 text-base">
+                                        <i class="fa-solid fa-user text-emerald-400 mr-2"></i>
+                                        <?php echo htmlspecialchars($r['prenom'] . ' ' . $r['nom']); ?>
+                                    </p>
+                                    <p class="text-sm text-slate-500 mt-1">
+                                        <i class="fa-regular fa-calendar mr-1"></i>
+                                        <?php echo date('d/m/Y à H:i', $debut); ?>
+                                        <?php if ($fin): ?>
+                                            → <?php echo date('H:i', $fin); ?>
+                                            <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full ml-1"><?php echo $duree; ?></span>
+                                        <?php endif; ?>
+                                    </p>
+                                    <?php if ($r['statut'] === 'en_attente'): ?>
+                                    <div class="mt-3 bg-white border border-slate-200 rounded-xl p-3 space-y-1.5">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2 tracking-wide">Informations du senior</p>
+                                        <?php if ($age !== null): ?>
+                                        <p class="text-xs text-slate-600">
+                                            <i class="fa-solid fa-cake-candles text-slate-400 mr-2 w-3"></i>
+                                            Né(e) le <?php echo date('d/m/Y', strtotime($r['date_naissance'])); ?> — <strong><?php echo $age; ?> ans</strong>
+                                        </p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($r['adresse'])): ?>
+                                        <p class="text-xs text-slate-600">
+                                            <i class="fa-solid fa-location-dot text-slate-400 mr-2 w-3"></i>
+                                            <?php echo htmlspecialchars($r['adresse']); ?>
+                                        </p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($r['telephone'])): ?>
+                                        <p class="text-xs text-slate-600">
+                                            <i class="fa-solid fa-phone text-slate-400 mr-2 w-3"></i>
+                                            <?php echo htmlspecialchars($r['telephone']); ?>
+                                        </p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($r['senior_email'])): ?>
+                                        <p class="text-xs text-slate-600">
+                                            <i class="fa-solid fa-envelope text-slate-400 mr-2 w-3"></i>
+                                            <?php echo htmlspecialchars($r['senior_email']); ?>
+                                        </p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($r['description'])): ?>
+                                    <p class="text-xs text-slate-400 mt-2 italic">
+                                        "<?php echo htmlspecialchars($r['description']); ?>"
+                                    </p>
+                                    <?php endif; ?>
                                 </div>
-                                <?php elseif ($r['statut'] === 'confirme'): ?>
-                                <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=terminer" class="bg-slate-200 text-slate-600 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-slate-300">Marquer terminé</a>
-                                <?php endif; ?>
+
+                                
+                                <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                                    <span class="text-xs font-bold px-3 py-1 rounded-full <?php echo match($r['statut']) {
+                                        'en_attente' => 'bg-yellow-100 text-yellow-700',
+                                        'confirme'   => 'bg-emerald-100 text-emerald-700',
+                                        'termine'    => 'bg-slate-100 text-slate-500',
+                                        'annule'     => 'bg-red-100 text-red-500',
+                                        default      => 'bg-slate-100 text-slate-400'
+                                    }; ?>">
+                                        <?php echo match($r['statut']) {
+                                            'en_attente' => 'En attente',
+                                            'confirme'   => 'Confirmé',
+                                            'termine'    => 'Terminé',
+                                            'annule'     => 'Annulé',
+                                            default      => $r['statut']
+                                        }; ?>
+                                    </span>
+                                    <?php if ($r['statut'] === 'en_attente'): ?>
+                                    <div class="flex gap-2">
+                                        <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=accepter"
+                                           class="bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-emerald-600">
+                                            ✓ Accepter
+                                        </a>
+                                        <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=refuser"
+                                           class="bg-red-100 text-red-500 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-red-200">
+                                            ✗ Refuser
+                                        </a>
+                                    </div>
+                                    <?php elseif ($r['statut'] === 'confirme'): ?>
+                                    <a href="act_res.php?id=<?php echo $r['id_reservation']; ?>&a=terminer"
+                                       class="bg-slate-200 text-slate-600 text-xs px-3 py-1.5 rounded-lg font-bold hover:bg-slate-300">
+                                        Marquer terminé
+                                    </a>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                         <?php endforeach; ?>
@@ -256,13 +315,13 @@ try {
             </div>
         </div>
 
+
         <div id="messages" class="tab-content space-y-6">
             <div class="bg-white p-10 rounded-senior shadow-sm border border-emerald-50 text-center text-slate-400 italic">
                 <i class="fa-solid fa-comment-dots text-4xl mb-4 block text-emerald-100"></i> Messagerie bientôt disponible.
             </div>
         </div>
 
-  
         <div id="profil" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Mon Entreprise</h2>
@@ -294,7 +353,6 @@ try {
 
                 <form action="update_pres.php" method="POST" class="space-y-6" onsubmit="return validerProfil()">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                         <div class="space-y-1">
                             <label class="text-xs font-bold text-slate-400 uppercase ml-1">Prénom</label>
                             <input type="text" value="<?php echo htmlspecialchars($profil['prenom'] ?? ''); ?>" disabled class="w-full p-4 bg-slate-100 rounded-xl border-none text-slate-500 font-bold cursor-not-allowed">
@@ -347,15 +405,13 @@ try {
                             <input type="text" name="iban" id="input-iban"
                                    value="<?php echo htmlspecialchars($profil['iban'] ?? ''); ?>"
                                    placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX"
-                                   maxlength="34"
-                                   oninput="formaterIBAN(this)"
+                                   maxlength="34" oninput="formaterIBAN(this)"
                                    <?php echo (isset($profil['statut']) && $profil['statut'] !== 'valide') ? 'disabled' : ''; ?>
                                    class="w-full p-4 rounded-xl outline-none uppercase font-mono tracking-widest transition-all <?php echo (isset($profil['statut']) && $profil['statut'] !== 'valide') ? 'bg-slate-100 border-none text-slate-400 cursor-not-allowed' : 'bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500'; ?>">
                             <p id="iban-error" class="hidden text-xs text-red-500 font-bold mt-1 ml-1">L'IBAN doit commencer par FR suivi de chiffres uniquement.</p>
                             <p class="text-xs text-slate-400 mt-1 ml-1">Format : FR76 + chiffres (27 caractères au total)</p>
                         </div>
                     </div>
-
                     <div class="flex justify-end pt-4">
                         <button type="submit" class="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-emerald-700 transition-all">
                             <i class="fa-solid fa-save mr-2"></i>Enregistrer les modifications
@@ -368,7 +424,6 @@ try {
     </section>
 </main>
 
-
 <div id="modalService" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-6">
     <div class="bg-white w-full max-w-lg rounded-senior shadow-2xl overflow-hidden">
         <div class="bg-emerald-600 p-6 text-white flex justify-between items-center font-bold">
@@ -377,12 +432,10 @@ try {
         </div>
         <form action="add_service.php" method="POST" class="p-8 space-y-4">
             <input type="text" name="nom_service" value="<?php echo htmlspecialchars($categorie_pres); ?>" readonly class="w-full p-4 bg-slate-100 border-none rounded-2xl text-slate-500 font-bold cursor-not-allowed outline-none">
-            
             <div class="grid grid-cols-2 gap-4">
                 <input type="text" name="ville" placeholder="Lieu (Ville)" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
                 <input type="number" name="prix" placeholder="Prix total (€)" min="1" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
             </div>
-
             <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 space-y-4">
                 <h4 class="text-xs font-bold text-emerald-800 uppercase">Disponibilité pour cette offre</h4>
                 <div class="grid grid-cols-2 gap-4">
@@ -396,9 +449,7 @@ try {
                     </div>
                 </div>
             </div>
-
             <textarea name="description" placeholder="Description courte (10 caractères min.)" rows="3" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
-            
             <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-700 transition-all">Publier l'offre et le créneau</button>
         </form>
     </div>
@@ -454,20 +505,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     const minDate = now.toISOString().slice(0, 16);
-    
+
     const debutInput = document.getElementById('dispo-debut');
-    const finInput = document.getElementById('dispo-fin');
-    
-    if(debutInput && finInput) {
+    const finInput   = document.getElementById('dispo-fin');
+
+    if (debutInput && finInput) {
         debutInput.min = minDate;
-        finInput.min = minDate;
-        
-        
+        finInput.min   = minDate;
         debutInput.addEventListener('change', function() {
             finInput.min = this.value;
-            if(finInput.value < this.value) {
-                finInput.value = this.value;
-            }
+            if (finInput.value < this.value) finInput.value = this.value;
         });
     }
 });
