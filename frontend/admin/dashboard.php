@@ -382,7 +382,7 @@ const titles = {
   prestataires: ['Prestataires', 'Gestion des prestataires partenaires'],
   categories: ['Catégories', 'Gestion des catégories de prestations'],
   evenements: ['Événements', 'Gestion des événements Silver Happy'],
-  articles: ['Articles', 'Gestion des articles']
+  articles: ['Articles', 'Gestion des articles'],
   documents: ['Documents', 'Validation des documents des prestataires']
 };
 
