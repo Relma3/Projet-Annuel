@@ -88,10 +88,35 @@ try {
         </div>
     </div>
     <div class="flex items-center gap-4">
-        <span class="text-sm font-medium">Expert : <strong><?php echo htmlspecialchars($nom_pres); ?></strong></span>
-        <a href="logout.php" class="bg-emerald-100 text-emerald-700 h-10 w-10 flex items-center justify-center rounded-full hover:bg-emerald-600 hover:text-white transition-all">
-            <i class="fa-solid fa-power-off"></i>
-        </a>
+
+    <!-- controle loupe dans la navbar -->
+    <div class="flex items-center gap-1 bg-slate-100 rounded-full px-3 py-1">
+        <button onclick="changerZoom(-1)" id="btn-zoom-moins"
+            class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-corail transition-colors font-bold text-lg"
+            title="Réduire">
+            <i class="fa-solid fa-magnifying-glass-minus text-sm"></i>
+        </button>
+
+        <button onclick="reinitZoom()"
+            class="w-8 h-8 flex items-center justify-center text-xs font-bold text-slate-500 hover:text-corail transition-colors"
+            title="Taille normale" id="btn-zoom-label">
+            100%
+        </button>
+
+        <button onclick="changerZoom(1)" id="btn-zoom-plus"
+            class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-corail transition-colors"
+            title="Agrandir">
+            <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
+        </button>
+    </div>
+
+    <span class="text-sm font-medium text-slate-500 hidden sm:block">
+        Bonjour, <strong><?php echo htmlspecialchars($prenom_user); ?></strong>
+    </span>
+
+    <a href="logout.php" class="bg-peche-pale text-corail h-10 w-10 flex items-center justify-center rounded-full hover:bg-corail hover:text-white transition-all shadow-sm">
+        <i class="fa-solid fa-power-off"></i>
+    </a>
     </div>
 </nav>
 
