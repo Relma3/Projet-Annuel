@@ -1,10 +1,10 @@
 <?php
+session_start();
 require_once __DIR__ . '/../db_connect.php';
 require_once __DIR__ . '/middleware.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 header('Content-Type: application/json');
-session_start();
 
 if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'senior') {
     http_response_code(401);
