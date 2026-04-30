@@ -9,7 +9,6 @@ $onesignal_app_id = getenv('ONESIGNAL_APP_ID') ?: '';
     await OneSignal.init({
       appId: "<?= htmlspecialchars($onesignal_app_id) ?>",
       notifyButton: { enable: false },
-      allowLocalhostAsSecureOrigin: true,
     });
 
     // Demande la permission à l'utilisateur
