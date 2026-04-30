@@ -462,7 +462,6 @@ $factures = $stmt->fetchAll();
 
             <div id="profil" class="tab-content space-y-6">
                 <h2 class="text-2xl font-title font-bold text-corail">Mes Informations</h2>
-<<<<<<< HEAD
 
                 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'profil_mis_a_jour'): ?>
                     <div class="bg-green-50 text-green-700 px-6 py-3 rounded-2xl font-bold">
@@ -533,21 +532,6 @@ $factures = $stmt->fetchAll();
                             Supprimer mon compte
                         </button>
                     </div>
-=======
-                <form id="form-profil" class="bg-white p-10 rounded-senior shadow-sm space-y-6">
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Téléphone</label>
-                            <input type="text" name="telephone" value="<?php echo htmlspecialchars($profil['telephone'] ?? ''); ?>" class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Adresse</label>
-                            <input type="text" name="adresse" value="<?php echo htmlspecialchars($profil['adresse'] ?? ''); ?>" class="w-full bg-peche-pale/50 p-4 rounded-2xl border-none font-bold text-corail focus:ring-2 focus:ring-corail outline-none">
-                        </div>
-                    </div>
-                    <button type="submit" class="bg-corail text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-transform">Enregistrer les modifications</button>
-                    <button type="button" onclick="supprimerCompte()" class="bg-red-50 text-red-500 px-10 py-4 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition-all">Supprimer mon compte</button>
->>>>>>> 102eb176e340bec157d14dace684472872d16ba2
                 </form>
             </div>
         </section>
@@ -568,20 +552,6 @@ $factures = $stmt->fetchAll();
             btn.classList.add('nav-active');
             btn.classList.remove('text-slate-400');
         }
-
-        document.getElementById('form-profil').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const res = await fetch('/api/seniors/me', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify({
-                    telephone: document.querySelector('[name=telephone]').value,
-                    adresse: document.querySelector('[name=adresse]').value
-                })
-            });
-            if (res.ok) window.location.href = 'dashboardS.php?msg=profil_mis_a_jour#profil';
-            else alert('Erreur lors de la mise à jour du profil.');
-        });
 
         async function prendreRdv() {
             const id_prestataire = document.getElementById('select-medecin').value;
