@@ -32,15 +32,15 @@ $id_senior = $_SESSION['id'];
 try {
     // Récupère le stripe_customer_id existant ou en crée un nouveau
     $stmt = $pdo->prepare("
-        SELECT s.id_senior, u.email, u.prenom, u.nom, a.stripe_customer_id
-        FROM senior s
-        JOIN utilisateur u ON s.id_utilisateur = u.id_utilisateur
-        LEFT JOIN abonnement a ON a.id_senior = s.id_senior
-        WHERE s.id_utilisateur = ?
-        ORDER BY a.created_at DESC LIMIT 1
-    ");
-    $stmt->execute([$id_senior]);
-    $senior = $stmt->fetch();
+    SELECT s.id_senior, u.email, s.prenom, s.nom, a.stripe_customer_id
+    FROM senior s
+    JOIN utilisateur u ON u.id_utilisateur = s.id_senior
+    LEFT JOIN abonnement a ON a.id_senior = s.id_senior
+    WHERE s.id_senior = ?
+    ORDER BY a.created_at DESC LIMIT 1
+");
+$stmt->execute([$id_senior]);
+$senior = $stmt->fetch();
 
     // Crée un customer Stripe si pas encore existant
     if (empty($senior['stripe_customer_id'])) {
