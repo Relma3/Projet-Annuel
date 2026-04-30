@@ -5,10 +5,9 @@ require_once 'db_connect.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && $_SESSION['type'] === 'prestataire') {
     $id_pres = $_SESSION['id'];
     
-    // On récupère uniquement l'IBAN
+    
     $iban = isset($_POST['iban']) ? htmlspecialchars(trim($_POST['iban'])) : null;
-
-    // Nettoyage (suppression des espaces pour la BDD)
+)
     $iban_propre = $iban ? str_replace(' ', '', $iban) : null;
 
     if ($iban_propre !== null) {
