@@ -53,10 +53,17 @@ try {
 
     $stmtConseils = $pdo->prepare("
         SELECT * FROM conseil WHERE visible = 1
-        ORDER BY created_at DESC LIMIT 6
+        ORDER BY categorie ASC, created_at DESC
     ");
     $stmtConseils->execute();
     $conseils = $stmtConseils->fetchAll();
+
+    // Regrouper par catégorie
+    $conseils_par_categorie = [];
+    foreach ($conseils as $c) {
+        $cat = $c['categorie'] ?? 'Général';
+        $conseils_par_categorie[$cat][] = $c;
+    }
 
     $stmtRdv = $pdo->prepare("
         SELECT r.*, p.nom as medecin_nom, p.prenom as medecin_prenom, p.specialite
@@ -442,13 +449,35 @@ $factures = $stmt->fetchAll();
 
             <div id="conseils" class="tab-content space-y-6">
                 <h2 class="text-2xl font-title font-bold text-corail">Espace Conseils</h2>
+
                 <?php if (empty($conseils)): ?>
-                    <div class="bg-white p-10 rounded-senior shadow-sm text-center text-slate-300 italic">Aucun conseil disponible pour le moment.</div>
+                    <div class="bg-white p-10 rounded-senior shadow-sm text-center text-slate-300 italic">
+                        Aucun conseil disponible pour le moment.
+                    </div>
                 <?php else: ?>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Filtres par catégorie -->
+                    <div class="flex flex-wrap gap-2" id="filtres-conseils">
+                        <button onclick="filtrerConseils('tous', this)"
+                                class="filtre-btn actif px-5 py-2 rounded-full text-sm font-bold bg-corail text-white transition-all">
+                            Tous
+                        </button>
+                        <?php foreach (array_keys($conseils_par_categorie) as $cat): ?>
+                            <button onclick="filtrerConseils('<?php echo htmlspecialchars($cat); ?>', this)"
+                                    class="filtre-btn px-5 py-2 rounded-full text-sm font-bold bg-white text-slate-500 border border-slate-200 hover:bg-peche-pale hover:text-corail transition-all">
+                                <?php echo htmlspecialchars($cat); ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Cartes conseils -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="grille-conseils">
                         <?php foreach ($conseils as $c): ?>
-                            <div class="bg-white p-8 rounded-senior shadow-sm border-l-8 border-corail">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><?php echo htmlspecialchars($c['categorie'] ?? 'Général'); ?></span>
+                            <div class="conseil-card bg-white p-8 rounded-senior shadow-sm border-l-8 border-corail"
+                                data-categorie="<?php echo htmlspecialchars($c['categorie'] ?? 'Général'); ?>">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    <?php echo htmlspecialchars($c['categorie'] ?? 'Général'); ?>
+                                </span>
                                 <h3 class="text-xl font-bold mt-2 mb-3"><?php echo htmlspecialchars($c['titre']); ?></h3>
                                 <p class="text-slate-500 leading-relaxed"><?php echo nl2br(htmlspecialchars($c['contenu'])); ?></p>
                                 <?php if ($c['auteur']): ?>
@@ -457,6 +486,7 @@ $factures = $stmt->fetchAll();
                             </div>
                         <?php endforeach; ?>
                     </div>
+
                 <?php endif; ?>
             </div>
 
@@ -539,6 +569,24 @@ $factures = $stmt->fetchAll();
 
 
     <script>
+        function filtrerConseils(categorie, btn) {
+        // Mettre à jour le bouton actif
+        document.querySelectorAll('.filtre-btn').forEach(b => {
+            b.classList.remove('actif', 'bg-corail', 'text-white');
+            b.classList.add('bg-white', 'text-slate-500');
+        });
+        btn.classList.add('actif', 'bg-corail', 'text-white');
+        btn.classList.remove('bg-white', 'text-slate-500');
+
+        // Afficher/masquer les cartes
+        document.querySelectorAll('.conseil-card').forEach(card => {
+            if (categorie === 'tous' || card.dataset.categorie === categorie) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        }
         const token = localStorage.getItem('token');
         const tutorielDejavu = <?php echo !empty($profil['tutoriel_vu']) ? 'true' : 'false'; ?>;
 
