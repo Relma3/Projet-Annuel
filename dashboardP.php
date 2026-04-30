@@ -106,7 +106,7 @@ try {
 
     <section class="lg:col-span-3 space-y-6 w-full">
 
-        <!-- DASHBOARD -->
+
         <div id="dashboard" class="tab-content active space-y-6">
             <div class="bg-emerald-600 p-10 rounded-senior shadow-lg text-white w-full">
                 <h1 class="text-3xl font-title font-bold">Bonjour, <?php echo htmlspecialchars($nom_pres); ?></h1>
@@ -131,7 +131,7 @@ try {
             </div>
         </div>
 
-        <!-- SERVICES -->
+
         <div id="services" class="tab-content space-y-6">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-title font-bold text-emerald-800">Mes Offres Planifiées</h2>
@@ -155,7 +155,21 @@ try {
             <?php else: ?>
                 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'service_ajoute'): ?>
                 <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-2xl mb-4 font-bold text-sm">
-                    <i class="fa-solid fa-check mr-2"></i>Offre publiée avec succès !
+                    <i class="fa-solid fa-check mr-2"></i>Offre et disponibilité publiées avec succès !
+                </div>
+                <?php endif; ?>
+
+                <?php if (isset($_GET['error'])): ?>
+                <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-4 font-bold text-sm">
+                    <?php
+                    echo match ($_GET['error']) {
+                        'desc_courte'     => 'La description doit faire au moins 10 caractères.',
+                        'prix_invalide'   => 'Le prix doit être supérieur à 0.',
+                        'dates_invalides' => 'Les dates doivent être dans le futur et cohérentes.',
+                        'sql'             => 'Erreur de base de données.',
+                        default           => 'Une erreur est survenue.'
+                    };
+                    ?>
                 </div>
                 <?php endif; ?>
 
@@ -185,7 +199,6 @@ try {
             <?php endif; ?>
         </div>
 
-        <!-- PLANNING / RÉSERVATIONS -->
         <div id="planning" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Réservations reçues</h2>
@@ -243,14 +256,13 @@ try {
             </div>
         </div>
 
-        <!-- MESSAGES -->
         <div id="messages" class="tab-content space-y-6">
             <div class="bg-white p-10 rounded-senior shadow-sm border border-emerald-50 text-center text-slate-400 italic">
                 <i class="fa-solid fa-comment-dots text-4xl mb-4 block text-emerald-100"></i> Messagerie bientôt disponible.
             </div>
         </div>
 
-        <!-- PROFIL -->
+  
         <div id="profil" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Mon Entreprise</h2>
@@ -356,18 +368,38 @@ try {
     </section>
 </main>
 
+
 <div id="modalService" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-md rounded-senior shadow-2xl overflow-hidden">
+    <div class="bg-white w-full max-w-lg rounded-senior shadow-2xl overflow-hidden">
         <div class="bg-emerald-600 p-6 text-white flex justify-between items-center font-bold">
-            <h3 class="text-xl">Nouvelle Offre</h3>
+            <h3 class="text-xl">Nouvelle Offre & Disponibilité</h3>
             <button onclick="toggleModal('modalService')" class="text-2xl">&times;</button>
         </div>
         <form action="add_service.php" method="POST" class="p-8 space-y-4">
             <input type="text" name="nom_service" value="<?php echo htmlspecialchars($categorie_pres); ?>" readonly class="w-full p-4 bg-slate-100 border-none rounded-2xl text-slate-500 font-bold cursor-not-allowed outline-none">
-            <input type="text" name="ville" placeholder="Ville d'exercice" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
-            <input type="number" name="prix" placeholder="Prix par heure (€)" min="1" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+            
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" name="ville" placeholder="Lieu (Ville)" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                <input type="number" name="prix" placeholder="Prix total (€)" min="1" required class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+
+            <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100 space-y-4">
+                <h4 class="text-xs font-bold text-emerald-800 uppercase">Disponibilité pour cette offre</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Début</label>
+                        <input type="datetime-local" id="dispo-debut" name="debut" required class="w-full p-3 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Fin</label>
+                        <input type="datetime-local" id="dispo-fin" name="fin" required class="w-full p-3 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+            </div>
+
             <textarea name="description" placeholder="Description courte (10 caractères min.)" rows="3" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
-            <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-700 transition-all">Publier l'offre</button>
+            
+            <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-700 transition-all">Publier l'offre et le créneau</button>
         </form>
     </div>
 </div>
@@ -417,6 +449,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hash) {
         const btn = document.querySelector(`.tab-btn[onclick*="'${hash}'"]`);
         if (btn) showTab(hash, btn);
+    }
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const minDate = now.toISOString().slice(0, 16);
+    
+    const debutInput = document.getElementById('dispo-debut');
+    const finInput = document.getElementById('dispo-fin');
+    
+    if(debutInput && finInput) {
+        debutInput.min = minDate;
+        finInput.min = minDate;
+        
+        
+        debutInput.addEventListener('change', function() {
+            finInput.min = this.value;
+            if(finInput.value < this.value) {
+                finInput.value = this.value;
+            }
+        });
     }
 });
 </script>
