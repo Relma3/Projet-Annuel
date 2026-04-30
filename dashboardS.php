@@ -157,6 +157,7 @@ $factures = $stmt->fetchAll();
         </div>
 
         <div class="flex items-center gap-4">
+
             <div class="flex items-center gap-1 bg-slate-100 rounded-full px-3 py-1">
                 <button onclick="changerZoom(-1)" class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-corail transition-colors" title="Réduire">
                     <i class="fa-solid fa-magnifying-glass-minus text-sm"></i>
