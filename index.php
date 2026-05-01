@@ -192,31 +192,39 @@
     </footer>
 
     <!-- Mmina -->
-    <script>
+     <!--malikat -->
+ <script>
 const LANG_KEY = 'sh_lang';
 
 async function loadLang(lang) {
     try {
-        const res  = await fetch(`lang${lang.toUpperCase()}.json`);
+        const res  = await fetch(`/lang/${lang}.json`);
         const data = await res.json();
+
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (data[key]) el.textContent = data[key];
         });
+
         localStorage.setItem(LANG_KEY, lang);
         document.getElementById('lang-selector').value = lang;
+
     } catch (e) {
-        console.warn('Langue non disponible :', lang);
+        console.error("Erreur langue :", e);
     }
 }
 
-const savedLang = localStorage.getItem(LANG_KEY) || 'fr';
-if (savedLang !== 'fr') loadLang(savedLang);
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem(LANG_KEY) || 'fr';
+    loadLang(savedLang);
 
-document.getElementById('lang-selector').addEventListener('change', function () {
-    loadLang(this.value);
+    document.getElementById('lang-selector').addEventListener('change', function () {
+        loadLang(this.value);
+    });
 });
+               
 </script>
+ <!-- fin malikat -->
 
 </body>
 </html>
