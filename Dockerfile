@@ -12,4 +12,10 @@ RUN mkdir -p storage/factures storage/logs \
     && chown -R www-data:www-data storage \
     && chmod -R 755 storage
 
-EXPOSE 80
+RUN a2enmod ssl rewrite
+COPY apache-ssl.conf /etc/apache2/sites-available/silverhappy.conf
+RUN a2dissite 000-default && a2ensite silverhappy.conf
+
+COPY apache-ssl.conf /opt/docker/etc/httpd/vhost.conf
+
+EXPOSE 80 443
