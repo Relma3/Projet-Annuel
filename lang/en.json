@@ -18,5 +18,9 @@
     "service_health": "Health & Well-being",
     "service_health_desc": "Medical appointments and advice.",
     "service_shop": "Adapted Store",
-    "service_shop_desc": "Comfort products."
+    "service_shop_desc": "Comfort products.",
+    "footer_title": "Silver Happy",
+    "footer_copyright": "© 2026 - All rights reserved",
+    "footer_propose": "Propose your services",
+    "footer_help": "Find help"
 }
