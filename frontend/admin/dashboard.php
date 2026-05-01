@@ -634,14 +634,42 @@ async function ajouterArticle(){
     const prix = document.getElementById('prix').value;
     const description = document.getElementById('desc').value;
 
-    await fetch('/api/admin/articles.php', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({nom, prix, description})
-    });
+    // ⚠️ sécurité
+    if(!nom || !description){
+        alert("Nom et description obligatoires");
+        return;
+    }
 
-    document.getElementById('modal').classList.add('hidden');
-    chargerArticles();
+    try {
+        const res = await fetch('/api/admin/articles.php', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                nom,
+                prix,
+                description
+            })
+        });
+
+        const data = await res.json();
+
+        console.log("REPONSE API :", data);
+
+        if(data.error){
+            alert(data.error);
+            return;
+        }
+
+        alert("Article ajouté ✅");
+
+        document.getElementById('modal').classList.add('hidden');
+
+        chargerArticles();
+
+    } catch(e){
+        console.error(e);
+        alert("Erreur serveur");
+    }
 }
 async function chargerPrestataires() {
   try {
