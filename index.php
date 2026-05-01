@@ -121,32 +121,32 @@
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-house-chimney text-2xl text-orange-corail"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-slate-900">Soins à domicile</h3>
-                    <p class="text-slate-600">Ménage, repas et courses.</p>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900" data-i18n="service_home">Soins à domicile</h3>
+                    <p class="text-slate-600" data-i18n="service_home_desc">Ménage, repas et courses.</p>
                 </div>
 
                 <div onclick="window.location.href='services.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-peche-pastel transition-all cursor-pointer shadow-sm">
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-palette text-2xl text-orange-corail"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-slate-900">Loisirs & Culture</h3>
-                    <p class="text-slate-600">Sorties et ateliers.</p>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900" data-i18n="service_culture">Loisirs & Culture</h3>
+                    <p class="text-slate-600" data-i18n="service_culture_desc">Sorties et ateliers.</p>
                 </div>
 
                 <div onclick="window.location.href='services.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-vert-menthe transition-all cursor-pointer shadow-sm">
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-heart-pulse text-2xl text-orange-corail"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-slate-900">Santé & Bien-être</h3>
-                    <p class="text-slate-600">RDV médicaux et conseils.</p>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900" data-i18n="service_health">Santé & Bien-être</h3>
+                    <p class="text-slate-600" data-i18n="service_health_desc">RDV médicaux et conseils.</p>
                 </div>
 
                 <div onclick="window.location.href='services.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-peche-pastel transition-all cursor-pointer shadow-sm">
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-basket-shopping text-2xl text-orange-corail"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3 text-slate-900">Boutique adaptée</h3>
-                    <p class="text-slate-600">Produits de confort.</p>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900" data-i18n="service_shop">Boutique adaptée</h3>
+                    <p class="text-slate-600" data-i18n="service_shop_desc">Produits de confort.</p>
                 </div>
             </div>
         </div>
