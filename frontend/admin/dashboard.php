@@ -659,20 +659,44 @@ async function chargerPrestataires() {
 
     table.innerHTML = data.map(p => `
       <tr class="border-b border-slate-700">
+
         <td class="p-3">#${p.id_utilisateur}</td>
         <td class="p-3">${p.email}</td>
         <td class="p-3">
-  ${
-    p.est_actif == 1
-      ? '<span class="text-green-400">Validé</span>'
-      : '<span class="text-orange-400">En attente</span>'
-  }
-</td>
-       <td class="p-3">
-  <button onclick="voirDocs(${p.id_utilisateur})" class="text-blue-400 hover:underline">
-    Voir documents
-  </button>
-</td>
+          ${
+            p.est_actif == 1
+              ? '<span class="text-green-400">Validé</span>'
+              : '<span class="text-orange-400">En attente</span>'
+          }
+        </td>
+
+        <td class="p-3 flex gap-2">
+
+          ${
+            p.est_actif == 0
+              ? `<button onclick="validerPrestataire(${p.id_utilisateur}, 1)"
+                  class="bg-green-500 px-3 py-1 rounded text-xs">
+                  Valider
+                </button>`
+              : ''
+          }
+
+          ${
+            p.est_actif == 1
+              ? `<button onclick="validerPrestataire(${p.id_utilisateur}, 0)"
+                  class="bg-red-500 px-3 py-1 rounded text-xs">
+                  Désactiver
+                </button>`
+              : ''
+          }
+
+          <button onclick="voirDocs(${p.id_utilisateur})"
+              class="text-blue-400 hover:underline text-xs">
+              Documents
+          </button>
+
+        </td>
+
       </tr>
     `).join('');
 
@@ -680,7 +704,6 @@ async function chargerPrestataires() {
     console.error(e);
   }
 }
-
 async function validerPrestataire(id, etat){
 
     await fetch('/api/admin/prestataires.php', {
@@ -688,7 +711,7 @@ async function validerPrestataire(id, etat){
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
             id_utilisateur:id,
-            est_valide:etat
+            est_actif:etat
         })
     });
 
