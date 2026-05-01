@@ -38,7 +38,7 @@ if ($id_devis > 0 && in_array($action, ['accepter', 'refuser'])) {
             }
 
             $pdo->commit();
-            header("Location: dashboardS.php?msg=$msg#planning");
+            header("Location: dashboardS.php?msg=$msg#rdv");
             exit();
         }
 
@@ -48,5 +48,5 @@ if ($id_devis > 0 && in_array($action, ['accepter', 'refuser'])) {
     }
 }
 
-header('Location: dashboardS.php#planning');
+header('Location: dashboardS.php#rdv');
 exit();
