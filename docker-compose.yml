@@ -6,6 +6,7 @@ services:
       - "3307:3306"
     volumes:
       - .:/app
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - db
     env_file:
