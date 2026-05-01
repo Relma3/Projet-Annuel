@@ -7,5 +7,16 @@
   "services_sub": "Everything you need for a peaceful daily life.",
   "benefits_title": "Member benefits",
   "benefits_sub": "Exclusive perks and a caring community.",
-  "benefits_btn": "Become a member"
+  "benefits_btn": "Become a member",
+    "nav_home": "Home",
+    "nav_services": "Services",
+    "nav_contact": "Contact",
+    "service_home": "Home care",
+    "service_home_desc": "Cleaning, meals and shopping.",
+    "service_culture": "Leisure & Culture",
+    "service_culture_desc": "Trips and workshops.",
+    "service_health": "Health & Well-being",
+    "service_health_desc": "Medical appointments and advice.",
+    "service_shop": "Adapted Store",
+    "service_shop_desc": "Comfort products."
 }

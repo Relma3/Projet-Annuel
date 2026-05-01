@@ -7,5 +7,16 @@
   "services_sub": "Tout ce dont vous avez besoin pour un quotidien serein.",
   "benefits_title": "Avantages réservés aux membres",
   "benefits_sub": "Privilèges exclusifs et communauté bienveillante.",
-  "benefits_btn": "Devenir membre"
+  "benefits_btn": "Devenir membre",
+  "nav_home": "Accueil",
+  "nav_services": "Services",
+  "nav_contact": "Contact",
+  "service_home": "Soins à domicile",
+"service_home_desc": "Ménage, repas et courses.",
+  "service_culture": "Loisirs & Culture",
+  "service_culture_desc": "Sorties et ateliers.",
+  "service_health": "Santé & Bien-être",
+  "service_health_desc": "RDV médicaux et conseils.",
+  "service_shop": "Boutique adaptée",
+  "service_shop_desc": "Produits de confort."
 }
