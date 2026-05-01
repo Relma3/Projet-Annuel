@@ -51,7 +51,7 @@
             <img src="logo.png" alt="Silver Happy" class="h-12">
             <div>
                 <span class="text-2xl font-bold text-orange-corail block leading-none">Silver Happy</span>
-                <span class="text-xs uppercase tracking-widest font-bold text-slate-400">Bien vivre après 60 ans</span>
+                <span class="text-xs uppercase tracking-widest font-bold text-slate-400" data-i18n="nav_tagline">Bien vivre après 60 ans</span>
             </div>
         </div>
         
@@ -99,7 +99,7 @@
             <?php endif; ?>
             <a href="#services" class="border-2 border-slate-200 px-8 py-4 rounded-senior text-lg font-bold hover:bg-slate-50 transition-colors"
                data-i18n="our_services">
-                Nos Services12
+                Nos Services
             </a>
         </div>
     </div>
@@ -175,12 +175,12 @@
     <footer class="bg-slate-900 text-white py-12 px-6">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
             <div>
-                <h3 class="text-2xl font-bold">Silver Happy</h3>
-                <p class="text-slate-400">© 2026 - Tous droits réservés</p>
+                <h3 class="text-2xl font-bold" data-i18n="footer_title">Silver Happy</h3>
+                <p class="text-slate-400" data-i18n="footer_copyright">© 2026 - Tous droits réservés</p>
             </div>
             <div class="flex gap-6">
-                <a href="inscriptionpres.php" class="border border-slate-700 px-6 py-3 rounded-senior hover:bg-white hover:text-slate-900 transition-all font-bold">Proposer mes services</a>
-                <a href="contact.php" class="bg-orange-corail px-6 py-3 rounded-senior font-bold hover:brightness-110 transition-all">Trouver de l'aide</a>
+                <a href="inscriptionpres.php" class="border border-slate-700 px-6 py-3 rounded-senior hover:bg-white hover:text-slate-900 transition-all font-bold" data-i18n="footer_propose">Proposer mes services</a>
+                <a href="contact.php" class="bg-orange-corail px-6 py-3 rounded-senior font-bold hover:brightness-110 transition-all" data-i18n="footer_help">Trouver de l'aide</a>
             </div>
         </div>
 
