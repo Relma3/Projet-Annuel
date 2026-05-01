@@ -43,6 +43,7 @@ services:
       - db
     restart: always
 
+  # phpMyAdmin : interface bdd sur http://51.210.12.40:8081
   phpmyadmin:
     image: phpmyadmin:latest
     ports:
