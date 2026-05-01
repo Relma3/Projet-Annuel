@@ -7,15 +7,15 @@ function initTutoriel() {
             texte: "Votre espace personnel pour bien vivre après 60 ans. Ce guide rapide vous présente les fonctionnalités essentielles."
         },
         {
-            titre: "Vos rendez-vous 📅",
+            titre: "Vos rendez-vous",
             texte: "Dans l'onglet \"Mes RDV\", retrouvez tous vos services réservés, vos télé-consultations médicales et vos événements à venir."
         },
         {
-            titre: "La boutique 🛍️",
+            titre: "La boutique",
             texte: "Accédez à notre sélection de produits adaptés aux seniors directement depuis le menu en haut de page."
         },
         {
-            titre: "La messagerie 💬",
+            titre: "La messagerie",
             texte: "Vous pouvez contacter à tout moment l'équipe Silver Happy via l'onglet Messagerie. Nous vous répondons rapidement."
         },
         {
