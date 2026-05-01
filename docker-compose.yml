@@ -3,11 +3,9 @@ services:
     build: .
     ports:
       - "80:80"
-      - "443:443"
       - "3307:3306"
     volumes:
       - .:/app
-      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - db
     env_file:
@@ -16,7 +14,7 @@ services:
       DB_HOST: db
       DB_NAME: silver_happy
       DB_USER: sh_user
-      DB_PASS: Silverhappy123
+      DB_PASS: ChoisisUnMotDePasseFort
       JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     restart: always
 
@@ -26,7 +24,7 @@ services:
       MYSQL_ROOT_PASSWORD: rootsecret
       MYSQL_DATABASE: silver_happy
       MYSQL_USER: sh_user
-      MYSQL_PASSWORD: Silverhappy123
+      MYSQL_PASSWORD: ChoisisUnMotDePasseFort
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -39,12 +37,13 @@ services:
       DB_HOST: db
       DB_NAME: silver_happy
       DB_USER: sh_user
-      DB_PASS: Silverhappy123
+      DB_PASS: ChoisisUnMotDePasseFort
       JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     depends_on:
       - db
     restart: always
 
+  # phpMyAdmin : interface bdd sur http://51.210.12.40:8081
   phpmyadmin:
     image: phpmyadmin:latest
     ports:
@@ -52,7 +51,7 @@ services:
     environment:
       PMA_HOST: db
       PMA_USER: sh_user
-      PMA_PASSWORD: Silverhappy123
+      PMA_PASSWORD: ChoisisUnMotDePasseFort
       UPLOAD_LIMIT: 50M
     depends_on:
       - db
