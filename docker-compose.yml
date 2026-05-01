@@ -14,7 +14,7 @@ services:
       DB_HOST: db
       DB_NAME: silver_happy
       DB_USER: sh_user
-      DB_PASS: ChoisisUnMotDePasseFort
+      DB_PASS: Silverhappy123
       JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     restart: always
 
@@ -38,7 +38,7 @@ services:
       DB_HOST: db
       DB_NAME: silver_happy
       DB_USER: sh_user
-      DB_PASS: ChoisisUnMotDePasseFort
+      DB_PASS: Silverhappy123
       JWT_SECRET: silverhappy_secret_jwt_2026_ovh
     depends_on:
       - db
@@ -52,7 +52,7 @@ services:
     environment:
       PMA_HOST: db
       PMA_USER: sh_user
-      PMA_PASSWORD: ChoisisUnMotDePasseFort
+      PMA_PASSWORD: Silverhappy123
       UPLOAD_LIMIT: 50M
     depends_on:
       - db
