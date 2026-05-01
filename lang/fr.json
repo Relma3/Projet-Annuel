@@ -18,5 +18,9 @@
   "service_health": "Santé & Bien-être",
   "service_health_desc": "RDV médicaux et conseils.",
   "service_shop": "Boutique adaptée",
-  "service_shop_desc": "Produits de confort."
+  "service_shop_desc": "Produits de confort.",
+  "footer_title": "Silver Happy",
+  "footer_copyright": "© 2026 - Tous droits réservés",
+  "footer_propose": "Proposer mes services",
+  "footer_help": "Trouver de l'aide"
 }
