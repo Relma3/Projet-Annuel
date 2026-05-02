@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 if (!isset($_SESSION['id']) || $_SESSION['type'] !== 'prestataire') {
-    
+ 
 }
 
 $prenom        = htmlspecialchars(trim($_POST['prenom']        ?? ''));
@@ -47,7 +47,6 @@ if ($date_naissance) {
         exit();
     }
 }
-
 
 $uploadDir = __DIR__ . '/uploads/documents/';
 if (!is_dir($uploadDir)) {
@@ -114,10 +113,11 @@ try {
     $stmtUser->execute([$email, $hash]);
     $idUser = $pdo->lastInsertId();
 
+
     $stmtPres = $pdo->prepare("
         INSERT INTO prestataire (
             id_prestataire, nom, prenom, date_naissance, telephone, adresse,
-            ville, categorie, siret, raison_sociale, bio, tarif_horaire, statut
+            ville, categorie, siret, raison_sociale, description, tarif_horaire, statut
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
     ");
@@ -126,7 +126,6 @@ try {
         $adresse, $ville, $categorie, $siret, $raison_sociale ?: null,
         $bio ?: null, $tarif_horaire ?: null
     ]);
-
 
     $documents = [
         'casier_judiciaire' => 'casier_judiciaire',
@@ -160,6 +159,7 @@ try {
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
+    
     error_log("Erreur inscription prestataire : " . $e->getMessage());
     header('Location: inscriptionpres.php?error=sql');
     exit();
