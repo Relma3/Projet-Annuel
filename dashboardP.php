@@ -555,7 +555,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (finInput.value < this.value) finInput.value = this.value;
         });
     }
+       } catch (PDOException $e) {
+    die("Erreur : " . $e->getMessage());
+}
 });
 </script>
 </body>
+ 
 </html>
