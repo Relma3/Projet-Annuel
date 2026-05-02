@@ -114,13 +114,13 @@ try {
     $idUser = $pdo->lastInsertId();
 
 
-    $stmtPres = $pdo->prepare("
-        INSERT INTO prestataire (
-            id_prestataire, nom, prenom, date_naissance, telephone, adresse,
-            ville, categorie, siret, raison_sociale, description, tarif_horaire, statut
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
-    ");
+   $stmtPres = $pdo->prepare("
+    INSERT INTO prestataire (
+        id_prestataire, nom, prenom, date_naissance, telephone, adresse,
+        ville, categorie, siret, raison_sociale, bio, tarif_horaire, statut
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente')
+");
     $stmtPres->execute([
         $idUser, $nom, $prenom, $date_naissance ?: null, $telephone,
         $adresse, $ville, $categorie, $siret, $raison_sociale ?: null,
@@ -160,11 +160,8 @@ try {
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     
-    // ON DÉBLOQUE L'AFFICHAGE DE L'ERREUR EN ENLEVANT LES "//"
-    die("Erreur SQL détaillée : " . $e->getMessage());
-    
-    // ON DÉSACTIVE LA REDIRECTION EN METTANT DES "//" DEVANT
-    // error_log("Erreur inscription prestataire : " . $e->getMessage());
-    // header('Location: inscriptionpres.php?error=sql');
-    // exit();
+
+    error_log("Erreur inscription prestataire : " . $e->getMessage());
+    header('Location: inscriptionpres.php?error=sql');
+    exit();
 }
