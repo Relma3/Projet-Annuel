@@ -159,8 +159,9 @@ try {
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-   
-    die("Erreur SQL détaillée : " . $e->getMessage());
     
-
+  
+    error_log("Erreur inscription prestataire : " . $e->getMessage());
+    header('Location: inscriptionpres.php?error=sql');
+    exit();
 }
