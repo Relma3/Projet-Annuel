@@ -160,11 +160,7 @@ try {
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
     
-    // ON DÉBLOQUE L'AFFICHAGE DE L'ERREUR EN ENLEVANT LES "//"
-    die("Erreur SQL détaillée : " . $e->getMessage());
-    
-    // ON DÉSACTIVE LA REDIRECTION EN METTANT DES "//" DEVANT
-    // error_log("Erreur inscription prestataire : " . $e->getMessage());
-    // header('Location: inscriptionpres.php?error=sql');
-    // exit();
+    error_log("Erreur inscription prestataire : " . $e->getMessage());
+    header('Location: inscriptionpres.php?error=sql');
+    exit();
 }
