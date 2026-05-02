@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json");
 
+
 // CORS
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");
@@ -13,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../utils/log.php';
 
 $pdo = getDB();
 $method = $_SERVER['REQUEST_METHOD'];
@@ -96,6 +98,8 @@ function addArticle($pdo) {
             $data['photo'] ?? null,
             $data['disponible'] ?? 1
         ]);
+
+        addLog($pdo, 1, "Ajout article : " . $data['nom']);
 
         http_response_code(201);
         echo json_encode(["success" => "Article ajouté"]);

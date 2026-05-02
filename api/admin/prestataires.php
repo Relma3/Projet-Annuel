@@ -1,5 +1,6 @@
 <?php
 require_once '../config/database.php';
+require_once '../utils/log.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -31,6 +32,8 @@ if ($method === 'PATCH') {
         $data['est_actif'],
         $data['id_utilisateur']
     ]);
+
+    addLog($pdo, $data['id_utilisateur'], 'validation_prestataire');
 
     echo json_encode(['success' => true]);
 }
