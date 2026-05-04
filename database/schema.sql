@@ -394,9 +394,9 @@ CREATE TABLE `senior` (
   `date_naissance` date DEFAULT NULL,
   `adresse` varchar(255) DEFAULT NULL,
   `ville` varchar(100) DEFAULT NULL,
-  `tutoriel_vu` tinyint(1) DEFAULT 0
+  `tutoriel_vu` tinyint(1) DEFAULT 0,
+  `onesignal_player_id` VARCHAR(255) NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 -- --------------------------------------------------------
 
 --
@@ -429,21 +429,6 @@ CREATE TABLE `utilisateur` (
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Index pour les tables déchargées
---
-
-CREATE TABLE `senior` (
-  `id_senior` int(11) NOT NULL,
-  `nom` varchar(100) DEFAULT NULL,
-  `prenom` varchar(100) DEFAULT NULL,
-  `telephone` varchar(20) DEFAULT NULL,
-  `date_naissance` date DEFAULT NULL,
-  `adresse` varchar(255) DEFAULT NULL,
-  `ville` varchar(100) DEFAULT NULL,
-  `tutoriel_vu` tinyint(1) DEFAULT 0,
-  `onesignal_player_id` VARCHAR(255) NULL DEFAULT NULL   -- ← ajouter ici
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 --
 -- Index pour la table `abonnement`
 --
