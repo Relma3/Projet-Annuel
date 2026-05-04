@@ -144,6 +144,7 @@ CREATE TABLE `disponibilites` (
   `date_fin` datetime NOT NULL,
   `type` enum('libre','reserve','indisponible') NOT NULL DEFAULT 'libre',
   `id_reservation` int(11) DEFAULT NULL,
+  `id_service` int(11) DEFAULT NULL,   
   `note` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
