@@ -23,6 +23,9 @@ if ($method === 'GET') {
             FROM documents_presta d
             JOIN utilisateur u ON d.id_prestataire = u.id_utilisateur
         ");
+
+        $pdo->prepare("UPDATE prestataire SET statut = 'en_attente' WHERE id_prestataire = ?")
+            ->execute([$id_prestataire]);
     }
 
     echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -64,6 +67,9 @@ if ($reste == 0) {
         UPDATE utilisateur SET est_actif = 1
         WHERE id_utilisateur = ?
     ")->execute([$id_prestataire]);
+
+    $pdo->prepare("UPDATE prestataire SET statut = 'valide', date_validation = NOW() WHERE id_prestataire = ?")
+    ->execute([$id_prestataire]);
 
 } else {
 
