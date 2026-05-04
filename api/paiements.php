@@ -20,10 +20,13 @@ function creer_paiement() {
 
     try {
         $intent = \Stripe\PaymentIntent::create([
-            "amount" => $data["montant"],
+            "amount"   => $data["montant"],
             "currency" => "eur",
             "metadata" => [
-                "user_id" => $payload["id_utilisateur"]
+                "user_id"        => $payload["id_utilisateur"],
+                "type_objet"     => "devis",
+                "id_devis"       => $data["id_devis"]       ?? 0,
+                "id_reservation" => $data["id_reservation"] ?? 0
             ]
         ]);
 
