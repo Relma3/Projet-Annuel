@@ -190,7 +190,9 @@ $factures = $stmt->fetchAll();
         <aside class="lg:col-span-1">
             <div class="bg-white rounded-senior p-6 shadow-sm sticky top-28 space-y-2 border border-slate-100">
                 <button onclick="showTab('actu', this)" class="tab-btn nav-active w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold transition-all"><i class="fa-solid fa-house"></i> Vue d'ensemble</button>
-                <button onclick="showTab('planning', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-calendar-check"></i> Mes RDV</button>
+                <a href="planning.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all">
+                    <i class="fa-solid fa-calendar-check"></i> Mon Planning
+                </a>
                 <button onclick="showTab('commandes', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-box"></i> Mes Achats</button>
                 <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-comment-dots"></i> Messagerie</button>
                 <a href="/abonnement.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-id-card"></i> Mon Abonnement</a>
