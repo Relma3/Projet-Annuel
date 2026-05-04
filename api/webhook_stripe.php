@@ -17,43 +17,74 @@ try {
 }
 
 if ($event->type === "payment_intent.succeeded") {
-    $intent   = $event->data->object;
+    $intent    = $event->data->object;
     $id_senior = $intent->metadata->user_id;
-    $montant  = $intent->amount;
-
-    $type      = $montant <= 400 ? "mensuel" : "annuel";
-    $date_debut = date("Y-m-d");
-    $date_fin  = $type === "mensuel"
-        ? date("Y-m-d", strtotime("+1 month"))
-        : date("Y-m-d", strtotime("+1 year"));
+    $montant   = $intent->amount;
+    $type_objet = $intent->metadata->type_objet ?? 'abonnement';
 
     $pdo = getDB();
 
-    // Mise à jour abonnement
-    $pdo->prepare("
-        INSERT INTO abonnement (id_senior, type, statut, date_debut, date_fin, montant)
-        VALUES (?, ?, 'actif', ?, ?, ?)
-        ON DUPLICATE KEY UPDATE statut='actif', date_fin=?, montant=?
-    ")->execute([
-        $id_senior, $type, $date_debut, $date_fin, $montant / 100,
-        $date_fin, $montant / 100
-    ]);
+    // ── CAS 1 : paiement d'un devis/prestation ──────────────────
+    if ($type_objet === 'devis') {
+        $id_devis       = (int) ($intent->metadata->id_devis ?? 0);
+        $id_reservation = (int) ($intent->metadata->id_reservation ?? 0);
 
-    // Enregistrement du paiement et récupération de l'id
-    $pdo->prepare("
-        INSERT INTO paiements (type_objet, objet_id, id_payeur, montant_cents,
-                               stripe_payment_intent_id, statut, date_paiement)
-        VALUES ('abonnement', 0, ?, ?, ?, 'reussi', NOW())
-    ")->execute([$id_senior, $montant, $intent->id]);
+        // Marque la réservation comme confirmée
+        if ($id_reservation) {
+            $pdo->prepare("UPDATE reservation SET statut = 'confirme' WHERE id_reservation = ?")
+                ->execute([$id_reservation]);
+        }
 
-    $id_paiement = (int) $pdo->lastInsertId(); // ← c'était ça qui manquait
+        // Enregistre le paiement
+        $pdo->prepare("
+            INSERT INTO paiements (type_objet, objet_id, id_payeur, montant_cents,
+                                   stripe_payment_intent_id, statut, date_paiement)
+            VALUES ('devis', ?, ?, ?, ?, 'reussi', NOW())
+        ")->execute([$id_devis, $id_senior, $montant, $intent->id]);
 
-    // Génération de la facture PDF
-    $pdf = new PdfGenerator();
-    try {
-        $pdf->genererFactureSenior($pdo, $id_paiement);
-    } catch (Exception $e) {
-        error_log('Erreur PDF senior: ' . $e->getMessage());
+        $id_paiement = (int) $pdo->lastInsertId();
+
+        // Génère la facture PDF senior
+        require_once __DIR__ . '/../PdfGenerator.php';
+        $pdf = new PdfGenerator();
+        try {
+            $pdf->genererFactureSenior($pdo, $id_paiement);
+        } catch (Exception $e) {
+            error_log('Erreur PDF devis senior: ' . $e->getMessage());
+        }
+
+    // ── CAS 2 : paiement d'un abonnement (votre code existant) ──
+    } else {
+        $type      = $montant <= 400 ? "mensuel" : "annuel";
+        $date_debut = date("Y-m-d");
+        $date_fin  = $type === "mensuel"
+            ? date("Y-m-d", strtotime("+1 month"))
+            : date("Y-m-d", strtotime("+1 year"));
+
+        $pdo->prepare("
+            INSERT INTO abonnement (id_senior, type, statut, date_debut, date_fin, montant)
+            VALUES (?, ?, 'actif', ?, ?, ?)
+            ON DUPLICATE KEY UPDATE statut='actif', date_fin=?, montant=?
+        ")->execute([
+            $id_senior, $type, $date_debut, $date_fin, $montant / 100,
+            $date_fin, $montant / 100
+        ]);
+
+        $pdo->prepare("
+            INSERT INTO paiements (type_objet, objet_id, id_payeur, montant_cents,
+                                   stripe_payment_intent_id, statut, date_paiement)
+            VALUES ('abonnement', 0, ?, ?, ?, 'reussi', NOW())
+        ")->execute([$id_senior, $montant, $intent->id]);
+
+        $id_paiement = (int) $pdo->lastInsertId();
+
+        require_once __DIR__ . '/../PdfGenerator.php';
+        $pdf = new PdfGenerator();
+        try {
+            $pdf->genererFactureSenior($pdo, $id_paiement);
+        } catch (Exception $e) {
+            error_log('Erreur PDF abonnement: ' . $e->getMessage());
+        }
     }
 }
 
