@@ -80,6 +80,23 @@
             <form action="traitement_inscription_pres.php" method="POST" enctype="multipart/form-data"
                   onsubmit="return validatePresForm()" class="p-10 md:p-14 space-y-10">
 
+                <?php
+                $erreurs = [
+                    'champs_manquants' => 'Tous les champs obligatoires doivent être remplis (prénom, nom, email, mot de passe, catégorie, SIRET).',
+                    'password_court'   => 'Le mot de passe doit contenir au moins 8 caractères.',
+                    'email_invalide'   => 'L\'adresse email n\'est pas valide.',
+                    'age_invalide'     => 'Vous devez avoir au moins 18 ans.',
+                    'email_existe'     => 'Cette adresse email est déjà utilisée.',
+                    'sql'              => 'Une erreur technique est survenue. Veuillez réessayer.',
+                ];
+                $err = $_GET['error'] ?? null;
+                if ($err && isset($erreurs[$err])): ?>
+                    <div class="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 mb-6 font-bold text-sm">
+                        <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                        <?= $erreurs[$err] ?>
+                    </div>
+                <?php endif; ?>
+                
                 <!-- SECTION 1 : Identité -->
                 <div class="space-y-6">
                     <h2 class="text-xl font-bold flex items-center gap-2 text-emerald-800 border-b border-emerald-100 pb-3">
