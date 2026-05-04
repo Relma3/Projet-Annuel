@@ -107,7 +107,7 @@ try {
     $hash = password_hash($password, PASSWORD_BCRYPT);
 
     $stmtUser = $pdo->prepare("
-        INSERT INTO utilisateur (email, mot_de_passe, type_utilisateur, est_actif)
+        VALUES (?, ?, 'prestataire', 0)   ← bloqué jusqu'à validation admin
         VALUES (?, ?, 'prestataire', 1)
     ");
     $stmtUser->execute([$email, $hash]);

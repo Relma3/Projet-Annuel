@@ -28,6 +28,10 @@ if ($method === 'PATCH') {
         WHERE id_utilisateur = ?
     ");
 
+    $nouveauStatut = $data['est_actif'] == 1 ? 'valide' : 'suspendu';
+    $pdo->prepare("UPDATE prestataire SET statut = ?, date_validation = NOW() WHERE id_prestataire = ?")
+        ->execute([$nouveauStatut, $data['id_utilisateur']]);
+
     $stmt->execute([
         $data['est_actif'],
         $data['id_utilisateur']
