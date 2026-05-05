@@ -2,7 +2,6 @@
 require_once('check_session.php');
 require_once('db_connect.php');
 
-// Récupérer les infos de l'utilisateur connecté
 $nom_pre   = '';
 $email_pre = '';
 
@@ -26,7 +25,6 @@ if (isset($_SESSION['id'])) {
     }
 }
 
-// Traitement du formulaire
 $success = false;
 $erreur  = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
