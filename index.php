@@ -105,7 +105,7 @@
     </div>
     <div class="md:w-1/2 relative">
         <div class="bg-orange-corail/10 absolute inset-0 rounded-full blur-3xl"></div>
-        <img src="arbre.png" alt="Arbre de vie" class="relative z-10 w-full max-w-md mx-auto">
+        <img src="arbre.jpg" alt="Arbre de vie" class="relative z-10 w-full max-w-md mx-auto">
     </div>
 </header>
 
