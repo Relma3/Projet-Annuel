@@ -49,16 +49,31 @@
             <li><a href="contact.php" class="hover:text-orange-corail transition-colors">Contact</a></li>
         </ul>
 
-        <div class="flex gap-3 items-center">
-            <a href="<?php echo getDashboardLink(); ?>" class="bg-peche-pastel text-orange-corail px-5 py-2 rounded-senior font-bold hover:bg-orange-corail hover:text-white transition-all text-sm">
-                <i class="fa-solid fa-user-circle mr-2"></i>
-                <?php echo (isset($_SESSION['id']) && $_SESSION['type'] === 'senior') ? 'Mon Espace' : 'Espace Adhérent'; ?>
-            </a>
-            
-            <a href="connexionpres.php" class="bg-vert-menthe/20 text-emerald-700 border border-vert-menthe px-5 py-2 rounded-senior font-bold hover:bg-vert-menthe hover:text-slate-800 transition-all text-sm">
-                Espace Prestataire
-            </a>
-        </div>
+       <div class="flex gap-3 items-center">
+    <?php if (isset($_SESSION['id']) && $_SESSION['type'] === 'senior'): ?>
+        <a href="dashboardS.php" class="bg-orange-corail text-white px-5 py-2 rounded-senior font-bold hover:brightness-110 transition-all text-sm shadow-sm">
+            <i class="fa-solid fa-user-circle mr-2"></i>Accéder à mon compte
+        </a>
+
+    <?php elseif (isset($_SESSION['id']) && $_SESSION['type'] === 'prestataire'): ?>
+        <a href="dashboardP.php" class="bg-emerald-600 text-white px-5 py-2 rounded-senior font-bold hover:bg-emerald-700 transition-all text-sm shadow-sm">
+            <i class="fa-solid fa-user-circle mr-2"></i>Accéder à mon compte
+        </a>
+
+    <?php else: ?>
+        <a href="connexion.php" class="bg-peche-pastel text-orange-corail px-5 py-2 rounded-senior font-bold hover:bg-orange-corail hover:text-white transition-all text-sm shadow-sm">
+            <i class="fa-solid fa-user-circle mr-2"></i>Espace Adhérent
+        </a>
+        <a href="connexionpres.php" class="bg-vert-menthe/20 text-emerald-700 border border-vert-menthe px-5 py-2 rounded-senior font-bold hover:bg-vert-menthe hover:text-slate-800 transition-all text-sm">
+            Espace Prestataire
+        </a>
+    <?php endif; ?>
+
+    <select id="lang-selector" class="bg-transparent border-none text-sm font-bold cursor-pointer ml-2 outline-none">
+        <option value="fr">FR</option>
+        <option value="en">EN</option>
+    </select>
+</div>
     </nav>
 
     <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
