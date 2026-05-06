@@ -87,7 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     INSERT INTO reservation (id_senior, id_prestataire, date_reservation, date_fin, id_disponibilite, description, statut)
                     VALUES (?, ?, ?, ?, ?, ?, 'en_attente')
                 ")->execute([$id_senior, $id_pres, $debut, $fin, $id_dispo, $description]);
-
+                require_once __DIR__ . '/includes/send_notification.php';
+                envoyerNotification($pdo, $_SESSION['id'], 'Réservation confirmée', 'Votre réservation a bien été enregistrée.', 'rdv');
                 $pdo->commit();
                 header('Location: dashboardS.php?msg=ok#planning');
                 exit();
