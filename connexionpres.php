@@ -1,3 +1,4 @@
+<?php?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -75,11 +76,21 @@
                         <h2 class="font-title text-3xl font-bold text-slate-900">Connexion Pro</h2>
                         <p class="text-slate-500">Bienvenue dans votre espace professionnel.</p>
 
-                        <?php if (isset($_GET['inscrit'])): ?>
-                        <p class="text-emerald-600 font-bold text-sm mt-3 bg-emerald-50 border border-emerald-100 px-4 py-3 rounded-xl">
-                            <i class="fa-solid fa-circle-check mr-2"></i>
-                            Inscription réussie ! Votre dossier est en cours d'examen. Vous pouvez vous connecter dès maintenant.
-                        </p>
+                        <?php if(isset($_GET['error'])): ?>
+                            <div class="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 mt-3 text-sm font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                Identifiants incorrects. Vérifiez votre email et mot de passe.
+                            </div>
+                        <?php elseif(isset($_GET['pending'])): ?>
+                            <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 mt-3 text-sm font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-clock"></i>
+                                Votre compte est en cours de validation par notre équipe.
+                            </div>
+                        <?php elseif(isset($_GET['inscrit'])): ?>
+                            <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl p-4 mt-3 text-sm font-bold flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Inscription envoyée ! Votre dossier est en cours d'examen.
+                            </div>
                         <?php endif; ?>
 
                         <?php if (isset($_GET['error'])): ?>
