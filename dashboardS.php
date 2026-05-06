@@ -110,11 +110,17 @@ if (!empty($evenements_inscrits) && (!$prochain || $evenements_inscrits[0]['date
 }
 
 $stmt = $pdo->prepare("
-    SELECT f.* FROM factures f
-    JOIN paiements p ON p.id_paiement = f.id_paiement
-    WHERE p.id_payeur = ?
-    ORDER BY f.date_generation DESC
+    SELECT p.id_paiement AS id_facture,
+           CONCAT('SH-S-', DATE_FORMAT(p.date_creation,'%Y%m%d'), '-', LPAD(p.id_paiement,5,'0')) AS numero_facture,
+           p.montant_cents / 100 AS montant,
+           p.type_objet,
+           p.date_creation AS date_generation
+    FROM paiements p
+    WHERE p.id_payeur = ? AND p.statut = 'reussi'
+    ORDER BY p.date_creation DESC
 ");
+$stmt->execute([$_SESSION['id']]);
+$factures = $stmt->fetchAll();
 $stmt->execute([$_SESSION['id']]);
 $factures = $stmt->fetchAll();
 ?>
@@ -228,7 +234,7 @@ $factures = $stmt->fetchAll();
                                 <li class="flex items-center justify-between bg-peche-pale rounded-xl px-4 py-3">
                                     <span class="text-sm font-medium text-gray-700">📄 <?= htmlspecialchars($f['numero_facture']) ?></span>
                                     <span class="text-xs text-gray-400 mx-4"><?= date('d/m/Y', strtotime($f['date_generation'])) ?></span>
-                                    <a href="telecharger_facture.php?id=<?= $f['id_facture'] ?>" target="_blank" class="text-sm text-corail font-semibold hover:underline">Télécharger</a>
+                                    <a href="facture_senior.php?id=<?= $f['id_facture'] ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
