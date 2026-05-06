@@ -43,16 +43,16 @@ try {
 
     if ($user['est_actif'] == 0) {
         header("Location: $page_erreur?pending=1");
-        exit();
+        exit(); 
     }
 
     session_unset();
-    session_destroy();
+    session_destroy(); 
     session_start();
 
     $_SESSION['id']   = $user['id_utilisateur'];
     $_SESSION['type'] = $user['type_utilisateur'];
-    $_SESSION['email'] = $user['email'];
+    $_SESSION['email'] = $email;
 
     if ($user['type_utilisateur'] === 'senior') {
         $stmtS = $pdo->prepare("SELECT prenom, nom FROM senior WHERE id_senior = ?");

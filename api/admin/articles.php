@@ -100,9 +100,11 @@ function addArticle($pdo) {
             $data['disponible'] ?? 1
         ]);
 
-      $email = $_SESSION['email'] ?? 'inconnu';
+     $userId = $_SESSION['id'] ?? null;
 
-addLog($email, "Ajout article : " . $data['nom']);
+      if ($userId) {
+           addLog($pdo, $userId, "Ajout article : " . $data['nom']);
+      }
 
         http_response_code(201);
         echo json_encode(["success" => "Article ajouté"]);
