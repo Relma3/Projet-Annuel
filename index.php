@@ -182,6 +182,18 @@
         </div>
     </section>
 
+    <?php if (isset($_GET['news']) && $_GET['news'] == 'ok'): ?>
+    <div class="text-green-500 text-center font-bold mt-4">
+         Inscription réussie !
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['news']) && $_GET['news'] == 'exist'): ?>
+    <div class="text-orange-400 text-center font-bold mt-4">
+         Vous êtes déjà inscrit.
+    </div>
+<?php endif; ?>
+
     <footer class="bg-slate-900 text-white py-12 px-6">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
             <div>
@@ -193,6 +205,31 @@
                 <a href="contact.php" class="bg-orange-corail px-6 py-3 rounded-senior font-bold hover:brightness-110 transition-all" data-i18n="footer_help">Trouver de l'aide</a>
             </div>
         </div>
+
+        <div class="mt-12 text-center">
+    <h3 class="text-xl font-bold mb-4 text-white">
+         S'inscrire à la newsletter
+    </h3>
+
+    <form action="newsletter.php" method="POST" class="flex flex-col md:flex-row justify-center items-center gap-3 max-w-md mx-auto">
+        
+        <input 
+            type="email" 
+            name="email" 
+            placeholder="Votre email"
+            required
+            class="w-full px-5 py-3 rounded-senior text-slate-800 outline-none"
+        >
+
+        <button 
+            type="submit"
+            class="bg-orange-corail px-6 py-3 rounded-senior font-bold hover:brightness-110 transition-all"
+        >
+            S’inscrire
+        </button>
+
+    </form>
+</div>
 
         <div class="max-w-7xl mx-auto mt-8 pt-6 border-t border-slate-800 text-center">
             <a href="connexion_admin.php" class="text-slate-600 ...">

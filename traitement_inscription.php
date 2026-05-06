@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'silverhappy.contact@gmail.com';
-            $mail->Password = 'dbzp bzmn rrdf kreo';
+            $mail->Password = 'dbzpbzmnrrdfkreo';
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
 
