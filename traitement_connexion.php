@@ -52,6 +52,7 @@ try {
 
     $_SESSION['id']   = $user['id_utilisateur'];
     $_SESSION['type'] = $user['type_utilisateur'];
+    $_SESSION['email'] = $user['email'];
 
     if ($user['type_utilisateur'] === 'senior') {
         $stmtS = $pdo->prepare("SELECT prenom, nom FROM senior WHERE id_senior = ?");
