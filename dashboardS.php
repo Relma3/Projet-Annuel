@@ -122,7 +122,6 @@ $stmt = $pdo->prepare("
 $stmt->execute([$_SESSION['id']]);
 $factures = $stmt->fetchAll();
 $stmt->execute([$_SESSION['id']]);
-$factures = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -233,8 +232,9 @@ $factures = $stmt->fetchAll();
                             <?php foreach ($factures as $f): ?>
                                 <li class="flex items-center justify-between bg-peche-pale rounded-xl px-4 py-3">
                                     <span class="text-sm font-medium text-gray-700">📄 <?= htmlspecialchars($f['numero_facture']) ?></span>
-                                    <span class="text-xs text-gray-400 mx-4"><?= date('d/m/Y', strtotime($f['date_generation'])) ?></span>
-                                    <a href="facture_senior.php?id=<?= $f['id_facture'] ?>
+                                    <span class="text-xs text-gray-400"><?= date('d/m/Y', strtotime($f['date_generation'])) ?></span>
+                                    <a href="facture_senior.php?id=<?= $f['id_facture'] ?>" target="_blank"
+                                    class="text-sm text-corail font-semibold hover:underline">Télécharger</a>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
