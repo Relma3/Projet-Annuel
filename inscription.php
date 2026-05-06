@@ -164,6 +164,18 @@
                         </div>
                     </div>
 
+                   <!-- // CAPTCHA -->
+                    <div>
+                       <label class="block text-sm font-bold mb-1 ml-2 text-slate-700">Captcha</label>
+
+                           <p id="captcha-question" class="mb-2 text-lg font-bold text-orange-corail"></p>
+
+                              <input type="text" name="captcha" required
+                                    class="w-full px-6 py-3 bg-slate-50 border-2 border-slate-100 rounded-senior focus:border-orange-corail focus:bg-white outline-none transition-all text-lg"
+                                    placeholder="Réponse du calcul">
+                   </div>
+
+
                     <div class="pt-2">
                         <button type="submit" class="w-full bg-orange-corail text-white py-4 rounded-senior font-bold text-xl shadow-lg shadow-orange-corail/30 hover:scale-[1.02] transition-all">
                             Valider mon inscription
@@ -177,6 +189,19 @@
             </div>
         </div>
     </main>
+<!-- CAPTCHA -->
+    <script>
+async function loadCaptcha() {
+    const res = await fetch('/api/getCaptcha.php');
+    const data = await res.json();
+
+    document.getElementById('captcha-question').textContent = data.question;
+}
+
+// charger captcha au chargement
+document.addEventListener('DOMContentLoaded', loadCaptcha);
+</script>
+<!--fin captchaaa-->
 
 </body>
 </html>

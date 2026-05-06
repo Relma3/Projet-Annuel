@@ -1,5 +1,7 @@
 <?php
+session_start();
 require_once 'db_connect.php';
+require_once 'api/utils/captcha.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -11,9 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date_naissance = $_POST['date_naissance'] ?? '';
     $adresse        = htmlspecialchars(trim($_POST['adresse'] ?? ''));
     $ville          = htmlspecialchars(trim($_POST['ville'] ?? ''));
-
+    $captcha        = $_POST['captcha'] ?? '';
     if (empty($prenom) || empty($nom) || empty($email) || empty($password)) {
         header('Location: inscription.php?error=champs_manquants');
+        exit();
+    }
+
+   if (!isset($captcha) || !verifyCaptcha($captcha)) {
+        header('Location: inscription.php?error=captcha_incorrect');
         exit();
     }
 
