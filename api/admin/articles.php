@@ -1,4 +1,5 @@
 <?php
+session_start();
 header("Content-Type: application/json");
 
 
@@ -99,7 +100,9 @@ function addArticle($pdo) {
             $data['disponible'] ?? 1
         ]);
 
-        addLog($pdo, 1, "Ajout article : " . $data['nom']);
+      $email = $_SESSION['email'] ?? 'inconnu';
+
+addLog($email, "Ajout article : " . $data['nom']);
 
         http_response_code(201);
         echo json_encode(["success" => "Article ajouté"]);
