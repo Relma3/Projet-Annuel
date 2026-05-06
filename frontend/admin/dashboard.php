@@ -87,6 +87,10 @@ tailwind.config = {
       <i class="fa-solid fa-file-alt w-4 text-center"></i> Documents
     </a>
 
+    <a onclick="showSection('logs')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
+      <i class="fa-solid fa-list w-4 text-center"></i> Logs
+    </a>
+
   </nav>
 
   <div class="p-4 border-t border-slate-700">
@@ -373,9 +377,36 @@ tailwind.config = {
 
   </div>
 </div>
-
-
 <!-- fin malikat section artiicles -->
+
+<!-- malikat section logs -->
+ <div id="section-logs" class="section">
+
+  <div class="bg-slate-800 p-6 rounded-2xl">
+
+    <h2 class="text-white font-bold mb-4">Logs système</h2>
+
+    <button onclick="chargerLogs()" class="bg-blue-500 px-4 py-2 rounded mb-4">
+      Actualiser
+    </button>
+
+    <table class="w-full">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Action</th>
+          <th>IP</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+
+      <tbody id="table-logs"></tbody>
+    </table>
+
+  </div>
+
+</div>
+<!-- fin malikat section logs -->
 
   </div>
 </main>
@@ -407,6 +438,7 @@ function showSection(name) {
   if (name === 'articles') chargerArticles();
   if (name === 'prestataires') chargerPrestataires();
   if (name === 'documents') chargerDocuments();
+  if (name === 'logs') chargerLogs();
   
 }
 
@@ -837,6 +869,23 @@ async function voirDocs(id_prestataire) {
         <button onclick="validerDoc(${d.id_document}, 'valide')">oui</button>
         <button onclick="validerDoc(${d.id_document}, 'refuse')">non</button>
       </td>
+    </tr>
+  `).join('');
+}
+
+async function chargerLogs() {
+
+  const res = await fetch('/api/admin/logs.php');
+  const data = await res.json();
+
+  const table = document.getElementById('table-logs');
+
+  table.innerHTML = data.map(l => `
+    <tr>
+      <td>${l.email ?? '—'}</td>
+      <td>${l.action}</td>
+      <td>${l.ip}</td>
+      <td>${new Date(l.date_action).toLocaleString()}</td>
     </tr>
   `).join('');
 }
