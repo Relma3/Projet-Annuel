@@ -24,13 +24,13 @@ body { font-family: 'DM Sans', sans-serif; }
 
 <h1 class="text-3xl font-bold mb-6">💡 Gestion des conseils</h1>
 
-<!-- 🔥 Bouton ajouter -->
+<!--  Bouton ajouter -->
 <button onclick="toggleForm()" 
 class="mb-6 bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-xl font-bold shadow">
-➕ Ajouter un conseil
+ Ajouter un conseil
 </button>
 
-<!-- 🔥 FORMULAIRE -->
+<!--  FORMULAIRE -->
 <div id="formAdd" class="hidden bg-slate-800 p-6 rounded-2xl mb-8 shadow">
 <form action="traitement_conseil.php" method="POST" class="space-y-4">
 
@@ -48,13 +48,13 @@ class="w-full p-3 rounded-lg bg-slate-700 text-white">
 
 <button type="submit" name="action" value="add"
 class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-xl font-bold">
-✅ Publier
+ Publier
 </button>
 
 </form>
 </div>
 
-<!-- 🔥 TABLEAU -->
+<!--  TABLEAU -->
 <div class="bg-slate-800 rounded-2xl shadow overflow-hidden">
 
 <table class="w-full text-left">
@@ -81,9 +81,9 @@ class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-xl font-bold">
 
 <td class="p-4">
 <?php if ($c['visible']): ?>
-<span class="text-green-400 font-bold">✔ Visible</span>
+<span class="text-green-400 font-bold"> Visible</span>
 <?php else: ?>
-<span class="text-red-400 font-bold">✖ Caché</span>
+<span class="text-red-400 font-bold"> Caché</span>
 <?php endif; ?>
 </td>
 
@@ -94,7 +94,7 @@ class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-xl font-bold">
 <input type="hidden" name="id" value="<?= $c['id_conseil'] ?>">
 <button type="submit" name="action" value="delete"
 class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg">
-🗑
+supp 
 </button>
 </form>
 
