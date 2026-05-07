@@ -1,3 +1,10 @@
+<?php
+require_once '../../api/admin.php';
+require_once '../../db_connect.php';
+
+$stats = stats_financieres($pdo);
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -87,12 +94,17 @@ tailwind.config = {
       <i class="fa-solid fa-file-alt w-4 text-center"></i> Documents
     </a>
 
-    <a onclick="showSection('logs')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
-      <i class="fa-solid fa-list w-4 text-center"></i> Logs
-    </a>
 
     <a href="/frontend/admin/admin_conseils.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300">
       <i class="fa-solid fa-lightbulb w-4 text-center"></i> Conseils
+    </a>
+
+    <a onclick="showSection('finances')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
+      <i class="fa-solid fa-euro-sign w-4 text-center"></i> Finances
+    </a>
+
+     <a onclick="showSection('logs')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
+      <i class="fa-solid fa-list w-4 text-center"></i> Logs
     </a>
 
   </nav>
@@ -277,6 +289,9 @@ tailwind.config = {
   </div>
 </div>
 <!-- fin malikat section valider docs -->
+
+<!-- malikat section categories -->
+
     <div id="section-categories" class="section">
       <div class="grid grid-cols-3 gap-6">
         <div class="col-span-2 bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
@@ -309,6 +324,56 @@ tailwind.config = {
         </div>
       </div>
     </div>
+<!-- fin malikat section categories -->
+
+<!-- malikat section  finances   -->
+
+ <div id="section-finances" class="section">
+
+<h2 class="text-xl font-bold mb-4">Finances</h2>
+
+<div class="grid grid-cols-4 gap-6 mb-6">
+
+<div class="bg-slate-800 p-4 rounded-xl">
+  CA : <?= number_format($stats['ca_total'],2) ?> €
+</div>
+
+<div class="bg-slate-800 p-4 rounded-xl">
+  Commissions : <?= number_format($stats['commissions'],2) ?> €
+</div>
+
+<div class="bg-slate-800 p-4 rounded-xl">
+  Seniors actifs : <?= $stats['seniors'] ?>
+</div>
+
+<div class="bg-slate-800 p-4 rounded-xl">
+  Prestataires actifs : <?= $stats['prestataires'] ?>
+</div>
+
+</div>
+
+<h3 class="mb-3 font-bold">Paiements récents</h3>
+
+<table class="w-full">
+<tr>
+  <th>Montant</th>
+  <th>Payeur</th>
+  <th>Date</th>
+</tr>
+
+<?php foreach ($stats['paiements'] as $p): ?>
+<tr>
+  <td><?= $p['montant_cents']/100 ?> €</td>
+  <td><?= $p['nom_payeur'] ?></td>
+  <td><?= $p['date_paiement'] ?></td>
+</tr>
+<?php endforeach; ?>
+
+</table>
+
+</div>
+
+<!-- fin malikat section finances   -->
 
     <div id="section-evenements" class="section">
       <div class="grid grid-cols-3 gap-6">

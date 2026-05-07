@@ -79,6 +79,7 @@ if ($id_res > 0 && !empty($action)) {
                     $montantHT  = round($prixHeure * $dureeH, 2);
                     $tvaTaux    = 20.00;
                     $montantTTC = round($montantHT * (1 + $tvaTaux / 100), 2);
+                    $commission = round($montantTTC * 0.01, 2);
 
                 
                     $numeroDevis = 'DEV-' . date('Y-m') . '-' . str_pad($id_res, 4, '0', STR_PAD_LEFT);
