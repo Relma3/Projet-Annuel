@@ -74,6 +74,31 @@ function supprimer_evenement($id) {
     echo json_encode(["message" => "Evenement supprime"]);
 }
 
+function stats_financieres() {
+    verifier_admin();
+    $pdo = getDB();
+
+    $ca          = $pdo->query("SELECT COALESCE(SUM(montant_cents)/100, 0) FROM paiements WHERE statut = 'reussi'")->fetchColumn();
+    $commissions = $pdo->query("SELECT COALESCE(SUM(commission_sh), 0) FROM reservation WHERE commission_sh IS NOT NULL")->fetchColumn();
+    $seniors     = $pdo->query("SELECT COUNT(*) FROM abonnement WHERE statut = 'actif'")->fetchColumn();
+    $prestas     = $pdo->query("SELECT COUNT(*) FROM prestataire WHERE abonnement_statut = 'actif'")->fetchColumn();
+    $paiements   = $pdo->query("
+        SELECT p.*, COALESCE(CONCAT(s.prenom, ' ', s.nom), 'Inconnu') AS nom_payeur
+        FROM paiements p
+        LEFT JOIN senior s ON p.id_payeur = s.id_senior
+        WHERE p.statut = 'reussi'
+        ORDER BY p.date_paiement DESC
+        LIMIT 20
+    ")->fetchAll();
+
+    echo json_encode([
+        'ca_total'     => (float)$ca,
+        'commissions'  => (float)$commissions,
+        'seniors'      => (int)$seniors,
+        'prestataires' => (int)$prestas,
+        'paiements'    => $paiements,
+    ]);
+}
 
 if (isset($_GET['action'])) {
     $method = $_SERVER['REQUEST_METHOD'];
@@ -90,17 +115,21 @@ if (isset($_GET['action'])) {
             break;
 
         case 'categories':
-            if ($method === 'GET')    { lister_categories(); }
-            elseif ($method === 'POST')   { creer_categorie(); }
-            elseif ($method === 'DELETE' && $id) { supprimer_categorie($id); }
+            if ($method === 'GET')                   { lister_categories(); }
+            elseif ($method === 'POST')              { creer_categorie(); }
+            elseif ($method === 'DELETE' && $id)     { supprimer_categorie($id); }
             else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
             break;
 
         case 'evenements':
-            if ($method === 'GET')    { lister_evenements(); }
-            elseif ($method === 'POST')   { creer_evenement(); }
-            elseif ($method === 'DELETE' && $id) { supprimer_evenement($id); }
+            if ($method === 'GET')                   { lister_evenements(); }
+            elseif ($method === 'POST')              { creer_evenement(); }
+            elseif ($method === 'DELETE' && $id)     { supprimer_evenement($id); }
             else { http_response_code(405); echo json_encode(['erreur' => 'Methode non autorisee']); }
+            break;
+
+        case 'stats':
+            stats_financieres();
             break;
 
         default:
@@ -108,57 +137,3 @@ if (isset($_GET['action'])) {
             echo json_encode(['erreur' => 'Action inconnue : ' . $action]);
     }
 }
-
-//malikat add func
-
-function stats_financieres($pdo) {
-
-    // CA total
-    $ca = $pdo->query("
-        SELECT SUM(montant_cents)/100 AS total 
-        FROM paiements 
-        WHERE statut = 'reussi'
-    ")->fetch()['total'] ?? 0;
-
-    // commissions
-    $commissions = $pdo->query("
-        SELECT SUM(commission_sh) AS total 
-        FROM reservation 
-        WHERE commission_sh IS NOT NULL
-    ")->fetch()['total'] ?? 0;
-
-    // abonnements seniors
-    $seniors = $pdo->query("
-        SELECT COUNT(*) AS total 
-        FROM abonnement 
-        WHERE statut = 'actif'
-    ")->fetch()['total'];
-
-    // abonnements prestataires
-    $prestas = $pdo->query("
-        SELECT COUNT(*) AS total 
-        FROM prestataire 
-        WHERE abonnement_statut = 'actif'
-    ")->fetch()['total'];
-
-    // paiements récents
-    $paiements = $pdo->query("
-        SELECT p.*, 
-               COALESCE(CONCAT(s.prenom, ' ', s.nom), 'Inconnu') AS nom_payeur
-        FROM paiements p
-        LEFT JOIN senior s ON p.id_payeur = s.id_senior
-        WHERE p.statut = 'reussi'
-        ORDER BY p.date_paiement DESC
-        LIMIT 20
-    ")->fetchAll();
-
-    return [
-        'ca_total' => $ca,
-        'commissions' => $commissions,
-        'seniors' => $seniors,
-        'prestataires' => $prestas,
-        'paiements' => $paiements
-    ];
-}
-
-//fin malikat add func
