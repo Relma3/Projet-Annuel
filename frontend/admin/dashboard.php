@@ -1,10 +1,3 @@
-<?php
-require_once '../../api/admin.php';
-require_once '../../db_connect.php';
-
-$stats = stats_financieres($pdo);
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
