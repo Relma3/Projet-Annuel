@@ -6,11 +6,13 @@ $action = $_POST['action'] ?? '';
 if ($action === 'add') {
     $titre = $_POST['titre'];
     $contenu = $_POST['contenu'];
-
+    $categorie = $_POST['categorie'];
+    $auteur = $_POST['auteur'];
 $stmt = $pdo->prepare("
-    INSERT INTO conseil (titre, contenu, visible, created_at)
-    VALUES (?, ?, 1, NOW())
-");    $stmt->execute([$titre, $contenu]);
+INSERT INTO conseil (titre, contenu, categorie, auteur, visible, created_at)
+VALUES (?, ?, ?, ?, 1, NOW())
+"); 
+ $stmt->execute([$titre, $contenu, $categorie, $auteur]);
 
     header('Location: admin_conseils.php');
     exit();
