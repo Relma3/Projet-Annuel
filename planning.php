@@ -15,11 +15,13 @@ $prenom    = $_SESSION['prenom'] ?? 'Senior';
 $stmtRes = $pdo->prepare("
     SELECT r.id_reservation, r.date_reservation, r.statut,
            COALESCE(s.nom_service, 'Prestation') AS titre,
-           p.prenom AS p_prenom, p.nom AS p_nom
+           p.prenom AS p_prenom, p.nom AS p_nom,
+           dv.id_devis, dv.montant_ttc, dv.statut AS devis_statut
     FROM reservation r
     JOIN prestataire p ON r.id_prestataire = p.id_prestataire
     LEFT JOIN disponibilites d ON r.id_disponibilite = d.id_disponibilite
     LEFT JOIN services s ON d.id_service = s.id_service
+    LEFT JOIN devis dv ON dv.id_reservation = r.id_reservation
     WHERE r.id_senior = ?
       AND r.statut IN ('en_attente', 'confirme')
     ORDER BY r.date_reservation ASC
@@ -191,7 +193,16 @@ foreach ($evenements as $e) {
         // Fusionne et trie tous les événements à venir
         $tous = [];
         foreach ($reservations as $r) {
-            $tous[] = ['date' => $r['date_reservation'], 'label' => ($r['titre'] ?? 'Service') . ' avec ' . $r['p_prenom'] . ' ' . $r['p_nom'], 'type' => 'service', 'statut' => $r['statut']];
+            $tous[] = [
+                'date'         => $r['date_reservation'],
+                'label'        => ($r['titre'] ?? 'Service') . ' avec ' . $r['p_prenom'] . ' ' . $r['p_nom'],
+                'type'         => 'service',
+                'statut'       => $r['statut'],
+                'id_devis'     => $r['id_devis'] ?? null,
+                'montant_ttc'  => $r['montant_ttc'] ?? null,
+                'devis_statut' => $r['devis_statut'] ?? null,
+                'id_reservation' => $r['id_reservation'],
+            ];
         }
         foreach ($rdvs as $r) {
             $tous[] = ['date' => $r['date_rdv'], 'label' => 'Dr ' . $r['med_prenom'] . ' ' . $r['med_nom'] . ($r['specialite'] ? ' (' . $r['specialite'] . ')' : ''), 'type' => 'medical', 'statut' => 'planifié'];
@@ -216,9 +227,30 @@ foreach ($evenements as $e) {
                         <p class="font-bold"><?= htmlspecialchars($ev['label']) ?></p>
                         <p class="text-sm opacity-80 mt-0.5"><?= date('l d F Y à H:i', strtotime($ev['date'])) ?></p>
                     </div>
-                    <span class="text-xs font-bold uppercase px-3 py-1 rounded-full bg-white/60 border border-current">
-                        <?= htmlspecialchars($ev['statut']) ?>
-                    </span>
+                    <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                        <?php if ($ev['devis_statut'] === 'envoye'): ?>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-right">
+                                <p class="text-xs font-bold text-blue-700 mb-2">Devis reçu : <?= number_format($ev['montant_ttc'], 2, ',', ' ') ?> €</p>
+                                <div class="flex gap-2">
+                                    <a href="act_devis.php?id=<?= $ev['id_devis'] ?>&action=accepter"
+                                    onclick="return confirm('Accepter ce devis ?')"
+                                    class="text-xs bg-emerald-500 text-white px-3 py-1 rounded-lg font-bold hover:bg-emerald-600">Accepter</a>
+                                    <a href="act_devis.php?id=<?= $ev['id_devis'] ?>&action=refuser"
+                                    onclick="return confirm('Refuser ce devis ?')"
+                                    class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-lg font-bold hover:bg-red-200">Refuser</a>
+                                </div>
+                            </div>
+                        <?php elseif ($ev['devis_statut'] === 'accepte'): ?>
+                            <a href="payer_devis.php?id=<?= $ev['id_devis'] ?>"
+                            class="text-xs bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600">
+                                Payer <?= number_format($ev['montant_ttc'], 2, ',', ' ') ?> €
+                            </a>
+                        <?php else: ?>
+                            <span class="text-xs font-bold uppercase px-3 py-1 rounded-full bg-white/60 border border-current">
+                                <?= htmlspecialchars($ev['statut']) ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <?php endforeach; ?>
             </div>
