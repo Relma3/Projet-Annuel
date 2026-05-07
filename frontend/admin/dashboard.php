@@ -91,6 +91,10 @@ tailwind.config = {
       <i class="fa-solid fa-list w-4 text-center"></i> Logs
     </a>
 
+    <a href="/admin_conseils.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300">
+      <i class="fa-solid fa-lightbulb w-4 text-center"></i> Conseils
+    </a>
+
   </nav>
 
   <div class="p-4 border-t border-slate-700">
