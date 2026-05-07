@@ -32,7 +32,7 @@ class="mb-6 bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-xl font-bold sha
 
 <!--  FORMULAIRE -->
 <div id="formAdd" class="hidden bg-slate-800 p-6 rounded-2xl mb-8 shadow">
-<form action="traitement_conseil.php" method="POST" class="space-y-4">
+<form action="/traitement_conseil.php" method="POST" class="space-y-4">
 
 <input type="text" name="titre" placeholder="Titre"
 class="w-full p-3 rounded-lg bg-slate-700 text-white" required>
