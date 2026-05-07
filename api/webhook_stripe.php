@@ -3,7 +3,7 @@ require_once __DIR__ . "/config/database.php";
 require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . '/../PdfGenerator.php';
 
-\Stripe\Stripe::setApiKey(getenv("STRIPE_SECRET"));
+\Stripe\Stripe::setApiKey(getenv("STRIPE_SECRET_KEY"));
 
 $payload = file_get_contents("php://input");
 $sig     = $_SERVER["HTTP_STRIPE_SIGNATURE"] ?? "";
