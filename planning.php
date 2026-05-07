@@ -228,7 +228,7 @@ foreach ($evenements as $e) {
                         <p class="text-sm opacity-80 mt-0.5"><?= date('l d F Y à H:i', strtotime($ev['date'])) ?></p>
                     </div>
                     <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                        <?php if ($ev['devis_statut'] === 'envoye'): ?>
+                        <?php if (($ev['devis_statut'] ?? null) === 'envoye'): ?>
                             <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-right">
                                 <p class="text-xs font-bold text-blue-700 mb-2">Devis reçu : <?= number_format($ev['montant_ttc'], 2, ',', ' ') ?> €</p>
                                 <div class="flex gap-2">
@@ -240,7 +240,7 @@ foreach ($evenements as $e) {
                                     class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-lg font-bold hover:bg-red-200">Refuser</a>
                                 </div>
                             </div>
-                        <?php elseif ($ev['devis_statut'] === 'accepte'): ?>
+                        <?php elseif (($ev['devis_statut'] ?? null) === 'accepte'): ?>
                             <a href="payer_devis.php?id=<?= $ev['id_devis'] ?>"
                             class="text-xs bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600">
                                 Payer <?= number_format($ev['montant_ttc'], 2, ',', ' ') ?> €
