@@ -75,7 +75,6 @@ function supprimer_evenement($id) {
 }
 
 function stats_financieres() {
-    verifier_admin();
     $pdo = getDB();
 
     $ca          = $pdo->query("SELECT COALESCE(SUM(montant_cents)/100, 0) FROM paiements WHERE statut = 'reussi'")->fetchColumn();
