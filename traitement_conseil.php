@@ -14,7 +14,7 @@ VALUES (?, ?, ?, ?, 1, NOW())
 "); 
  $stmt->execute([$titre, $contenu, $categorie, $auteur]);
 
-    header('Location: admin_conseils.php');
+    header('Location: /frontend/admin/admin_conseils.php');
     exit();
 }
 
@@ -24,6 +24,6 @@ if ($action === 'delete') {
     $stmt = $pdo->prepare("DELETE FROM conseil WHERE id_conseil = ?");
     $stmt->execute([$id]);
 
-    header('Location: admin_conseils.php');
+    header('Location: /frontend/admin/admin_conseils.php');
     exit();
 }
