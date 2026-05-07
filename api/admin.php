@@ -108,3 +108,57 @@ if (isset($_GET['action'])) {
             echo json_encode(['erreur' => 'Action inconnue : ' . $action]);
     }
 }
+
+//malikat add func
+
+function stats_financieres($pdo) {
+
+    // CA total
+    $ca = $pdo->query("
+        SELECT SUM(montant_cents)/100 AS total 
+        FROM paiements 
+        WHERE statut = 'reussi'
+    ")->fetch()['total'] ?? 0;
+
+    // commissions
+    $commissions = $pdo->query("
+        SELECT SUM(commission_sh) AS total 
+        FROM reservation 
+        WHERE commission_sh IS NOT NULL
+    ")->fetch()['total'] ?? 0;
+
+    // abonnements seniors
+    $seniors = $pdo->query("
+        SELECT COUNT(*) AS total 
+        FROM abonnement 
+        WHERE statut = 'actif'
+    ")->fetch()['total'];
+
+    // abonnements prestataires
+    $prestas = $pdo->query("
+        SELECT COUNT(*) AS total 
+        FROM prestataire 
+        WHERE abonnement_statut = 'actif'
+    ")->fetch()['total'];
+
+    // paiements récents
+    $paiements = $pdo->query("
+        SELECT p.*, 
+               COALESCE(CONCAT(s.prenom, ' ', s.nom), 'Inconnu') AS nom_payeur
+        FROM paiements p
+        LEFT JOIN senior s ON p.id_payeur = s.id_senior
+        WHERE p.statut = 'reussi'
+        ORDER BY p.date_paiement DESC
+        LIMIT 20
+    ")->fetchAll();
+
+    return [
+        'ca_total' => $ca,
+        'commissions' => $commissions,
+        'seniors' => $seniors,
+        'prestataires' => $prestas,
+        'paiements' => $paiements
+    ];
+}
+
+//fin malikat add func
