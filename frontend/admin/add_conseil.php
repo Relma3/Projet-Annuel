@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->execute([$titre, $contenu, $categorie, $auteur]);
 
-    header("Location: admin_conseils.php");
+    header("Location: /frontend/admin/admin_conseils.php");
 }
 ?>
 
