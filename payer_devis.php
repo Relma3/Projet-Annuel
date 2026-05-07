@@ -22,7 +22,7 @@ $devis = $stmt->fetch();
 
 if (!$devis) { http_response_code(404); die('Devis introuvable ou déjà traité.'); }
 
-\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET'));
+\Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
 
 $intent = \Stripe\PaymentIntent::create([
     'amount'   => (int)round($devis['montant_ttc'] * 100),
@@ -35,8 +35,7 @@ $intent = \Stripe\PaymentIntent::create([
     ],
 ]);
 
-$stripe_public_key = getenv('STRIPE_PUBLIC_KEY');
-?>
+$stripe_public_key = getenv('STRIPE_PUBLIC_KEY');?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
