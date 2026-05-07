@@ -146,5 +146,20 @@ if ($event->type === 'customer.subscription.deleted') {
     ")->execute([$sub_id]);
 }
 
+// ── CAS abonnement prestataire ──
+if ($event->type === "payment_intent.succeeded") {
+    $intent = $event->data->object;
+    if (($intent->metadata->type_objet ?? '') === 'abonnement_presta') {
+        $id_presta       = (int)$intent->metadata->id_prestataire;
+        $type_abonnement = $intent->metadata->type_abonnement;
+        $expiration      = $type_abonnement === 'annuel'
+            ? date('Y-m-d', strtotime('+1 year'))
+            : date('Y-m-d', strtotime('+1 month'));
+        $pdo = getDB();
+        $pdo->prepare("UPDATE prestataire SET abonnement_statut = 'actif', abonnement_expiration = ? WHERE id_prestataire = ?")
+            ->execute([$expiration, $id_presta]);
+    }
+}
+
 http_response_code(200);
 echo json_encode(["ok" => true]);
