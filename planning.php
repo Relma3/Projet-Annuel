@@ -231,6 +231,12 @@ foreach ($evenements as $e) {
                         <?php if (($ev['devis_statut'] ?? null) === 'envoye'): ?>
                             <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-right">
                                 <p class="text-xs font-bold text-blue-700 mb-2">Devis reçu : <?= number_format($ev['montant_ttc'], 2, ',', ' ') ?> €</p>
+                                <div class="flex gap-2 justify-end mb-2">
+                                    <a href="voir_devis.php?id=<?= $ev['id_devis'] ?>" target="_blank"
+                                    class="text-xs bg-white border border-slate-300 text-slate-600 px-3 py-1 rounded-lg font-bold hover:bg-slate-100">
+                                        Consulter
+                                    </a>
+                                </div>
                                 <div class="flex gap-2">
                                     <a href="act_devis.php?id=<?= $ev['id_devis'] ?>&action=accepter"
                                     onclick="return confirm('Accepter ce devis ?')"
