@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY main.go .
 
-RUN go mod init silverhappy-go-api
-
-RUN go build -o go-api .
+RUN go mod init silverhappy-go-api && \
+    go get github.com/go-sql-driver/mysql && \
+    go build -o go-api .
 
 EXPOSE 8080
 
