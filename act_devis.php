@@ -23,10 +23,10 @@ if ($id_devis > 0 && in_array($action, ['accepter', 'refuser'])) {
             $id_res = $devis['id_reservation'];
 
             if ($action === 'accepter') {
-            
-                $pdo->prepare("UPDATE devis SET statut = 'accepte' WHERE id_devis = ?")->execute([$id_devis]);
-                $msg = 'devis_accepte';
-            } 
+                // Ne pas changer le statut ici, Stripe le fera via webhook
+                header("Location: payer_devis.php?id=$id_devis");
+                exit();
+            }
             elseif ($action === 'refuser') {
               
                 $pdo->prepare("UPDATE devis SET statut = 'refuse' WHERE id_devis = ?")->execute([$id_devis]);
