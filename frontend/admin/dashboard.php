@@ -83,6 +83,10 @@ tailwind.config = {
       <i class="fa-solid fa-box w-4 text-center"></i> Articles
     </a>
 
+    <a onclick="showSection('commandes')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
+      <i class="fa-solid fa-shopping-cart w-4 text-center"></i> Commandes
+    </a>
+
     <a onclick="showSection('documents')" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-sm font-medium text-slate-300">
       <i class="fa-solid fa-file-alt w-4 text-center"></i> Documents
     </a>
