@@ -114,6 +114,7 @@ function forgotPassword() {
         $mail->setFrom('silverhappy.contact@gmail.com', 'Silver Happy');
         $mail->addAddress($email);
         $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
         $mail->Subject = 'Réinitialisation de votre mot de passe';
         $link = "https://www.silverhappy.com/reset_password.php?token=$token";
         $mail->Body = "
