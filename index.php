@@ -127,7 +127,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div onclick="window.location.href='services.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-vert-menthe transition-all cursor-pointer shadow-sm">
+                <div onclick="window.location.href='services.php?cat=Services+à+domicile'" class="group bg-sable-doux p-8 rounded-senior hover:bg-vert-menthe transition-all cursor-pointer shadow-sm">
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-house-chimney text-2xl text-orange-corail"></i>
                     </div>
@@ -135,7 +135,7 @@
                     <p class="text-slate-600" data-i18n="service_home_desc">Ménage, repas et courses.</p>
                 </div>
 
-                <div onclick="window.location.href='services.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-peche-pastel transition-all cursor-pointer shadow-sm">
+                <div onclick="window.location.href='services.php?cat=Loisirs+%26+Culture'" class="group bg-sable-doux p-8 rounded-senior hover:bg-peche-pastel transition-all cursor-pointer shadow-sm">
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-palette text-2xl text-orange-corail"></i>
                     </div>
@@ -143,7 +143,7 @@
                     <p class="text-slate-600" data-i18n="service_culture_desc">Sorties et ateliers.</p>
                 </div>
 
-                <div onclick="window.location.href='services.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-vert-menthe transition-all cursor-pointer shadow-sm">
+                <div onclick="window.location.href='services.php?cat=Santé+%26+Bien-être'" class="group bg-sable-doux p-8 rounded-senior hover:bg-vert-menthe transition-all cursor-pointer shadow-sm">
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-heart-pulse text-2xl text-orange-corail"></i>
                     </div>
@@ -151,7 +151,7 @@
                     <p class="text-slate-600" data-i18n="service_health_desc">RDV médicaux et conseils.</p>
                 </div>
 
-                <div onclick="window.location.href='services.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-peche-pastel transition-all cursor-pointer shadow-sm">
+                <div onclick="window.location.href='boutique.php'" class="group bg-sable-doux p-8 rounded-senior hover:bg-peche-pastel transition-all cursor-pointer shadow-sm">
                     <div class="bg-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-sm mx-auto">
                         <i class="fa-solid fa-basket-shopping text-2xl text-orange-corail"></i>
                     </div>
