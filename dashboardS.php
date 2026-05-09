@@ -202,7 +202,9 @@ $stmt->execute([$_SESSION['id']]);
                     <i class="fa-solid fa-calendar-check"></i> <span data-i18n="dashboard_planning">Mon Planning</span>
                 </a>
                 <button onclick="showTab('commandes', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-box"></i> Mes Achats</button>
-                <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-comment-dots"></i> <span data-i18n="dashboard_messages">Messagerie</span></button>
+                <a href="messagerie.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all">
+                  <i class="fa-solid fa-comment-dots"></i> <span data-i18n="dashboard_messages">Messagerie</span>
+                </a>
                 <a href="/abonnement.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-id-card"></i> <span data-i18n="dashboard_subscription">Mon Abonnement</span></a>
                 <a href="evenements.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-calendar-days"></i> <span data-i18n="dashboard_events">Événements</span></a>
                 <a href="conseils.php"  class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-lightbulb"></i> <span data-i18n="dashboard_advice">Conseils</span></a> 
