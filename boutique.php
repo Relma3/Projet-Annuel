@@ -28,20 +28,49 @@ $exemples = [
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Boutique - Silver Happy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique — Silver Happy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/168ebc7feb.js" crossorigin="anonymous"></script>
+    <script>
+    tailwind.config = {
+        theme: { extend: {
+            colors: {
+                'sable-doux': '#F4EDDE',
+                'orange-corail': '#FF885B',
+                'vert-menthe': '#A0E8AF',
+                'peche-pastel': '#FFD9CA',
+                'corail': '#FF885B',
+                'peche-pale': '#FFD9CA',
+                'sable': '#F4EDDE',
+            },
+            fontFamily: { 'sans': ['Roboto','sans-serif'], 'title': ['Quicksand','sans-serif'] },
+            borderRadius: { 'senior': '28px' }
+        }}
+    }
+    </script>
+    <style>body { font-family: 'Roboto', sans-serif; background-color: #F4EDDE; } h1,h2,h3 { font-family: 'Quicksand', sans-serif; }</style>
     <?php include $_SERVER['DOCUMENT_ROOT'] . '/includes/onesignal.php'; ?>
 </head>
-<body class="bg-gray-50 min-h-screen" style="font-size:18px;">
-    <?php include 'accessibilite.php'; ?>
+<body class="bg-sable-doux text-slate-800 min-h-screen">
+<?php include 'accessibilite.php'; ?>
 
-<nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
-    <span class="text-orange-500 font-bold text-2xl">Silver Happy</span>
-    <div class="flex gap-4">
-        <a href="dashboardS.php" class="text-gray-600">Tableau de bord</a>
-        <a href="logout.php" class="text-red-400"data-i18n="nav_logout">Déconnexion</a>
+<nav class="fixed w-full bg-white/80 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-4">
+        <img src="/logo.png" alt="Silver Happy" class="h-12">
+        <div>
+            <span class="text-2xl font-bold text-orange-corail block leading-none font-title">Silver Happy</span>
+            <span class="text-xs uppercase tracking-widest font-bold text-slate-400">Bien vivre après 60 ans</span>
+        </div>
+    </div>
+    <div class="flex gap-4 items-center">
+        <a href="dashboardS.php" class="text-slate-600 hover:text-orange-corail font-bold transition-colors">Tableau de bord</a>
+        <a href="logout.php" class="text-red-400 hover:text-red-600 font-bold transition-colors">Déconnexion</a>
     </div>
 </nav>
+
+<div class="pt-28 px-6 max-w-7xl mx-auto pb-16">
 
 <div class="max-w-6xl mx-auto mt-10 px-4">
     <h1 class="text-3xl font-bold text-orange-500 mb-2"><span data-i18n="boutique_title">Boutique Silver Happy</span></h1>
@@ -109,7 +138,7 @@ $exemples = [
 
     </div>
 </div>
-
+</div>
 <script src="/lang/i18n.js"></script>
 </body>
 </html>
