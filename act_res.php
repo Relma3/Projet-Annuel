@@ -23,7 +23,6 @@ if ($id_res > 0 && !empty($action)) {
         try {
             $pdo->beginTransaction();
 
-
             $stmtGet = $pdo->prepare("
                 SELECT r.*, s.prix AS service_prix, s.nom_service, s.id_service
                 FROM reservation r
@@ -36,7 +35,6 @@ if ($id_res > 0 && !empty($action)) {
 
             if ($reservation) {
 
-                
                 $pdo->prepare("
                     UPDATE reservation SET statut = ? WHERE id_reservation = ?
                 ")->execute([$nouveau_statut, $id_res]);
@@ -65,11 +63,10 @@ if ($id_res > 0 && !empty($action)) {
                         }
                     }
 
-                    $debut   = strtotime($reservation['date_reservation']);
-                    $fin     = strtotime($reservation['date_fin']);
-                    $dureeH  = ($fin - $debut) / 3600;
+                    $debut     = strtotime($reservation['date_reservation']);
+                    $fin       = strtotime($reservation['date_fin']);
+                    $dureeH    = ($fin - $debut) / 3600;
 
-                    
                     $prixHeure = (float)($reservation['service_prix'] ?? 0);
                     if ($prixHeure <= 0) {
                         $stmtTarif = $pdo->prepare("SELECT tarif_horaire FROM prestataire WHERE id_prestataire = ?");
@@ -82,18 +79,13 @@ if ($id_res > 0 && !empty($action)) {
                     $montantTTC = round($montantHT * (1 + $tvaTaux / 100), 2);
                     $commission = round($montantTTC * 0.01, 2);
 
-                
                     $numeroDevis = 'DEV-' . date('Y-m') . '-' . str_pad($id_res, 4, '0', STR_PAD_LEFT);
-
- 
-                    $titreDevis = $reservation['nom_service']
+                    $titreDevis  = $reservation['nom_service']
                         ? htmlspecialchars($reservation['nom_service']) . ' — ' . date('d/m/Y', $debut)
                         : 'Prestation du ' . date('d/m/Y', $debut);
-
-                    $descDevis = 'Prestation du ' . date('d/m/Y à H:i', $debut)
+                    $descDevis   = 'Prestation du ' . date('d/m/Y à H:i', $debut)
                         . ' au ' . date('d/m/Y à H:i', $fin)
                         . ' (' . round($dureeH, 1) . 'h × ' . $prixHeure . '€/h)';
-
                     $dateValidite = date('Y-m-d H:i:s', strtotime($reservation['date_reservation']) - 12 * 3600);
 
                     $pdo->prepare("
@@ -117,13 +109,24 @@ if ($id_res > 0 && !empty($action)) {
                     ]);
                 }
 
-     
                 if ($nouveau_statut === 'annule' && $reservation['id_disponibilite']) {
                     $pdo->prepare("
-                        UPDATE disponibilites 
-                        SET type = 'libre', id_reservation = NULL 
+                        UPDATE disponibilites
+                        SET type = 'libre', id_reservation = NULL
                         WHERE id_reservation = ? AND type = 'reserve'
                     ")->execute([$id_res]);
+                }
+
+                // Notifier le senior si la demande est refusée
+                if ($nouveau_statut === 'annule') {
+                    require_once __DIR__ . '/includes/send_notification.php';
+                    envoyerNotification(
+                        $pdo,
+                        $reservation['id_senior'],
+                        'Demande refusée',
+                        'Votre demande de prestation a été refusée par le prestataire.',
+                        'info'
+                    );
                 }
             }
 
@@ -131,7 +134,8 @@ if ($id_res > 0 && !empty($action)) {
 
         } catch (PDOException $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();
-            die("Erreur : " . $e->getMessage());
+            error_log("Erreur act_res: " . $e->getMessage());
+            die("Erreur serveur");
         }
     }
 }
