@@ -154,5 +154,53 @@
     }
     </script>
 <script src="/lang/i18n.js"></script>
+
+<!-- Modale mot de passe oublié -->
+<div id="modal-reset" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl">
+        <h2 class="text-xl font-bold text-orange-500 mb-2">Mot de passe oublié</h2>
+        <p class="text-gray-500 text-sm mb-6">Entrez votre email, vous recevrez un lien de réinitialisation.</p>
+        <input type="email" id="reset-email" placeholder="votre@email.com"
+            class="w-full border border-gray-300 rounded-xl p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400">
+        <div id="reset-msg" class="hidden mb-4 p-3 rounded-xl text-sm font-medium"></div>
+        <div class="flex gap-3">
+            <button onclick="envoyerReset()"
+                class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition-all">
+                Envoyer le lien
+            </button>
+            <button onclick="fermerModalReset()"
+                class="flex-1 border border-gray-300 text-gray-500 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all">
+                Annuler
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function ouvrirModalReset() {
+    document.getElementById('modal-reset').classList.remove('hidden');
+}
+function fermerModalReset() {
+    document.getElementById('modal-reset').classList.add('hidden');
+    document.getElementById('reset-email').value = '';
+    document.getElementById('reset-msg').classList.add('hidden');
+}
+async function envoyerReset() {
+    const email = document.getElementById('reset-email').value.trim();
+    const msg   = document.getElementById('reset-msg');
+    if (!email) { return; }
+
+    const res  = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+
+    msg.textContent = data.message;
+    msg.className = 'mb-4 p-3 rounded-xl text-sm font-medium bg-green-50 text-green-700';
+    msg.classList.remove('hidden');
+}
+</script>
 </body>
 </html>
