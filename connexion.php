@@ -108,7 +108,7 @@
                         <div>
                             <div class="flex justify-between items-center mb-2 px-2 text-slate-700">
                                 <label class="text-sm font-bold">Mot de passe</label>
-                                <a href="#" class="text-xs text-orange-corail font-bold hover:underline">Oublié ?</a>
+                                <a href="#" onclick="ouvrirModalReset(); return false;" class="text-xs text-orange-corail font-bold hover:underline">Oublié ?</a>
                             </div>
                             <div class="relative">
                                 <input type="password" name="password" required id="pwd-input"
