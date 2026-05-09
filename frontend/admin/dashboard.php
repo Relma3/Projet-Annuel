@@ -440,6 +440,34 @@ tailwind.config = {
 </div>
 <!-- /Section articles -->
 
+<!-- Section : Gestion des commandes -->
+<div id="section-commandes" class="section">
+  <h2 class="text-xl font-bold text-white mb-6">Gestion des commandes</h2>
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+    <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+      <h2 class="font-bold text-white">Commandes boutique</h2>
+      <button onclick="chargerCommandes()" class="bg-orange-corail hover:brightness-110 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all">
+        <i class="fa-solid fa-rotate-right mr-2"></i>Actualiser
+      </button>
+    </div>
+    <table class="w-full text-sm text-slate-300">
+      <thead class="bg-slate-700 text-slate-400 uppercase text-xs">
+        <tr>
+          <th class="p-4 text-left">Senior</th>
+          <th class="p-4 text-left">Article</th>
+          <th class="p-4 text-left">Prix</th>
+          <th class="p-4 text-left">Statut</th>
+          <th class="p-4 text-left">Action</th>
+        </tr>
+      </thead>
+      <tbody id="liste-commandes" class="divide-y divide-slate-700">
+        <tr><td colspan="5" class="p-6 text-center text-slate-400">Cliquez sur Actualiser</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- /Section commandes -->
+
 <!-- Section : Logs système -->
  <div id="section-logs" class="section">
 
@@ -485,6 +513,7 @@ const titles = {
   categories: ['Catégories', 'Gestion des catégories de prestations'],
   evenements: ['Événements', 'Gestion des événements Silver Happy'],
   articles: ['Articles', 'Gestion des articles'],
+  commandes: ['Commandes', 'Gestion des commandes boutique'],
   documents: ['Documents', 'Validation des documents des prestataires']
 };
 
@@ -497,6 +526,7 @@ function showSection(name) {
   document.getElementById('page-sub').textContent = titles[name][1];
   if (name === 'overview') chargerStats();
   if (name === 'articles') chargerArticles();
+  if (name === 'commandes') chargerCommandes();
   if (name === 'prestataires') chargerPrestataires();
   if (name === 'documents') chargerDocuments();
   if (name === 'logs') chargerLogs();
@@ -928,6 +958,46 @@ async function voirDocs(id_prestataire) {
       </td>
     </tr>
   `).join('');
+}
+
+async function chargerCommandes() {
+  try {
+    const res  = await fetch('/api/admin/commandes.php', { headers: { Authorization: 'Bearer ' + token() } });
+    const data = await res.json();
+    const tbody = document.getElementById('liste-commandes');
+    if (!Array.isArray(data) || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">Aucune commande</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(c => `
+      <tr class="hover:bg-slate-700/30 transition-colors">
+        <td class="p-4">${c.senior_nom}</td>
+        <td class="p-4">${c.nom_article}</td>
+        <td class="p-4 font-bold">${parseFloat(c.prix).toFixed(2)} €</td>
+        <td class="p-4">
+          <span class="px-2 py-1 rounded-full text-xs font-bold ${
+            c.statut === 'en_attente' ? 'bg-yellow-500/20 text-yellow-400' :
+            c.statut === 'expediee'   ? 'bg-blue-500/20 text-blue-400' :
+            c.statut === 'livree'     ? 'bg-green-500/20 text-green-400' :
+                                        'bg-red-500/20 text-red-400'
+          }">${c.statut}</span>
+        </td>
+        <td class="p-4">
+          ${c.statut === 'en_attente' ? `<button onclick="changerStatutCommande(${c.id_commande}, 'expediee')" class="text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700">Expédier</button>` : ''}
+          ${c.statut === 'expediee'   ? `<button onclick="changerStatutCommande(${c.id_commande}, 'livree')" class="text-xs bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700">Livrer</button>` : ''}
+          ${c.statut === 'annulee'    ? '<span class="text-xs text-red-400">Annulée</span>' : ''}
+        </td>
+      </tr>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+async function changerStatutCommande(id, statut) {
+  await fetch('/api/admin/commandes.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() },
+    body: JSON.stringify({ id_commande: id, statut })
+  });
+  chargerCommandes();
 }
 
 async function chargerLogs() {
