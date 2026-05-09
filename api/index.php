@@ -124,5 +124,14 @@ if (strpos($uri, "/seniors/me") !== false && $method === "DELETE") {
     supprimer_compte_senior(); exit;
 }
 
+// Commandes admin
+if (strpos($uri, "/admin/commandes") !== false && $method === "GET") {
+    require_once __DIR__ . "/admin/commandes.php";
+    exit;
+}
+if (strpos($uri, "/admin/commandes") !== false && $method === "POST") {
+    require_once __DIR__ . "/admin/commandes.php";
+    exit;
+}
 http_response_code(404);
 echo json_encode(["message" => "Route non trouvée"]);
