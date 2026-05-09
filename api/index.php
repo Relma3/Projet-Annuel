@@ -1,4 +1,8 @@
 <?php
+/**
+ * Routeur API REST — Silver Happy
+ * Point d'entrée unique pour toutes les routes API
+ */
 header("Content-Type: application/json");
 
 header("Access-Control-Allow-Origin: *");

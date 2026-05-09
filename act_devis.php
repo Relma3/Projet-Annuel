@@ -1,4 +1,5 @@
 <?php
+/** act_devis.php — Acceptation ou refus d'un devis par le senior */
 session_start();
 require_once 'db_connect.php';
 

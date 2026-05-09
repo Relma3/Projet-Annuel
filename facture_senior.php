@@ -1,4 +1,5 @@
 <?php
+/** facture_senior.php — Génération et téléchargement facture PDF senior */
 session_start();
 require_once 'db_connect.php';
 require_once 'PdfGenerator.php';

@@ -1,4 +1,5 @@
 <?php
+/** dashboardP.php — Espace prestataire : réservations, services, profil, factures */
 require_once 'check_session.php';
 require_once 'db_connect.php';
 
@@ -207,7 +208,6 @@ try {
             <?php endif; ?>
         </div>
 
-
         <div id="planning" class="tab-content space-y-6">
             <div class="bg-white p-8 rounded-senior shadow-sm border border-emerald-50">
                 <h2 class="text-2xl font-title font-bold text-emerald-800 mb-6">Réservations reçues</h2>
@@ -278,7 +278,6 @@ try {
                                     </p>
                                     <?php endif; ?>
                                 </div>
-
 
                                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
 
@@ -458,7 +457,6 @@ try {
 
     </section>
 </main>
-
 
 <div id="modalService" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-6">
     <div class="bg-white w-full max-w-lg rounded-senior shadow-2xl overflow-hidden">

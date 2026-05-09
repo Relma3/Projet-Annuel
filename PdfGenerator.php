@@ -1,4 +1,8 @@
 <?php
+/**
+ * Générateur de factures PDF — Silver Happy
+ * Génère les factures seniors (à la demande) et prestataires (mensuelles)
+ */
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Dompdf\Dompdf;

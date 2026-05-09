@@ -1,4 +1,5 @@
 <?php
+/** dashboardS.php — Espace personnel senior : planning, boutique, messagerie, profil */
 session_start();
 
 require_once 'db_connect.php';
@@ -92,7 +93,8 @@ try {
     $evenements_inscrits = $stmtEvents->fetchAll();
 
 } catch (PDOException $e) {
-    die("Erreur de base de données : " . $e->getMessage());
+    error_log("Erreur dashboardS: " . $e->getMessage());
+    die("Erreur serveur");
 }
 
 $prochain = null;
@@ -576,7 +578,6 @@ $stmt->execute([$_SESSION['id']]);
             </div>
         </section>
     </main>
-
 
     <script>
         function filtrerConseils(categorie, btn) {

@@ -1,4 +1,5 @@
 <?php
+/** abonnement.php — Souscription abonnement senior via Stripe */
 require_once 'check_session.php';
 
 if (!$is_connected || $_SESSION['type'] != 'senior') {
@@ -16,7 +17,7 @@ $stmt = $db->prepare("
 $stmt->execute([$_SESSION['id']]);
 $senior = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$stripe_public_key = getenv("STRIPE_PUBLIC_KEY") ?: "pk_test_votre_cle_publique";
+$stripe_public_key = getenv("STRIPE_PUBLIC_KEY");
 ?>
 
 <!DOCTYPE html>

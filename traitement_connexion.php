@@ -1,4 +1,5 @@
 <?php
+/** traitement_connexion.php — Authentification et création de session */
 session_start();
 require_once 'db_connect.php';
 require_once 'api/middleware.php';

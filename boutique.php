@@ -1,4 +1,5 @@
 <?php
+/** boutique.php — Boutique en ligne Silver Happy */
 require_once 'check_session.php';
 
 if (!$is_connected || $_SESSION['type'] != 'senior') {

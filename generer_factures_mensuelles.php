@@ -1,4 +1,5 @@
 <?php
+/** generer_factures_mensuelles.php — Cron mensuel : factures prestataires */
 // À lancer via cron le 1er de chaque mois : 0 8 1 * * php /var/www/generer_factures_mensuelles.php
 
 require_once __DIR__ . '/db_connect.php';

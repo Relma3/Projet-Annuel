@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        echo "Erreur SQL : " . $e->getMessage(); // debug temporaire
+        error_log("Erreur SQL newsletter: " . $e->getMessage());
     }
 
 } else {

@@ -1,4 +1,5 @@
 <?php
+/** payer_devis.php — Paiement d'un devis accepté via Stripe */
 session_start();
 require_once 'db_connect.php';
 require_once 'vendor/autoload.php';

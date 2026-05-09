@@ -1,3 +1,9 @@
+// Package main — API Go Silver Happy
+// Micro-service REST exposé sur :8080
+// Routes :
+//   GET  /health             → statut du service
+//   GET  /api/stats          → statistiques (délègue à l'API PHP)
+//   POST /api/notifications  → envoi de notification (délègue à l'API PHP)
 package main
 
 import (
