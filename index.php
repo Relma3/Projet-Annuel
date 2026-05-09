@@ -238,8 +238,8 @@
         </div>
     </footer>
 
-    <!-- Mmina -->
-     <!--malikat -->
+    
+     
  <script>
 const LANG_KEY = 'sh_lang';
 
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
                
 </script>
- <!-- fin malikat -->
+ 
 
 </body>
 </html>

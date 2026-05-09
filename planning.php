@@ -1,4 +1,5 @@
 <?php
+/** planning.php — Calendrier senior : réservations, événements, RDV médicaux */
 session_start();
 require_once 'db_connect.php';
 require_once 'check_session.php';

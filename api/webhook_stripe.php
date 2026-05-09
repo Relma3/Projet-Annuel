@@ -1,4 +1,8 @@
 <?php
+/**
+ * Webhook Stripe — Silver Happy
+ * Traite les événements Stripe : paiement abonnement senior/prestataire, devis
+ */
 require_once __DIR__ . "/config/database.php";
 require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . '/../PdfGenerator.php';
@@ -22,7 +26,7 @@ if ($event->type === "payment_intent.succeeded") {
     $type_objet = $intent->metadata->type_objet ?? 'abonnement';
     $pdo        = getDB();
 
-    // ── CAS abonnement prestataire ──
+    // ── Abonnement prestataire (Stripe) ─────────
     if ($type_objet === 'abonnement_presta') {
         $id_presta       = (int)($intent->metadata->id_prestataire ?? 0);
         $type_abonnement = $intent->metadata->type_abonnement ?? 'mensuel';

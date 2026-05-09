@@ -1,4 +1,8 @@
 <?php
+/**
+ * Envoi de notifications push OneSignal — Silver Happy
+ * Enregistre en BDD et envoie via l'API OneSignal si player_id disponible
+ */
 function envoyerNotification(PDO $pdo, int $id_senior, string $titre, string $message, string $type = 'info'): void {
     // Récupérer le player_id du senior
     $stmt = $pdo->prepare("SELECT onesignal_player_id FROM senior WHERE id_senior = ?");

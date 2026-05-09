@@ -52,7 +52,9 @@ try {
     $offres = $stmt->fetchAll();
 
 } catch (PDOException $e) {
-    die("Erreur SQL : " . $e->getMessage());
+    error_log("Erreur liste_prestataires: " . $e->getMessage());
+    http_response_code(500);
+    die("Erreur serveur");
 }
 ?>
 <!DOCTYPE html>

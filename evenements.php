@@ -1,4 +1,5 @@
 <?php
+/** evenements.php — Liste et inscription aux événements Silver Happy */
 session_start();
 require_once 'db_connect.php';
 

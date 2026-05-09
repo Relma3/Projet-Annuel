@@ -1,5 +1,9 @@
 <?php
-// Mmina
+/**
+ * API Admin — Silver Happy
+ * Gestion des ressources admin : seniors, prestataires, catégories, événements, stats
+ */
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Authorization, Content-Type');
@@ -12,6 +16,7 @@ if (!function_exists('getDB')) {
 }
 require_once __DIR__ . "/middleware.php";
 
+// ── Seniors ──────────────────────────────────
 function lister_seniors() {
     verifier_admin();
     $pdo = getDB();
@@ -26,6 +31,8 @@ function lister_prestataires() {
     echo json_encode($req->fetchAll(PDO::FETCH_ASSOC));
 }
 
+
+// ── Catégories ───────────────────────────────
 function lister_categories() {
     verifier_admin();
     $pdo = getDB();
@@ -50,6 +57,8 @@ function supprimer_categorie($id) {
     echo json_encode(["message" => "Categorie supprimee"]);
 }
 
+
+// ── Événements ───────────────────────────────
 function lister_evenements() {
     verifier_admin();
     $pdo    = getDB();
@@ -74,6 +83,8 @@ function supprimer_evenement($id) {
     echo json_encode(["message" => "Evenement supprime"]);
 }
 
+
+// ── Stats financières ────────────────────────
 function stats_financieres() {
     $pdo = getDB();
 

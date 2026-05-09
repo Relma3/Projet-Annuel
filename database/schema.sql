@@ -1,4 +1,4 @@
--- CECI EST LE FICHIER DIRECTEMENT EXPORTE DEPUIS PHPMYADMIN (ON A RIEN CODER)
+-- Schema Silver Happy — export phpMyAdmin
 
 
 -- phpMyAdmin SQL Dump

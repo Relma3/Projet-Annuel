@@ -1,4 +1,5 @@
 <?php
+/** traitement_inscription.php — Création de compte senior */
 session_start();
 require_once 'db_connect.php';
 require_once 'api/utils/captcha.php';

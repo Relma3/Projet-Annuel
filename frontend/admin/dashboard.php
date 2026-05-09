@@ -87,7 +87,6 @@ tailwind.config = {
       <i class="fa-solid fa-file-alt w-4 text-center"></i> Documents
     </a>
 
-
     <a href="/frontend/admin/admin_conseils.php" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300">
       <i class="fa-solid fa-lightbulb w-4 text-center"></i> Conseils
     </a>
@@ -224,7 +223,7 @@ tailwind.config = {
       </div>
     </div>
 
-   <!-- Prestataires section malikat -->
+   <!-- Section : Gestion des prestataires -->
    <div id="section-prestataires" class="section">
 
   <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
@@ -253,8 +252,8 @@ tailwind.config = {
   </div>
 
 </div>
-<!-- fin prestataires section malikat -->
-<!-- malikat section valider docs -->
+<!-- /Section prestataires -->
+<!-- Section : Validation des documents -->
  <div id="section-documents" class="section">
 
   <div class="bg-slate-800 rounded-2xl p-6">
@@ -281,9 +280,9 @@ tailwind.config = {
 
   </div>
 </div>
-<!-- fin malikat section valider docs -->
+<!-- /Section validation documents -->
 
-<!-- malikat section categories -->
+<!-- Section : Catégories de prestations -->
 
     <div id="section-categories" class="section">
       <div class="grid grid-cols-3 gap-6">
@@ -317,9 +316,9 @@ tailwind.config = {
         </div>
       </div>
     </div>
-<!-- fin malikat section categories -->
+<!-- /Section catégories -->
 
-<!-- malikat section  finances   -->
+<!-- Section : Finances et statistiques -->
 
  <div id="section-finances" class="section">
 
@@ -366,7 +365,7 @@ tailwind.config = {
 
 </div>
 
-<!-- fin malikat section finances   -->
+<!-- /Section finances -->
 
     <div id="section-evenements" class="section">
       <div class="grid grid-cols-3 gap-6">
@@ -411,7 +410,7 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- malikat section articles -->
+    <!-- Section : Gestion des articles -->
   <div id="section-articles" class="section">
    <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
 
@@ -439,9 +438,9 @@ tailwind.config = {
 
   </div>
 </div>
-<!-- fin malikat section artiicles -->
+<!-- /Section articles -->
 
-<!-- malikat section logs -->
+<!-- Section : Logs système -->
  <div id="section-logs" class="section">
 
   <div class="bg-slate-800 p-6 rounded-2xl">
@@ -468,7 +467,7 @@ tailwind.config = {
   </div>
 
 </div>
-<!-- fin malikat section logs -->
+<!-- /Section logs -->
 
   </div>
 </main>
@@ -664,7 +663,6 @@ chargerEvenements = async function() {
 window.addEventListener('load', () => { chargerStats(); chargerCategories(); chargerEvenements(); });
 </script>
 <script>
-    //malikat
 
 // NAVIGATION
 // CHARGER ARTICLES
@@ -748,8 +746,6 @@ async function ajouterArticle(){
 
         const data = await res.json();
 
-        console.log("REPONSE API :", data);
-
         if(data.error){
             alert(data.error);
             return;
@@ -770,8 +766,6 @@ async function chargerPrestataires() {
   try {
     const res = await fetch('/api/admin/prestataires.php');
     const data = await res.json();
-
-    console.log(data); // DEBUG
 
     const table = document.getElementById('table-prestataires');
 
@@ -973,10 +967,8 @@ async function chargerFinances() {
   document.querySelector('#section-finances table').innerHTML += table;
 }
 
-
-// FIN MALIKAT
 </script>
-<!-- malikat -->
+
 <div id="modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
   <div class="bg-slate-800 p-6 rounded-2xl w-96 border border-slate-700">
@@ -993,6 +985,6 @@ async function chargerFinances() {
 
   </div>
 </div>
-<!-- fin malikat -->
+
 </body>
 </html>

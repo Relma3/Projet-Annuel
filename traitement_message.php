@@ -1,4 +1,5 @@
 <?php
+/** traitement_message.php — Envoi d'un message senior vers le staff */
 require_once 'check_session.php';
 
 if (!$is_connected || $_SESSION['type'] != 'senior') {

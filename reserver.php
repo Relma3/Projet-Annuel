@@ -1,4 +1,5 @@
 <?php
+/** reserver.php — Formulaire de réservation d'un service */
 session_start();
 require_once 'db_connect.php';
 

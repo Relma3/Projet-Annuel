@@ -37,7 +37,7 @@ if (!$devis) {
     exit();
 }
 
-$stripe_public_key = getenv('STRIPE_PUBLIC_KEY') ?: 'pk_test_votre_cle_publique';
+$stripe_public_key = getenv('STRIPE_PUBLIC_KEY');
 $montant_centimes  = (int) round($devis['montant_ttc'] * 100);
 ?>
 <!DOCTYPE html>

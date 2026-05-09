@@ -1,4 +1,5 @@
 <?php
+/** messagerie.php — Messagerie senior ↔ staff Silver Happy */
 require_once 'check_session.php';
 
 if (!$is_connected || $_SESSION['type'] != 'senior') {
