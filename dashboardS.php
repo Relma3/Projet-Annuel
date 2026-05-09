@@ -1,5 +1,5 @@
 <?php
-/** dashboardS.php — Espace personnel senior : planning, boutique, messagerie, profil */
+/** Espace personnel senior : planning, boutique, messagerie, profil */
 session_start();
 
 require_once 'db_connect.php';
@@ -426,7 +426,18 @@ $stmt->execute([$_SESSION['id']]);
                                     <tr>
                                         <td class="p-6 font-medium"><?php echo htmlspecialchars($c['nom_article']); ?></td>
                                         <td class="p-6 font-bold"><?php echo number_format($c['prix'], 2); ?> €</td>
-                                        <td class="p-6 italic"><?php echo htmlspecialchars($c['statut']); ?></td>
+                                        <td class="p-6">
+                                            <span class="italic <?= $c['statut'] === 'annulee' ? 'text-red-400' : ($c['statut'] === 'livree' ? 'text-green-600' : 'text-slate-500') ?>">
+                                                <?= htmlspecialchars($c['statut']) ?>
+                                            </span>
+                                        </td>
+                                        <td class="p-6">
+                                            <?php if ($c['statut'] === 'en_attente'): ?>
+                                                <a href="api/commandes.php?action=annuler&id=<?= $c['id_commande'] ?>"
+                                                onclick="return confirm('Annuler cette commande ?')"
+                                                class="text-xs text-red-400 hover:text-red-600 font-bold">Annuler</a>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
