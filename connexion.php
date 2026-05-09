@@ -39,8 +39,8 @@
             </div>
         </div>
         <ul class="hidden md:flex gap-8 font-medium">
-            <li><a href="index.php" class="hover:text-orange-corail transition-colors">Accueil</a></li>
-            <li><a href="services.php" class="hover:text-orange-corail transition-colors">Services</a></li>
+            <li><a href="index.php" class="hover:text-orange-corail transition-colors" data-i18n="nav_home">Accueil</a></li>
+            <li><a href="services.php" class="hover:text-orange-corail transition-colors" data-i18n="nav_services">Services</a></li>
             <li><a href="contact.php" class="hover:text-orange-corail transition-colors">Contact</a></li>
         </ul>
         <div class="flex gap-4 items-center">
@@ -153,5 +153,6 @@
         }
     }
     </script>
+<script src="/lang/i18n.js"></script>
 </body>
 </html>

@@ -165,9 +165,9 @@ $stmt->execute([$_SESSION['id']]);
                 <span class="text-2xl font-bold text-corail font-title">Silver Happy</span>
             </a>
             <div class="hidden md:flex gap-8 text-sm font-bold text-slate-500 uppercase tracking-widest">
-                <a href="index.php" class="hover:text-corail transition-colors">Accueil</a>
-                <a href="boutique.php" class="hover:text-corail transition-colors">Boutique</a>
-                <a href="services.php" class="hover:text-corail transition-colors">Services</a>
+                <a href="index.php" class="hover:text-corail transition-colors" data-i18n="nav_home">Accueil</a>
+                <a href="boutique.php" class="hover:text-corail transition-colors" data-i18n="nav_boutique">Boutique</a>
+                <a href="services.php" class="hover:text-corail transition-colors" data-i18n="nav_services">Services</a>
                 <a href="evenements.php" class="hover:text-corail transition-colors">Événements</a>
             </div>
         </div>
@@ -197,14 +197,14 @@ $stmt->execute([$_SESSION['id']]);
             <div class="bg-white rounded-senior p-6 shadow-sm sticky top-28 space-y-2 border border-slate-100">
                 <button onclick="showTab('actu', this)" class="tab-btn nav-active w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold transition-all"><i class="fa-solid fa-house"></i> Vue d'ensemble</button>
                 <a href="planning.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all">
-                    <i class="fa-solid fa-calendar-check"></i> Mon Planning
+                    <i class="fa-solid fa-calendar-check"></i> <span data-i18n="dashboard_planning">Mon Planning</span>
                 </a>
                 <button onclick="showTab('commandes', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-box"></i> Mes Achats</button>
-                <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-comment-dots"></i> Messagerie</button>
-                <a href="/abonnement.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-id-card"></i> Mon Abonnement</a>
-                <a href="evenements.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-calendar-days"></i> Événements</a>
-                <a href="conseils.php"  class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-lightbulb"></i> Conseils</a> 
-                <button onclick="showTab('profil', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-user"></i> Mon Profil</button>
+                <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-comment-dots"></i> <span data-i18n="dashboard_messages">Messagerie</span></button>
+                <a href="/abonnement.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-id-card"></i> <span data-i18n="dashboard_subscription">Mon Abonnement</span></a>
+                <a href="evenements.php" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-calendar-days"></i> <span data-i18n="dashboard_events">Événements</span></a>
+                <a href="conseils.php"  class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-lightbulb"></i> <span data-i18n="dashboard_advice">Conseils</span></a> 
+                <button onclick="showTab('profil', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-peche-pale hover:text-corail transition-all"><i class="fa-solid fa-user"></i> <span data-i18n="dashboard_profile">Mon Profil</span></button>
             </div>
         </aside>
  
@@ -679,5 +679,6 @@ $stmt->execute([$_SESSION['id']]);
         });
     </script>
     <script src="frontend/tutoriel.js"></script>
+<script src="/lang/i18n.js"></script>
 </body>
 </html>

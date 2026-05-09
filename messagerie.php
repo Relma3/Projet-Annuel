@@ -37,7 +37,7 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <span class="text-orange-500 font-bold text-2xl">Silver Happy</span>
     <div class="flex gap-4">
         <a href="dashboardS.php" class="text-gray-600">Tableau de bord</a>
-        <a href="logout.php" class="text-red-400">Déconnexion</a>
+        <a href="logout.php" class="text-red-400"data-i18n="nav_logout">Déconnexion</a>
     </div>
 </nav>
 
@@ -85,5 +85,6 @@ $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </form>
 </div>
 
+<script src="/lang/i18n.js"></script>
 </body>
 </html>

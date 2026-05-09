@@ -152,9 +152,9 @@ foreach ($evenements as $e) {
         <a href="dashboardS.php" class="text-slate-600 hover:text-corail transition-colors">
             <i class="fa-solid fa-house mr-1"></i>Tableau de bord
         </a>
-        <a href="services.php" class="text-slate-600 hover:text-corail transition-colors">Services</a>
-        <a href="boutique.php" class="text-slate-600 hover:text-corail transition-colors">Boutique</a>
-        <a href="logout.php" class="text-red-400 hover:text-red-600 transition-colors">Déconnexion</a>
+        <a href="services.php" class="text-slate-600 hover:text-corail transition-colors"data-i18n="nav_services">Services</a>
+        <a href="boutique.php" class="text-slate-600 hover:text-corail transition-colors"data-i18n="nav_boutique">Boutique</a>
+        <a href="logout.php" class="text-red-400 hover:text-red-600 transition-colors"data-i18n="nav_logout">Déconnexion</a>
     </div>
 </nav>
 
@@ -187,7 +187,7 @@ foreach ($evenements as $e) {
     <!-- Liste des prochains RDV -->
     <div class="bg-white rounded-3xl shadow-sm p-6">
         <h2 class="text-xl font-title font-bold text-slate-700 mb-4">
-            <i class="fa-solid fa-list-check text-corail mr-2"></i>Prochains rendez-vous
+            <i class="fa-solid fa-list-check text-corail mr-2"></i><span data-i18n="planning_rdv">Prochains rendez-vous</span>
         </h2>
         <?php
         // Fusionne et trie tous les événements à venir
@@ -317,5 +317,6 @@ document.addEventListener('DOMContentLoaded', function () {
     calendar.render();
 });
 </script>
+<script src="/lang/i18n.js"></script>
 </body>
 </html>
