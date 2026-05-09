@@ -501,6 +501,7 @@ function showSection(name) {
   if (name === 'prestataires') chargerPrestataires();
   if (name === 'documents') chargerDocuments();
   if (name === 'logs') chargerLogs();
+  if (name === 'finances') chargerFinances();
   
 }
 
@@ -754,7 +755,7 @@ async function ajouterArticle(){
             return;
         }
 
-        alert("Article ajouté ✅");
+        alert("Article ajouté ");
 
         document.getElementById('modal').classList.add('hidden');
 
@@ -951,6 +952,28 @@ async function chargerLogs() {
     </tr>
   `).join('');
 }
+
+async function chargerFinances() {
+  const res = await fetch('/api/admin.php?action=stats_financieres');
+  const data = await res.json();
+
+  document.getElementById('ca').textContent = data.ca_total + ' €';
+  document.getElementById('commissions').textContent = data.commissions + ' €';
+  document.getElementById('seniors-actifs').textContent = data.seniors;
+  document.getElementById('prestataires-actifs').textContent = data.prestataires;
+
+  const table = data.paiements.map(p => `
+    <tr>
+      <td>${p.montant_cents / 100} €</td>
+      <td>${p.nom_payeur}</td>
+      <td>${p.date_paiement}</td>
+    </tr>
+  `).join('');
+
+  document.querySelector('#section-finances table').innerHTML += table;
+}
+
+
 // FIN MALIKAT
 </script>
 <!-- malikat -->

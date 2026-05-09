@@ -136,3 +136,50 @@ if (isset($_GET['action'])) {
             echo json_encode(['erreur' => 'Action inconnue : ' . $action]);
     }
 }
+
+// Si aucune action n'est spécifiée, on peut retourner une erreur ou une page d'accueil de l'API
+
+if ($_GET['action'] === 'stats_financieres') {
+
+    $ca = $pdo->query("
+        SELECT SUM(montant_cents)/100 AS total
+        FROM paiements
+        WHERE statut = 'reussi'
+    ")->fetch();
+
+    $ca_total = $ca['total'] ?? 0;
+
+    $commissions = $pdo->query("
+        SELECT SUM(commission_sh) AS total
+        FROM reservation
+        WHERE commission_sh IS NOT NULL
+    ")->fetch()['total'] ?? 0;
+
+    $seniors = $pdo->query("
+        SELECT COUNT(*) FROM abonnement WHERE statut='actif'
+    ")->fetchColumn();
+
+    $prestataires = $pdo->query("
+        SELECT COUNT(*) FROM prestataire WHERE abonnement_statut='actif'
+    ")->fetchColumn();
+
+    $paiements = $pdo->query("
+        SELECT p.*, 
+        COALESCE(CONCAT(s.prenom, ' ', s.nom), 'Inconnu') AS nom_payeur
+        FROM paiements p
+        LEFT JOIN senior s ON p.id_payeur = s.id_senior
+        WHERE p.statut = 'reussi'
+        ORDER BY p.date_paiement DESC
+        LIMIT 20
+    ")->fetchAll();
+
+    echo json_encode([
+        'ca_total' => $ca_total,
+        'commissions' => $commissions,
+        'seniors' => $seniors,
+        'prestataires' => $prestataires,
+        'paiements' => $paiements
+    ]);
+
+    exit;
+}
