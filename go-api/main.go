@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -21,7 +22,13 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	resp, err := http.Get("http://silverhappy-web-1/api/admin.php?action=stats")
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+
+	resp, err := client.Get("https://silverhappy-web-1/api/admin.php?action=stats")
 	if err != nil || resp.StatusCode != 200 {
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"total_seniors":      0,
