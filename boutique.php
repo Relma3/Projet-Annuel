@@ -38,12 +38,12 @@ $exemples = [
     <span class="text-orange-500 font-bold text-2xl">Silver Happy</span>
     <div class="flex gap-4">
         <a href="dashboardS.php" class="text-gray-600">Tableau de bord</a>
-        <a href="logout.php" class="text-red-400">Déconnexion</a>
+        <a href="logout.php" class="text-red-400"data-i18n="nav_logout">Déconnexion</a>
     </div>
 </nav>
 
 <div class="max-w-6xl mx-auto mt-10 px-4">
-    <h1 class="text-3xl font-bold text-orange-500 mb-2">Boutique Silver Happy</h1>
+    <h1 class="text-3xl font-bold text-orange-500 mb-2"><span data-i18n="boutique_title">Boutique Silver Happy</span></h1>
     <p class="text-gray-500 mb-8">Articles et produits adaptes aux seniors</p>
 
     <?php if (isset($_GET['commande'])) { ?>
@@ -109,5 +109,6 @@ $exemples = [
     </div>
 </div>
 
+<script src="/lang/i18n.js"></script>
 </body>
 </html>

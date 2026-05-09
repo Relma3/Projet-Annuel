@@ -33,7 +33,7 @@ $evenements = $stmt->fetchAll();
 <body class="bg-gray-50 min-h-screen p-8">
 
 <a href="dashboardS.php" class="text-orange-500 font-bold mb-6 inline-block">← Retour au tableau de bord</a>
-<h1 class="text-2xl font-bold mb-6">Événements à venir</h1>
+<h1 class="text-2xl font-bold mb-6"><span data-i18n="events_title">Événements à venir</span></h1>
 
 <?php if (isset($_GET['msg'])): ?>
     <p class="mb-4 p-3 rounded bg-green-100 text-green-700"><?= htmlspecialchars($_GET['msg']) ?></p>
@@ -51,7 +51,7 @@ $evenements = $stmt->fetchAll();
                 <?= $e['lieu'] ? '· ' . htmlspecialchars($e['lieu']) : '' ?>
             </p>
             <p class="text-sm mt-1 <?= $e['places_restantes'] <= 0 ? 'text-red-500' : 'text-green-600' ?>">
-                <?= $e['deja_inscrit'] ? '✓ Inscrit(e)' : ($e['places_restantes'] <= 0 ? 'Complet' : $e['places_restantes'] . ' place(s) disponible(s)') ?>
+                <?= $e['deja_inscrit'] ? '<span data-i18n="events_registered">✓ Inscrit(e)</span>' : ($e['places_restantes'] <= 0 ? 'Complet' : $e['places_restantes'] . ' place(s) disponible(s)') ?>
             </p>
         </div>
         <div>
@@ -72,5 +72,6 @@ $evenements = $stmt->fetchAll();
     <?php endforeach; ?>
 <?php endif; ?>
 
+<script src="/lang/i18n.js"></script>
 </body>
 </html>
