@@ -1,5 +1,5 @@
 <?php
-/** dashboardP.php — Espace prestataire : réservations, services, profil, factures */
+
 require_once 'check_session.php';
 require_once 'db_connect.php';
 
