@@ -1,8 +1,25 @@
 <?php
-/** traitement_connexion.php — Authentification et création de session */
 session_start();
 require_once 'db_connect.php';
 require_once 'api/middleware.php';
+if (isset($_SESSION['id'], $_SESSION['type'])) {
+    $source_demande = $_POST['source'] ?? 'senior';
+    $type_demande = match($source_demande) {
+        'prestataire' => 'prestataire',
+        'admin'       => 'admin',
+        default       => 'senior'
+    };
+
+    if ($_SESSION['type'] !== $type_demande) {
+        $page_erreur = match($source_demande) {
+            'prestataire' => 'connexionpres.php',
+            'admin'       => 'connexion_admin.php',
+            default       => 'connexion.php'
+        };
+        header("Location: $page_erreur?error=deja_connecte");
+        exit();
+    }
+}
 
 if (!isset($_POST['email'], $_POST['password'])) {
     exit();
@@ -37,6 +54,7 @@ try {
         header("Location: $page_erreur?error=1");
         exit();
     }
+
     if ($user['type_utilisateur'] !== $type_attendu) {
         header("Location: $page_erreur?error=mauvais_compte");
         exit();
@@ -44,15 +62,15 @@ try {
 
     if ($user['est_actif'] == 0) {
         header("Location: $page_erreur?pending=1");
-        exit(); 
+        exit();
     }
 
     session_unset();
-    session_destroy(); 
+    session_destroy();
     session_start();
 
-    $_SESSION['id']   = $user['id_utilisateur'];
-    $_SESSION['type'] = $user['type_utilisateur'];
+    $_SESSION['id']    = $user['id_utilisateur'];
+    $_SESSION['type']  = $user['type_utilisateur'];
     $_SESSION['email'] = $email;
 
     if ($user['type_utilisateur'] === 'senior') {
