@@ -8,24 +8,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/168ebc7feb.js" crossorigin="anonymous"></script>
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'sable-doux': '#F4EDDE',
-                        'orange-corail': '#FF885B',
-                        'vert-menthe': '#A0E8AF',
-                        'peche-pastel': '#FFD9CA',
+                        'sable-doux': '#F4EDDE', 'orange-corail': '#FF885B',
+                        'vert-menthe': '#A0E8AF', 'peche-pastel': '#FFD9CA',
                     },
-                    fontFamily: {
-                        'sans': ['Roboto', 'sans-serif'],
-                        'title': ['Quicksand', 'sans-serif'],
-                    },
-                    borderRadius: {
-                        'senior': '28px',
-                    }
+                    fontFamily: { 'sans': ['Roboto', 'sans-serif'], 'title': ['Quicksand', 'sans-serif'] },
+                    borderRadius: { 'senior': '28px' }
                 }
             }
         }
@@ -39,62 +31,61 @@
             <img src="logo.png" alt="Silver Happy" class="h-12">
             <div class="hidden sm:block">
                 <span class="text-2xl font-bold text-orange-corail block leading-none">Silver Happy</span>
-                <span class="text-xs uppercase tracking-widest font-bold text-slate-400">Bien vivre après 60 ans</span>
+                <span class="text-xs uppercase tracking-widest font-bold text-slate-400" data-i18n="nav_tagline">Bien vivre après 60 ans</span>
             </div>
         </div>
-        
+
         <ul class="hidden md:flex gap-8 font-medium">
-            <li><a href="index.php" class="hover:text-orange-corail transition-colors">Accueil</a></li>
-            <li><a href="services.php" class="hover:text-orange-corail transition-colors">Services</a></li>
-            <li><a href="contact.php" class="hover:text-orange-corail transition-colors">Contact</a></li>
+            <li><a href="index.php" class="hover:text-orange-corail transition-colors" data-i18n="nav_home">Accueil</a></li>
+            <li><a href="services.php" class="text-orange-corail font-bold" data-i18n="nav_services">Services</a></li>
+            <li><a href="contact.php" class="hover:text-orange-corail transition-colors" data-i18n="nav_contact">Contact</a></li>
         </ul>
 
-       <div class="flex gap-3 items-center">
-    <?php if (isset($_SESSION['id']) && $_SESSION['type'] === 'senior'): ?>
-        <a href="dashboardS.php" class="bg-orange-corail text-white px-5 py-2 rounded-senior font-bold hover:brightness-110 transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-user-circle mr-2"></i>Accéder à mon compte
-        </a>
+        <div class="flex gap-3 items-center">
+            <?php if (isset($_SESSION['id']) && $_SESSION['type'] === 'senior'): ?>
+                <a href="dashboardS.php" class="bg-orange-corail text-white px-5 py-2 rounded-senior font-bold hover:brightness-110 transition-all text-sm shadow-sm">
+                    <i class="fa-solid fa-user-circle mr-2"></i>Accéder à mon compte
+                </a>
+            <?php elseif (isset($_SESSION['id']) && $_SESSION['type'] === 'prestataire'): ?>
+                <a href="dashboardP.php" class="bg-emerald-600 text-white px-5 py-2 rounded-senior font-bold hover:bg-emerald-700 transition-all text-sm shadow-sm">
+                    <i class="fa-solid fa-user-circle mr-2"></i>Accéder à mon compte
+                </a>
+            <?php else: ?>
+                <a href="connexion.php" class="bg-peche-pastel text-orange-corail px-5 py-2 rounded-senior font-bold hover:bg-orange-corail hover:text-white transition-all text-sm shadow-sm">
+                    <i class="fa-solid fa-user-circle mr-2"></i>Espace Adhérent
+                </a>
+                <a href="connexionpres.php" class="bg-vert-menthe/20 text-emerald-700 border border-vert-menthe px-5 py-2 rounded-senior font-bold hover:bg-vert-menthe hover:text-slate-800 transition-all text-sm">
+                    Espace Prestataire
+                </a>
+            <?php endif; ?>
 
-    <?php elseif (isset($_SESSION['id']) && $_SESSION['type'] === 'prestataire'): ?>
-        <a href="dashboardP.php" class="bg-emerald-600 text-white px-5 py-2 rounded-senior font-bold hover:bg-emerald-700 transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-user-circle mr-2"></i>Accéder à mon compte
-        </a>
-
-    <?php else: ?>
-        <a href="connexion.php" class="bg-peche-pastel text-orange-corail px-5 py-2 rounded-senior font-bold hover:bg-orange-corail hover:text-white transition-all text-sm shadow-sm">
-            <i class="fa-solid fa-user-circle mr-2"></i>Espace Adhérent
-        </a>
-        <a href="connexionpres.php" class="bg-vert-menthe/20 text-emerald-700 border border-vert-menthe px-5 py-2 rounded-senior font-bold hover:bg-vert-menthe hover:text-slate-800 transition-all text-sm">
-            Espace Prestataire
-        </a>
-    <?php endif; ?>
-
-    <select id="lang-selector" class="bg-transparent border-none text-sm font-bold cursor-pointer ml-2 outline-none">
-        <option value="fr">FR</option>
-        <option value="en">EN</option>
-    </select>
-</div>
+            <select id="lang-selector" class="bg-transparent border-none text-sm font-bold cursor-pointer ml-2 outline-none">
+                <option value="fr">FR</option>
+                <option value="en">EN</option>
+            </select>
+        </div>
     </nav>
 
     <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-        
+
         <div class="text-center mb-16">
-            <h1 class="font-title text-4xl md:text-5xl font-bold text-slate-900 mb-4">Des services pensés pour vous</h1>
-            <p class="text-slate-500 text-xl max-w-2xl mx-auto">
+            <h1 class="font-title text-4xl md:text-5xl font-bold text-slate-900 mb-4" data-i18n="services_title">Des services pensés pour vous</h1>
+            <p class="text-slate-500 text-xl max-w-2xl mx-auto" data-i18n="services_sub">
                 Tout ce dont vous avez besoin pour un quotidien serein et une vie sociale épanouie.
             </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
+
             <a href="prestation_details.php?cat=domicile" class="group bg-white p-8 rounded-senior hover:bg-peche-pastel transition-all shadow-sm hover:shadow-xl border border-slate-100">
                 <div class="bg-peche-pastel w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-house-chimney text-3xl text-orange-corail"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-3">Services à domicile</h3>
-                <p class="text-slate-600 text-lg mb-4">Ménage, repassage, portage de repas et aide aux courses.</p>
+                <h3 class="text-2xl font-bold mb-3" data-i18n="service_home">Services à domicile</h3>
+                <p class="text-slate-600 text-lg mb-4" data-i18n="service_home_desc">Ménage, repassage, portage de repas et aide aux courses.</p>
                 <span class="text-orange-corail font-bold flex items-center gap-2">
-                    Voir les détails <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    <span data-i18n="service_home_link">Voir les détails</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
                 </span>
             </a>
 
@@ -102,10 +93,11 @@
                 <div class="bg-vert-menthe/30 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-palette text-3xl text-emerald-700"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-3">Loisirs & Culture</h3>
-                <p class="text-slate-600 text-lg mb-4">Événements, soirées de rencontres, visites et conférences.</p>
+                <h3 class="text-2xl font-bold mb-3" data-i18n="service_culture">Loisirs & Culture</h3>
+                <p class="text-slate-600 text-lg mb-4" data-i18n="service_culture_desc">Événements, soirées de rencontres, visites et conférences.</p>
                 <span class="text-emerald-700 font-bold flex items-center gap-2">
-                    Voir les détails <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    <span data-i18n="service_culture_link">Voir les détails</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
                 </span>
             </a>
 
@@ -113,10 +105,11 @@
                 <div class="bg-peche-pastel w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-heart-pulse text-3xl text-orange-corail"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-3">Santé & Bien-être</h3>
-                <p class="text-slate-600 text-lg mb-4">Télérendez-vous médicaux et conseils de vie adaptés.</p>
+                <h3 class="text-2xl font-bold mb-3" data-i18n="service_health">Santé & Bien-être</h3>
+                <p class="text-slate-600 text-lg mb-4" data-i18n="service_health_desc">Télérendez-vous médicaux et conseils de vie adaptés.</p>
                 <span class="text-orange-corail font-bold flex items-center gap-2">
-                    Voir les détails <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    <span data-i18n="service_health_link">Voir les détails</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
                 </span>
             </a>
 
@@ -124,10 +117,11 @@
                 <div class="bg-vert-menthe/30 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-screwdriver-wrench text-3xl text-emerald-700"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-3">Maison & Habitat</h3>
-                <p class="text-slate-600 text-lg mb-4">Petit bricolage, jardinage et amélioration de l'habitat.</p>
+                <h3 class="text-2xl font-bold mb-3" data-i18n="service_maison">Maison & Habitat</h3>
+                <p class="text-slate-600 text-lg mb-4" data-i18n="service_maison_desc">Petit bricolage, jardinage et amélioration de l'habitat.</p>
                 <span class="text-emerald-700 font-bold flex items-center gap-2">
-                    Voir les détails <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    <span data-i18n="service_maison_link">Voir les détails</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
                 </span>
             </a>
 
@@ -135,10 +129,11 @@
                 <div class="bg-peche-pastel w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-graduation-cap text-3xl text-orange-corail"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-3">Formations</h3>
-                <p class="text-slate-600 text-lg mb-4">Cours d'informatique, de langues et ateliers thématiques.</p>
+                <h3 class="text-2xl font-bold mb-3" data-i18n="service_formations">Formations</h3>
+                <p class="text-slate-600 text-lg mb-4" data-i18n="service_formations_desc">Cours d'informatique, de langues et ateliers thématiques.</p>
                 <span class="text-orange-corail font-bold flex items-center gap-2">
-                    Voir les détails <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    <span data-i18n="service_formations_link">Voir les détails</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
                 </span>
             </a>
 
@@ -146,10 +141,11 @@
                 <div class="bg-vert-menthe/30 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fa-solid fa-basket-shopping text-3xl text-emerald-700"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-3">Boutique adaptée</h3>
-                <p class="text-slate-600 text-lg mb-4">Articles de confort et équipements spécialisés.</p>
+                <h3 class="text-2xl font-bold mb-3" data-i18n="service_shop">Boutique adaptée</h3>
+                <p class="text-slate-600 text-lg mb-4" data-i18n="service_shop_desc">Articles de confort et équipements spécialisés.</p>
                 <span class="text-emerald-700 font-bold flex items-center gap-2">
-                    Accéder à la boutique <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                    <span data-i18n="service_shop_link">Accéder à la boutique</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
                 </span>
             </a>
 
@@ -157,10 +153,10 @@
 
         <div class="mt-20 bg-orange-corail rounded-senior p-10 text-white flex flex-col md:flex-row items-center justify-between gap-8">
             <div class="md:w-2/3">
-                <h2 class="text-3xl font-bold mb-4 font-title">Besoin d'un service spécifique ?</h2>
-                <p class="text-xl opacity-90">Nos prestations évoluent chaque année en fonction de vos demandes. Contactez-nous pour une offre sur-mesure.</p>
+                <h2 class="text-3xl font-bold mb-4 font-title" data-i18n="services_cta_title">Besoin d'un service spécifique ?</h2>
+                <p class="text-xl opacity-90" data-i18n="services_cta_sub">Nos prestations évoluent chaque année en fonction de vos demandes. Contactez-nous pour une offre sur-mesure.</p>
             </div>
-            <a href="contact.php" class="bg-white text-orange-corail px-8 py-4 rounded-senior font-bold text-lg hover:scale-105 transition-transform">
+            <a href="contact.php" class="bg-white text-orange-corail px-8 py-4 rounded-senior font-bold text-lg hover:scale-105 transition-transform" data-i18n="services_cta_btn">
                 Nous contacter
             </a>
         </div>
@@ -169,13 +165,40 @@
 
     <footer class="bg-slate-900 text-white py-12 px-6 mt-10">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <p class="text-slate-400">© 2026 Silver Happy — Bien vivre après 60 ans</p>
+            <p class="text-slate-400">© 2026 Silver Happy — <span data-i18n="nav_tagline">Bien vivre après 60 ans</span></p>
             <div class="flex gap-8">
                 <a href="#" class="hover:text-orange-corail">Mentions légales</a>
-                <a href="contact.php" class="hover:text-orange-corail">Aide</a>
+                <a href="contact.php" class="hover:text-orange-corail" data-i18n="footer_help">Aide</a>
             </div>
         </div>
     </footer>
 
+    <script>
+    const LANG_KEY = 'sh_lang';
+
+    async function loadLang(lang) {
+        try {
+            const res  = await fetch(`/lang/${lang}.json`);
+            const data = await res.json();
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (data[key]) el.textContent = data[key];
+            });
+            localStorage.setItem(LANG_KEY, lang);
+            document.getElementById('lang-selector').value = lang;
+            document.documentElement.lang = lang;
+        } catch (e) {
+            console.error("Erreur langue :", e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedLang = localStorage.getItem(LANG_KEY) || 'fr';
+        loadLang(savedLang);
+        document.getElementById('lang-selector').addEventListener('change', function () {
+            loadLang(this.value);
+        });
+    });
+    </script>
 </body>
 </html>
