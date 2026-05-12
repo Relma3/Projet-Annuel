@@ -107,7 +107,6 @@ try {
             <button onclick="showTab('planning', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-calendar-days"></i> Réservations reçues</button>
             <button onclick="showTab('messages', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-comment-dots"></i> Messages</button>
             <button onclick="showTab('profil', this)" class="tab-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-id-card"></i> Mon Entreprise</button>
-            <a href="abonnement_presta.php" class="w-full flex items-center gap-4 p-4 rounded-2xl text-left font-bold text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 transition-all"><i class="fa-solid fa-credit-card"></i> Mon Abonnement</a>
         </div>
     </aside>
 
