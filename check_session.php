@@ -1,5 +1,14 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    // Nom de session différent par type — évite les conflits entre onglets
+    $script = $_SERVER['SCRIPT_FILENAME'] ?? '';
+    if (str_contains($script, 'dashboardP') || str_contains($script, 'connexionpres') || str_contains($script, 'inscriptionpres') || str_contains($script, 'abonnement_presta')) {
+        session_name('sh_presta');
+    } elseif (str_contains($script, 'admin') || str_contains($script, 'connexion_admin')) {
+        session_name('sh_admin');
+    } else {
+        session_name('sh_senior');
+    }
     session_start();
 }
 

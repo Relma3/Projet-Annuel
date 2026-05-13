@@ -1,6 +1,14 @@
 <?php
 /** traitement_connexion.php — Authentification et création de session */
+$source = $_POST['source'] ?? 'senior';
+$session_name = match($source) {
+    'prestataire' => 'sh_presta',
+    'admin'       => 'sh_admin',
+    default       => 'sh_senior'
+};
+session_name($session_name);
 session_start();
+
 require_once 'db_connect.php';
 require_once 'api/middleware.php';
 
