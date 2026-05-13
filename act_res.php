@@ -114,6 +114,12 @@ if ($id_res > 0 && !empty($action)) {
                         $montantTTC,
                         $dateValidite
                     ]);
+
+                    $pdo->prepare("
+                      UPDATE reservation 
+                      SET commission_sh = ? 
+                      WHERE id_reservation = ?
+                    ")->execute([$commission, $id_res]);
                 }
 
      

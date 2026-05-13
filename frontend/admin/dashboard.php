@@ -328,40 +328,31 @@ tailwind.config = {
 <div class="grid grid-cols-4 gap-6 mb-6">
 
 <div class="bg-slate-800 p-4 rounded-xl">
-  CA : <?= number_format($stats['ca_total'],2) ?> €
+  CA : <span id="ca">0 €</span>
 </div>
 
 <div class="bg-slate-800 p-4 rounded-xl">
-  Commissions : <?= number_format($stats['commissions'],2) ?> €
+  Commissions : <span id="commissions">0 €</span>
 </div>
 
 <div class="bg-slate-800 p-4 rounded-xl">
-  Seniors actifs : <?= $stats['seniors'] ?>
+  Seniors actifs : <span id="seniors-actifs">0</span>
 </div>
 
 <div class="bg-slate-800 p-4 rounded-xl">
-  Prestataires actifs : <?= $stats['prestataires'] ?>
+  Prestataires actifs : <span id="prestataires-actifs">0</span>
 </div>
 
 </div>
 
 <h3 class="mb-3 font-bold">Paiements récents</h3>
 
-<table class="w-full">
+<table class="w-full" id="table-finances">
 <tr>
   <th>Montant</th>
   <th>Payeur</th>
   <th>Date</th>
 </tr>
-
-<?php foreach ($stats['paiements'] as $p): ?>
-<tr>
-  <td><?= $p['montant_cents']/100 ?> €</td>
-  <td><?= $p['nom_payeur'] ?></td>
-  <td><?= $p['date_paiement'] ?></td>
-</tr>
-<?php endforeach; ?>
-
 </table>
 
 </div>
@@ -970,8 +961,7 @@ async function chargerFinances() {
     </tr>
   `).join('');
 
-  document.querySelector('#section-finances table').innerHTML += table;
-}
+document.getElementById('table-finances').innerHTML += table;}
 
 
 // FIN MALIKAT
