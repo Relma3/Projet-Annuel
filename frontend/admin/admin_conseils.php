@@ -22,7 +22,7 @@ body { font-family: 'DM Sans', sans-serif; }
 
 <body class="bg-slate-900 text-white p-10">
 
-<h1 class="text-3xl font-bold mb-6">💡 Gestion des conseils</h1>
+<h1 class="text-3xl font-bold mb-6"> Gestion des conseils</h1>
 
 <!--  Bouton ajouter -->
 <button onclick="toggleForm()" 
