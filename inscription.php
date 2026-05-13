@@ -40,6 +40,16 @@
             }
             return true;
         }
+
+        function validationage() {
+            const date_naissance = document.getElementsByName('date_naissance')[0].value;
+            
+            if ( date_naissance < 60 ) {
+                alert(" vous etez trop jeunes pourvouir crée un compte !");
+                return false;
+            }
+            return true;
+        }
     </script>
 </head>
 <body class="bg-sable-doux text-slate-800 font-sans">
