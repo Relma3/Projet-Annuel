@@ -42,9 +42,9 @@
         }
 
         function validationage() {
-            const date_naissance = document.getElementsByName('date_naissance')[0].value;
+            const date_naissance = document.getElementsByName('date_naissance').value;
             
-            if ( date_naissance < 60 ) {
+            if ( date_naissance < [60] ) {
                 alert(" vous etez trop jeunes pourvouir crée un compte !");
                 return false;
             }
